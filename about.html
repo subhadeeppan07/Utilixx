@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>About — Utilixx</title>
+<meta name="description" content="About Utilixx — 47 free online tools for writing, SEO, math, design, and AI. No signup, no limits."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0b0c0f;--card:#13151a;--border:#1f2230;--accent:#f0ff44;--accent2:#44f0c8;--accent3:#ff6b6b;--text:#e8eaf0;--muted:#6b7080;--radius:16px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.8;min-height:100vh;}
+nav{position:sticky;top:0;z-index:100;background:rgba(11,12,15,0.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--accent);letter-spacing:-0.5px;text-decoration:none;}
+.logo span{color:var(--text);}
+.nav-back{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:color 0.2s;}
+.nav-back:hover{color:var(--text);}
+.hero{text-align:center;padding:60px 24px 40px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(240,255,68,0.1),transparent);pointer-events:none;}
+.hero-tag{display:inline-block;background:rgba(240,255,68,0.1);border:1px solid rgba(240,255,68,0.25);color:var(--accent);font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:100px;margin-bottom:16px;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,60px);font-weight:800;letter-spacing:-2px;margin-bottom:16px;}
+.hero h1 em{font-style:normal;color:var(--accent);}
+.hero p{color:var(--muted);font-size:16px;max-width:480px;margin:0 auto;}
+.content{max-width:900px;margin:0 auto;padding:40px 24px 80px;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:40px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;text-align:center;}
+.stat-card strong{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--accent);display:block;}
+.stat-card span{color:var(--muted);font-size:13px;}
+
+/* MISSION */
+.mission{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;margin-bottom:24px;text-align:center;}
+.mission h2{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:12px;}
+.mission h2 em{font-style:normal;color:var(--accent);}
+.mission p{color:var(--muted);max-width:560px;margin:0 auto;font-size:15px;}
+
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:40px;}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;}
+.feature-icon{font-size:28px;margin-bottom:12px;}
+.feature-card h3{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:6px;}
+.feature-card p{color:var(--muted);font-size:13px;line-height:1.6;}
+
+/* TOOLS LIST */
+.tools-overview{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:24px;}
+.tools-overview h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;}
+.tools-category{margin-bottom:20px;}
+.tools-category h3{font-size:14px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+.tools-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.tool-tag{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--muted);}
+
+/* CTA */
+.cta{background:rgba(240,255,68,0.06);border:1px solid rgba(240,255,68,0.2);border-radius:var(--radius);padding:40px;text-align:center;margin-bottom:24px;}
+.cta h2{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:10px;}
+.cta p{color:var(--muted);margin-bottom:20px;}
+.cta-btn{display:inline-block;background:var(--accent);color:#0b0c0f;font-family:'DM Sans',sans-serif;font-weight:700;font-size:15px;padding:12px 28px;border-radius:100px;text-decoration:none;transition:opacity 0.2s;}
+.cta-btn:hover{opacity:0.85;}
+
+footer{border-top:1px solid var(--border);padding:32px 24px;text-align:center;color:var(--muted);font-size:13px;}
+footer .footer-logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--accent);margin-bottom:8px;}
+footer a{color:var(--muted);text-decoration:none;margin:0 10px;}
+footer a:hover{color:var(--text);}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Utilix<span>x</span></a>
+  <a href="index.html" class="nav-back">← Back to Tools</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">About Us</div>
+  <h1>Tools for <em>Everyone,</em><br/>Always Free</h1>
+  <p>Utilixx is your all-in-one collection of free online tools. No signup. No limits. No cost.</p>
+</div>
+
+<div class="content">
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card"><strong>47+</strong><span>Free Tools</span></div>
+    <div class="stat-card"><strong>6</strong><span>Categories</span></div>
+    <div class="stat-card"><strong>0</strong><span>Signups Required</span></div>
+    <div class="stat-card"><strong>100%</strong><span>Free Forever</span></div>
+  </div>
+
+  <!-- MISSION -->
+  <div class="mission">
+    <h2>Our <em>Mission</em></h2>
+    <p>We believe everyone deserves access to powerful tools without paying expensive subscriptions. Utilixx brings together the most useful everyday tools in one fast, clean, ad-supported website — completely free for everyone, forever.</p>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Lightning Fast</h3>
+      <p>All tools run directly in your browser. No loading screens, no server delays. Instant results every time.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>Private & Secure</h3>
+      <p>Your data stays in your browser. We don't store, log, or share anything you type into our tools.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🚫</div>
+      <h3>No Signup Needed</h3>
+      <p>Just open the site and use any tool instantly. No account, no email, no registration required.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <h3>Works Everywhere</h3>
+      <p>Fully responsive design that works perfectly on mobile, tablet, and desktop browsers.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <h3>AI-Powered Tools</h3>
+      <p>Use your own Anthropic API key to unlock powerful AI tools like text rewriting, bio generation, and more.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">♾️</div>
+      <h3>Always Free</h3>
+      <p>Utilixx is and always will be free. We keep the lights on through non-intrusive advertising.</p>
+    </div>
+  </div>
+
+  <!-- TOOLS LIST -->
+  <div class="tools-overview">
+    <h2>🧰 All 47 Tools at a Glance</h2>
+
+    <div class="tools-category">
+      <h3>✍️ Text & Writing</h3>
+      <div class="tools-tags">
+        <span class="tool-tag">Word Counter</span>
+        <span class="tool-tag">Case Converter</span>
+        <span class="tool-tag">Text Reverser</span>
+        <span class="tool-tag">Duplicate Line Remover</span>
+        <span class="tool-tag">Text Diff Checker</span>
+        <span class="tool-tag">Grammar Checker</span>
+        <span class="tool-tag">Character Trimmer</span>
+        <span class="tool-tag">CSV ↔ JSON</span>
+        <span class="tool-tag">Lorem Ipsum Generator</span>
+      </div>
+    </div>
+
+    <div class="tools-category">
+      <h3>🖼️ Image & Design</h3>
+      <div class="tools-tags">
+        <span class="tool-tag">QR Code Generator</span>
+        <span class="tool-tag">Color Picker</span>
+        <span class="tool-tag">Image Compressor</span>
+        <span class="tool-tag">Image Resizer</span>
+        <span class="tool-tag">Image to Base64</span>
+        <span class="tool-tag">Favicon Generator</span>
+        <span class="tool-tag">Gradient Generator</span>
+        <span class="tool-tag">Pattern Generator</span>
+      </div>
+    </div>
+
+    <div class="tools-category">
+      <h3>🔍 SEO & Marketing</h3>
+      <div class="tools-tags">
+        <span class="tool-tag">Meta Tag Generator</span>
+        <span class="tool-tag">Keyword Density</span>
+        <span class="tool-tag">URL Slug Generator</span>
+        <span class="tool-tag">Open Graph Tags</span>
+        <span class="tool-tag">Robots.txt Generator</span>
+        <span class="tool-tag">Sitemap Generator</span>
+        <span class="tool-tag">Readability Score</span>
+        <span class="tool-tag">UTM Link Builder</span>
+      </div>
+    </div>
+
+    <div class="tools-category">
+      <h3>🔢 Math & Converter</h3>
+      <div class="tools-tags">
+        <span class="tool-tag">Percentage Calculator</span>
+        <span class="tool-tag">Unit Converter</span>
+        <span class="tool-tag">Number Base Converter</span>
+        <span class="tool-tag">Scientific Calculator</span>
+        <span class="tool-tag">Age Calculator</span>
+        <span class="tool-tag">Date Difference</span>
+        <span class="tool-tag">EMI Calculator</span>
+        <span class="tool-tag">Currency Converter</span>
+        <span class="tool-tag">Time Zone Converter</span>
+      </div>
+    </div>
+
+    <div class="tools-category">
+      <h3>🔐 Developer Tools</h3>
+      <div class="tools-tags">
+        <span class="tool-tag">Password Generator</span>
+        <span class="tool-tag">UUID Generator</span>
+        <span class="tool-tag">Hash Generator</span>
+        <span class="tool-tag">JSON Formatter</span>
+        <span class="tool-tag">Base64 Encoder/Decoder</span>
+        <span class="tool-tag">IP Lookup</span>
+        <span class="tool-tag">Regex Tester</span>
+      </div>
+    </div>
+
+    <div class="tools-category">
+      <h3>🤖 AI Tools</h3>
+      <div class="tools-tags">
+        <span class="tool-tag">AI Text Rewriter</span>
+        <span class="tool-tag">AI Title Generator</span>
+        <span class="tool-tag">AI Bio Generator</span>
+        <span class="tool-tag">AI Meta Description</span>
+        <span class="tool-tag">AI Text Summarizer</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <h2>Ready to Use the Tools? 🚀</h2>
+    <p>All 47 tools are free, instant, and require no signup.</p>
+    <a href="index.html" class="cta-btn">Go to Tools →</a>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-logo">Utilixx</div>
+  <p>Free online tools for everyone. No signup, no limits, no cost — ever.</p>
+  <div>
+    <a href="index.html">Home</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <p style="margin-top:16px;">© 2026 Utilixx. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

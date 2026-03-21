@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Contact — Utilixx</title>
+<meta name="description" content="Contact Utilixx — Get in touch with us for feedback, suggestions or support."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0b0c0f;--card:#13151a;--border:#1f2230;--accent:#f0ff44;--accent2:#44f0c8;--text:#e8eaf0;--muted:#6b7080;--radius:16px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.8;min-height:100vh;}
+nav{position:sticky;top:0;z-index:100;background:rgba(11,12,15,0.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--accent);letter-spacing:-0.5px;text-decoration:none;}
+.logo span{color:var(--text);}
+.nav-back{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:color 0.2s;}
+.nav-back:hover{color:var(--text);}
+.hero{text-align:center;padding:60px 24px 40px;position:relative;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(240,255,68,0.08),transparent);pointer-events:none;}
+.hero-tag{display:inline-block;background:rgba(240,255,68,0.1);border:1px solid rgba(240,255,68,0.25);color:var(--accent);font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:100px;margin-bottom:16px;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,52px);font-weight:800;letter-spacing:-1.5px;margin-bottom:12px;}
+.hero p{color:var(--muted);font-size:15px;}
+.content{max-width:640px;margin:0 auto;padding:40px 24px 80px;}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;}
+.form-card h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px;}
+.form-card p{color:var(--muted);font-size:14px;margin-bottom:24px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:6px;}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:12px 16px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--accent);}
+.form-group input::placeholder,.form-group textarea::placeholder{color:var(--muted);}
+.form-group textarea{min-height:120px;resize:vertical;}
+.form-group select{cursor:pointer;}
+.submit-btn{width:100%;padding:13px;background:var(--accent);color:#0b0c0f;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:opacity 0.2s;margin-top:8px;}
+.submit-btn:hover{opacity:0.85;}
+.success-msg{display:none;background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.3);border-radius:10px;padding:16px;text-align:center;margin-top:16px;color:var(--accent2);}
+.info-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;}
+.info-card .icon{font-size:24px;margin-bottom:8px;}
+.info-card h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px;}
+.info-card p{color:var(--muted);font-size:13px;}
+footer{border-top:1px solid var(--border);padding:32px 24px;text-align:center;color:var(--muted);font-size:13px;}
+footer .footer-logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--accent);margin-bottom:8px;}
+footer a{color:var(--muted);text-decoration:none;margin:0 10px;}
+footer a:hover{color:var(--text);}
+@media(max-width:480px){.info-cards{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Utilix<span>x</span></a>
+  <a href="index.html" class="nav-back">← Back to Tools</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">Contact</div>
+  <h1>Get in Touch</h1>
+  <p>Have feedback, suggestions, or found a bug? We'd love to hear from you!</p>
+</div>
+
+<div class="content">
+
+  <div class="info-cards">
+    <div class="info-card">
+      <div class="icon">⚡</div>
+      <h3>Quick Response</h3>
+      <p>We usually reply within 24-48 hours</p>
+    </div>
+    <div class="info-card">
+      <div class="icon">🛠️</div>
+      <h3>Suggest a Tool</h3>
+      <p>Tell us what tool you'd like us to add</p>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h2>Send Us a Message</h2>
+    <p>Fill out the form below and we'll get back to you as soon as possible.</p>
+
+    <div class="form-group">
+      <label>Your Name</label>
+      <input type="text" id="contact-name" placeholder="Enter your name"/>
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="contact-email" placeholder="your@email.com"/>
+    </div>
+    <div class="form-group">
+      <label>Subject</label>
+      <select id="contact-subject">
+        <option value="">Select a topic...</option>
+        <option>Bug Report</option>
+        <option>Tool Suggestion</option>
+        <option>General Feedback</option>
+        <option>Partnership / Advertising</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Message</label>
+      <textarea id="contact-message" placeholder="Write your message here..."></textarea>
+    </div>
+    <button class="submit-btn" onclick="submitForm()">Send Message →</button>
+    <div class="success-msg" id="success-msg">
+      ✅ Thank you for reaching out! We'll get back to you soon.
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-logo">Utilixx</div>
+  <p>Free online tools for everyone. No signup, no limits, no cost — ever.</p>
+  <div>
+    <a href="index.html">Home</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <p style="margin-top:16px;">© 2026 Utilixx. All rights reserved.</p>
+</footer>
+
+<script>
+function submitForm(){
+  const name=document.getElementById('contact-name').value.trim();
+  const email=document.getElementById('contact-email').value.trim();
+  const msg=document.getElementById('contact-message').value.trim();
+  if(!name||!email||!msg){alert('Please fill in all required fields.');return;}
+  document.getElementById('success-msg').style.display='block';
+  document.getElementById('contact-name').value='';
+  document.getElementById('contact-email').value='';
+  document.getElementById('contact-message').value='';
+}
+</script>
+</body>
+</html>

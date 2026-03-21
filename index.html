@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <style>
 :root{--bg:#0b0c0f;--card:#13151a;--border:#1f2230;--accent:#f0ff44;--accent2:#44f0c8;--accent3:#ff6b6b;--accent4:#b464f0;--text:#e8eaf0;--muted:#6b7080;--radius:16px;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -93,6 +94,11 @@ footer p{max-width:420px;margin:0 auto 16px;}
 footer a{color:var(--muted);text-decoration:none;margin:0 10px;}
 footer a:hover{color:var(--text);}
 canvas{display:none;}
+.ws-dropzone{border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:rgba(0,0,0,0.2);}
+.ws-dropzone:hover,.ws-dropzone.dragover{border-color:var(--accent3);background:rgba(255,107,107,0.05);}
+.pdf-file-item{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;margin-top:6px;font-size:12px;}
+.pdf-file-item span{color:var(--muted);}
+.pdf-file-item button{background:none;border:none;color:var(--accent3);cursor:pointer;font-size:14px;}
 @media(max-width:640px){.tools-grid{grid-template-columns:1fr;}.hero h1{letter-spacing:-1px;}.nav-links{display:none;}}
 </style>
 </head>
@@ -109,16 +115,17 @@ canvas{display:none;}
     <a href="#math-tools">Math</a>
     <a href="#dev-tools">Dev</a>
     <a href="#ai-tools">AI</a>
+    <a href="#pdf-tools">📄 PDF</a>
   </div>
 </nav>
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-tag">✦ 47 Tools · 100% Free · No Signup · No Limits</div>
+  <div class="hero-tag">✦ 60+ Tools · 100% Free · No Signup · No Limits</div>
   <h1>Your All-in-One<br/><em>Free Tool Kit</em></h1>
   <p>Fast, powerful online tools for writing, SEO, math, design, dev & AI. Works in your browser instantly.</p>
   <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="Search 47 tools..." oninput="filterTools()"/>
+    <input type="text" id="searchInput" placeholder="Search 60+ tools..." oninput="filterTools()"/>
     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
   </div>
 </div>
@@ -137,6 +144,7 @@ canvas{display:none;}
   <button class="cat-btn" onclick="filterCat('math',this)">🔢 Math & Converter</button>
   <button class="cat-btn" onclick="filterCat('dev',this)">🔐 Developer Tools</button>
   <button class="cat-btn" onclick="filterCat('ai',this)">🤖 AI Tools</button>
+  <button class="cat-btn" onclick="filterCat('pdf',this)">📄 PDF Tools</button>
 </div>
 
 <div class="tools-section">
@@ -1042,6 +1050,314 @@ canvas{display:none;}
 <!-- BOTTOM AD -->
 <div class="ad-banner">📢 Ad Space — Insert Google AdSense Code Here (728×90)</div>
 
+<!-- ===== PDF TOOLS ===== -->
+<canvas id="pdfCanvas" style="display:none;"></canvas>
+<div class="section-title" id="pdf-tools"><span style="background:rgba(255,107,107,0.1)">📄</span>PDF Tools</div>
+
+<!-- PDF SUB CATEGORIES -->
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+  <span style="font-size:12px;color:var(--muted);padding:5px 12px;border:1px solid var(--border);border-radius:100px;">🔀 Merge & Organize</span>
+  <span style="font-size:12px;color:var(--muted);padding:5px 12px;border:1px solid var(--border);border-radius:100px;">✂️ Split</span>
+  <span style="font-size:12px;color:var(--muted);padding:5px 12px;border:1px solid var(--border);border-radius:100px;">🗜️ Compress</span>
+  <span style="font-size:12px;color:var(--muted);padding:5px 12px;border:1px solid var(--border);border-radius:100px;">🔐 Security</span>
+  <span style="font-size:12px;color:var(--muted);padding:5px 12px;border:1px solid var(--border);border-radius:100px;">✏️ Edit</span>
+  <span style="font-size:12px;color:var(--muted);padding:5px 12px;border:1px solid var(--border);border-radius:100px;">🔄 Convert</span>
+  <span style="font-size:12px;color:var(--muted);padding:5px 12px;border:1px solid var(--border);border-radius:100px;">🛠️ Utility</span>
+</div>
+
+<div class="tools-grid">
+
+<!-- Merge PDF -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">📎</div><span class="tool-badge badge-hot">🔥 Popular</span></div>
+  <div class="tool-title">Merge PDF</div>
+  <div class="tool-desc">Combine multiple PDF files into one single PDF document.</div>
+  <button class="use-btn" onclick="toggleTool('pdfmerge')">Use Tool →</button>
+  <div class="workspace" id="ws-pdfmerge">
+    <div class="ws-dropzone" id="dz-pdfmerge" onclick="document.getElementById('f-pdfmerge').click()" ondragover="pdfDzOver(event,'dz-pdfmerge')" ondragleave="pdfDzLeave('dz-pdfmerge')" ondrop="pdfDzDrop(event,'pdfmerge')">
+      <div style="font-size:28px;">📂</div>
+      <strong style="font-size:14px;">Drop PDF files here</strong>
+      <p style="color:var(--muted);font-size:12px;margin-top:4px;">or click to browse — select multiple</p>
+      <input type="file" id="f-pdfmerge" multiple accept=".pdf" style="display:none;" onchange="pdfAddFiles('pdfmerge',this.files)"/>
+    </div>
+    <div id="fl-pdfmerge"></div>
+    <button class="ws-btn" onclick="pdfMerge()" style="margin-top:10px;">🔀 Merge PDFs</button>
+    <div class="ws-output" id="out-pdfmerge"></div>
+  </div>
+</div>
+
+<!-- Extract Pages -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">📤</div><span class="tool-badge badge-free">Free</span></div>
+  <div class="tool-title">Extract Pages</div>
+  <div class="tool-desc">Extract specific pages from a PDF into a new document.</div>
+  <button class="use-btn" onclick="toggleTool('pdfextract')">Use Tool →</button>
+  <div class="workspace" id="ws-pdfextract">
+    <div class="ws-dropzone" onclick="document.getElementById('f-pdfextract').click()">
+      <div style="font-size:24px;">📄</div><strong style="font-size:13px;">Select PDF</strong>
+      <input type="file" id="f-pdfextract" accept=".pdf" style="display:none;" onchange="pdfLoadInfo('pdfextract',this)"/>
+    </div>
+    <div id="pdfextract-info"></div>
+    <input class="ws-input" id="pdfextract-pages" placeholder="Pages to extract (e.g. 1,3,5-8)" style="margin-top:10px;"/>
+    <button class="ws-btn" onclick="pdfExtract()">📤 Extract & Download</button>
+    <div class="ws-output" id="out-pdfextract"></div>
+  </div>
+</div>
+
+<!-- Reorder Pages -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">📋</div><span class="tool-badge badge-free">Free</span></div>
+  <div class="tool-title">Organize & Reorder Pages</div>
+  <div class="tool-desc">Reorder or rearrange pages in your PDF by specifying the new order.</div>
+  <button class="use-btn" onclick="toggleTool('pdfreorder')">Use Tool →</button>
+  <div class="workspace" id="ws-pdfreorder">
+    <div class="ws-dropzone" onclick="document.getElementById('f-pdfreorder').click()">
+      <div style="font-size:24px;">📄</div><strong style="font-size:13px;">Select PDF</strong>
+      <input type="file" id="f-pdfreorder" accept=".pdf" style="display:none;" onchange="pdfLoadInfo('pdfreorder',this)"/>
+    </div>
+    <div id="pdfreorder-info"></div>
+    <input class="ws-input" id="pdfreorder-pages" placeholder="New order (e.g. 3,1,2 — omit to delete)" style="margin-top:10px;"/>
+    <button class="ws-btn" onclick="pdfReorder()">✅ Reorder & Download</button>
+    <div class="ws-output" id="out-pdfreorder"></div>
+  </div>
+</div>
+
+<!-- Split PDF -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">✂️</div><span class="tool-badge badge-hot">🔥 Popular</span></div>
+  <div class="tool-title">Split PDF</div>
+  <div class="tool-desc">Split a PDF into individual pages or by custom page ranges.</div>
+  <button class="use-btn" onclick="toggleTool('pdfsplit')">Use Tool →</button>
+  <div class="workspace" id="ws-pdfsplit">
+    <div class="ws-dropzone" onclick="document.getElementById('f-pdfsplit').click()">
+      <div style="font-size:24px;">📄</div><strong style="font-size:13px;">Select PDF</strong>
+      <input type="file" id="f-pdfsplit" accept=".pdf" style="display:none;" onchange="pdfLoadInfo('pdfsplit',this)"/>
+    </div>
+    <div id="pdfsplit-info"></div>
+    <select class="ws-select" id="pdfsplit-mode" style="margin-top:10px;">
+      <option value="all">Split into individual pages</option>
+      <option value="half">Split in half</option>
+      <option value="range">Split by custom range</option>
+      <option value="every">Split every N pages</option>
+    </select>
+    <input class="ws-input" id="pdfsplit-value" placeholder="Range: 1-3,4-6 | Every: 2"/>
+    <button class="ws-btn" onclick="pdfSplit()">✂️ Split & Download</button>
+    <div class="ws-output" id="out-pdfsplit"></div>
+  </div>
+</div>
+
+<!-- Delete Pages -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">🗑️</div><span class="tool-badge badge-free">Free</span></div>
+  <div class="tool-title">Delete Pages</div>
+  <div class="tool-desc">Remove specific pages from your PDF document easily.</div>
+  <button class="use-btn" onclick="toggleTool('pdfdelete')">Use Tool →</button>
+  <div class="workspace" id="ws-pdfdelete">
+    <div class="ws-dropzone" onclick="document.getElementById('f-pdfdelete').click()">
+      <div style="font-size:24px;">📄</div><strong style="font-size:13px;">Select PDF</strong>
+      <input type="file" id="f-pdfdelete" accept=".pdf" style="display:none;" onchange="pdfLoadInfo('pdfdelete',this)"/>
+    </div>
+    <div id="pdfdelete-info"></div>
+    <input class="ws-input" id="pdfdelete-pages" placeholder="Pages to delete (e.g. 2,4,6-8)" style="margin-top:10px;"/>
+    <button class="ws-btn" onclick="pdfDeletePages()">🗑️ Delete & Download</button>
+    <div class="ws-output" id="out-pdfdelete"></div>
+  </div>
+</div>
+
+<!-- Compress PDF -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">🗜️</div><span class="tool-badge badge-hot">🔥 Popular</span></div>
+  <div class="tool-title">Compress PDF</div>
+  <div class="tool-desc">Reduce PDF file size by removing metadata and optimizing content.</div>
+  <button class="use-btn" onclick="toggleTool('pdfcompress')">Use Tool →</button>
+  <div class="workspace" id="ws-pdfcompress">
+    <div class="ws-dropzone" onclick="document.getElementById('f-pdfcompress').click()">
+      <div style="font-size:24px;">📄</div><strong style="font-size:13px;">Select PDF to compress</strong>
+      <input type="file" id="f-pdfcompress" accept=".pdf" style="display:none;" onchange="pdfCompress(this)"/>
+    </div>
+    <div class="ws-output" id="out-pdfcompress"></div>
+  </div>
+</div>
+
+<!-- Protect PDF -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">🔒</div><span class="tool-badge badge-free">Free</span></div>
+  <div class="tool-title">Protect PDF</div>
+  <div class="tool-desc">Add password protection to your PDF to restrict access.</div>
+  <button class="use-btn" onclick="toggleTool('pdfprotect')">Use Tool →</button>
+  <div class="workspace" id="ws-pdfprotect">
+    <div class="ws-dropzone" onclick="document.getElementById('f-pdfprotect').click()">
+      <div style="font-size:24px;">📄</div><strong style="font-size:13px;">Select PDF</strong>
+      <input type="file" id="f-pdfprotect" accept=".pdf" style="display:none;" onchange="pdfStoreFile('pdfprotect',this)"/>
+    </div>
+    <input class="ws-input" id="pdfprotect-pass" type="password" placeholder="Enter password" style="margin-top:10px;"/>
+    <input class="ws-input" id="pdfprotect-pass2" type="password" placeholder="Confirm password"/>
+    <button class="ws-btn" onclick="pdfProtect()">🔒 Protect & Download</button>
+    <div class="ws-output" id="out-pdfprotect"></div>
+  </div>
+</div>
+
+<!-- Watermark PDF -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">💧</div><span class="tool-badge badge-free">Free</span></div>
+  <div class="tool-title">Watermark PDF</div>
+  <div class="tool-desc">Add a diagonal text watermark to every page of your PDF.</div>
+  <button class="use-btn" onclick="toggleTool('pdfwm')">Use Tool →</button>
+  <div class="workspace" id="ws-pdfwm">
+    <div class="ws-dropzone" onclick="document.getElementById('f-pdfwm').click()">
+      <div style="font-size:24px;">📄</div><strong style="font-size:13px;">Select PDF</strong>
+      <input type="file" id="f-pdfwm" accept=".pdf" style="display:none;" onchange="pdfStoreFile('pdfwm',this)"/>
+    </div>
+    <input class="ws-input" id="pdfwm-text" placeholder="Watermark text (e.g. CONFIDENTIAL)" style="margin-top:10px;"/>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+      <label style="font-size:12px;color:var(--muted);">Color:</label>
+      <input type="color" id="pdfwm-color" value="#ff0000" style="width:44px;height:32px;border:none;border-radius:6px;cursor:pointer;"/>
+      <label style="font-size:12px;color:var(--muted);">Opacity %:</label>
+      <input class="ws-input" id="pdfwm-opacity" type="number" value="30" style="margin:0;width:70px;"/>
+    </div>
+    <button class="ws-btn" onclick="pdfWatermark()">💧 Add Watermark</button>
+    <div class="ws-output" id="out-pdfwm"></div>
+  </div>
+</div>
+
+<!-- Rotate PDF -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">🔄</div><span class="tool-badge badge-free">Free</span></div>
+  <div class="tool-title">Rotate PDF</div>
+  <div class="tool-desc">Rotate all or specific pages in your PDF by 90°, 180° or 270°.</div>
+  <button class="use-btn" onclick="toggleTool('pdfrotate')">Use Tool →</button>
+  <div class="workspace" id="ws-pdfrotate">
+    <div class="ws-dropzone" onclick="document.getElementById('f-pdfrotate').click()">
+      <div style="font-size:24px;">📄</div><strong style="font-size:13px;">Select PDF</strong>
+      <input type="file" id="f-pdfrotate" accept=".pdf" style="display:none;" onchange="pdfLoadInfo('pdfrotate',this)"/>
+    </div>
+    <div id="pdfrotate-info"></div>
+    <select class="ws-select" id="pdfrotate-deg" style="margin-top:10px;">
+      <option value="90">Rotate 90° Clockwise</option>
+      <option value="180">Rotate 180°</option>
+      <option value="270">Rotate 90° Counter-clockwise</option>
+    </select>
+    <input class="ws-input" id="pdfrotate-pages" placeholder="Pages (e.g. 1,3) — blank = all"/>
+    <button class="ws-btn" onclick="pdfRotate()">🔄 Rotate & Download</button>
+    <div class="ws-output" id="out-pdfrotate"></div>
+  </div>
+</div>
+
+<!-- Add Page Numbers -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">🔢</div><span class="tool-badge badge-free">Free</span></div>
+  <div class="tool-title">Add Page Numbers</div>
+  <div class="tool-desc">Add page numbers to the header or footer of every PDF page.</div>
+  <button class="use-btn" onclick="toggleTool('pdfpagenum')">Use Tool →</button>
+  <div class="workspace" id="ws-pdfpagenum">
+    <div class="ws-dropzone" onclick="document.getElementById('f-pdfpagenum').click()">
+      <div style="font-size:24px;">📄</div><strong style="font-size:13px;">Select PDF</strong>
+      <input type="file" id="f-pdfpagenum" accept=".pdf" style="display:none;" onchange="pdfStoreFile('pdfpagenum',this)"/>
+    </div>
+    <select class="ws-select" id="pdfpagenum-pos" style="margin-top:10px;">
+      <option value="bottom-center">Bottom Center</option>
+      <option value="bottom-right">Bottom Right</option>
+      <option value="bottom-left">Bottom Left</option>
+      <option value="top-center">Top Center</option>
+    </select>
+    <input class="ws-input" id="pdfpagenum-start" type="number" value="1" placeholder="Start from number"/>
+    <button class="ws-btn" onclick="pdfPageNumbers()">🔢 Add Numbers & Download</button>
+    <div class="ws-output" id="out-pdfpagenum"></div>
+  </div>
+</div>
+
+<!-- Edit Metadata -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">🏷️</div><span class="tool-badge badge-free">Free</span></div>
+  <div class="tool-title">Edit PDF Metadata</div>
+  <div class="tool-desc">Edit the title, author, subject and keywords of any PDF file.</div>
+  <button class="use-btn" onclick="toggleTool('pdfmeta')">Use Tool →</button>
+  <div class="workspace" id="ws-pdfmeta">
+    <div class="ws-dropzone" onclick="document.getElementById('f-pdfmeta').click()">
+      <div style="font-size:24px;">📄</div><strong style="font-size:13px;">Select PDF</strong>
+      <input type="file" id="f-pdfmeta" accept=".pdf" style="display:none;" onchange="pdfLoadMeta(this)"/>
+    </div>
+    <div id="pdfmeta-fields" style="display:none;margin-top:10px;">
+      <input class="ws-input" id="pdfmeta-title" placeholder="Title"/>
+      <input class="ws-input" id="pdfmeta-author" placeholder="Author"/>
+      <input class="ws-input" id="pdfmeta-subject" placeholder="Subject"/>
+      <input class="ws-input" id="pdfmeta-keywords" placeholder="Keywords (comma separated)"/>
+      <button class="ws-btn" onclick="pdfSaveMeta()">💾 Save & Download</button>
+    </div>
+    <div class="ws-output" id="out-pdfmeta"></div>
+  </div>
+</div>
+
+<!-- Images to PDF -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">🖼️</div><span class="tool-badge badge-hot">🔥 Popular</span></div>
+  <div class="tool-title">Images to PDF</div>
+  <div class="tool-desc">Convert one or more JPG/PNG images into a PDF document.</div>
+  <button class="use-btn" onclick="toggleTool('pdfimg2pdf')">Use Tool →</button>
+  <div class="workspace" id="ws-pdfimg2pdf">
+    <div class="ws-dropzone" id="dz-pdfimg2pdf" onclick="document.getElementById('f-pdfimg2pdf').click()" ondragover="pdfDzOver(event,'dz-pdfimg2pdf')" ondragleave="pdfDzLeave('dz-pdfimg2pdf')" ondrop="pdfDzDrop(event,'pdfimg2pdf')">
+      <div style="font-size:28px;">🖼️</div>
+      <strong style="font-size:14px;">Drop images here</strong>
+      <p style="color:var(--muted);font-size:12px;margin-top:4px;">JPG, PNG — select multiple</p>
+      <input type="file" id="f-pdfimg2pdf" multiple accept="image/*" style="display:none;" onchange="pdfAddFiles('pdfimg2pdf',this.files)"/>
+    </div>
+    <div id="fl-pdfimg2pdf"></div>
+    <button class="ws-btn" onclick="pdfImgToPDF()" style="margin-top:10px;">📄 Convert to PDF</button>
+    <div class="ws-output" id="out-pdfimg2pdf"></div>
+  </div>
+</div>
+
+<!-- Rename PDF -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">✏️</div><span class="tool-badge badge-free">Free</span></div>
+  <div class="tool-title">Rename PDF</div>
+  <div class="tool-desc">Download your PDF with a new custom filename instantly.</div>
+  <button class="use-btn" onclick="toggleTool('pdfrename')">Use Tool →</button>
+  <div class="workspace" id="ws-pdfrename">
+    <div class="ws-dropzone" onclick="document.getElementById('f-pdfrename').click()">
+      <div style="font-size:24px;">📄</div><strong style="font-size:13px;">Select PDF</strong>
+      <input type="file" id="f-pdfrename" accept=".pdf" style="display:none;" onchange="pdfStoreFile('pdfrename',this)"/>
+    </div>
+    <input class="ws-input" id="pdfrename-name" placeholder="New filename (without .pdf)" style="margin-top:10px;"/>
+    <button class="ws-btn" onclick="pdfRename()">✅ Rename & Download</button>
+    <div class="ws-output" id="out-pdfrename"></div>
+  </div>
+</div>
+
+<!-- PDF to Word (External) -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">📝</div><span class="tool-badge badge-ai">🔗 Free Service</span></div>
+  <div class="tool-title">PDF to Word</div>
+  <div class="tool-desc">Convert PDF to editable Word (.docx) — opens a trusted free service.</div>
+  <a href="https://smallpdf.com/pdf-to-word" target="_blank" style="display:block;width:100%;padding:10px;background:rgba(180,100,240,0.08);border:1px solid rgba(180,100,240,0.2);border-radius:10px;color:var(--accent4);font-size:14px;font-weight:500;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--accent4)';this.style.color='#fff'" onmouseout="this.style.background='rgba(180,100,240,0.08)';this.style.color='var(--accent4)'">Open PDF to Word →</a>
+</div>
+
+<!-- PDF to JPG (External) -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">🖼️</div><span class="tool-badge badge-ai">🔗 Free Service</span></div>
+  <div class="tool-title">PDF to JPG / PNG</div>
+  <div class="tool-desc">Convert each PDF page into a high-quality image file.</div>
+  <a href="https://smallpdf.com/pdf-to-jpg" target="_blank" style="display:block;width:100%;padding:10px;background:rgba(180,100,240,0.08);border:1px solid rgba(180,100,240,0.2);border-radius:10px;color:var(--accent4);font-size:14px;font-weight:500;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--accent4)';this.style.color='#fff'" onmouseout="this.style.background='rgba(180,100,240,0.08)';this.style.color='var(--accent4)'">Open PDF to Image →</a>
+</div>
+
+<!-- OCR (External) -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">🔍</div><span class="tool-badge badge-ai">🔗 Free Service</span></div>
+  <div class="tool-title">OCR — Searchable PDF</div>
+  <div class="tool-desc">Make scanned PDFs searchable by extracting text using OCR.</div>
+  <a href="https://www.ilovepdf.com/pdf_ocr" target="_blank" style="display:block;width:100%;padding:10px;background:rgba(180,100,240,0.08);border:1px solid rgba(180,100,240,0.2);border-radius:10px;color:var(--accent4);font-size:14px;font-weight:500;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--accent4)';this.style.color='#fff'" onmouseout="this.style.background='rgba(180,100,240,0.08)';this.style.color='var(--accent4)'">Open OCR Tool →</a>
+</div>
+
+<!-- Unlock PDF (External) -->
+<div class="tool-card" data-cat="pdf">
+  <div class="tool-header"><div class="tool-icon red">🔓</div><span class="tool-badge badge-ai">🔗 Free Service</span></div>
+  <div class="tool-title">Unlock PDF</div>
+  <div class="tool-desc">Remove password protection from a PDF you own.</div>
+  <a href="https://smallpdf.com/unlock-pdf" target="_blank" style="display:block;width:100%;padding:10px;background:rgba(180,100,240,0.08);border:1px solid rgba(180,100,240,0.2);border-radius:10px;color:var(--accent4);font-size:14px;font-weight:500;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--accent4)';this.style.color='#fff'" onmouseout="this.style.background='rgba(180,100,240,0.08)';this.style.color='var(--accent4)'">Open Unlock PDF →</a>
+</div>
+
+</div><!-- end pdf grid -->
+
 </div><!-- end tools-section -->
 
 <!-- FOOTER -->
@@ -1676,6 +1992,300 @@ async function aiSummarize(){
 
 // ===== INIT =====
 updateUcUnits();updateColor();updateGradient();updatePattern();
+
+// ===== PDF TOOLS =====
+const pdfFileStore={};
+const pdfFileArrays={};
+
+function pdfDzOver(e,id){e.preventDefault();document.getElementById(id).classList.add('dragover');}
+function pdfDzLeave(id){document.getElementById(id).classList.remove('dragover');}
+function pdfDzDrop(e,tool){e.preventDefault();pdfDzLeave('dz-'+tool);pdfAddFiles(tool,e.dataTransfer.files);}
+
+function pdfAddFiles(tool,files){
+  if(!pdfFileArrays[tool])pdfFileArrays[tool]=[];
+  Array.from(files).forEach(f=>{if(f.type==='application/pdf'||f.type.startsWith('image/'))pdfFileArrays[tool].push(f);});
+  pdfRenderList(tool);
+}
+function pdfRenderList(tool){
+  const el=document.getElementById('fl-'+tool);if(!el)return;
+  el.innerHTML=pdfFileArrays[tool].map((f,i)=>`<div class="pdf-file-item"><span>📄 ${f.name}</span><span>${(f.size/1024).toFixed(1)}KB</span><button onclick="pdfRemoveFile('${tool}',${i})">✕</button></div>`).join('');
+}
+function pdfRemoveFile(tool,idx){pdfFileArrays[tool].splice(idx,1);pdfRenderList(tool);}
+function pdfStoreFile(tool,input){
+  const f=input.files[0];if(f){pdfFileStore[tool]=f;document.getElementById('out-'+tool).textContent='✅ Loaded: '+f.name+' ('+(f.size/1024).toFixed(1)+'KB)';}
+}
+async function pdfLoadInfo(tool,input){
+  const f=input.files[0];if(!f)return;
+  pdfFileStore[tool]=f;
+  try{
+    const buf=await f.arrayBuffer();
+    const pdf=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+    const n=pdf.getPageCount();
+    const el=document.getElementById(tool+'-info');
+    if(el)el.innerHTML=`<div style="font-size:12px;color:var(--accent2);margin-top:6px;padding:6px 10px;background:rgba(68,240,200,0.08);border-radius:8px;">📄 ${f.name} — <strong>${n} pages</strong></div>`;
+  }catch(e){document.getElementById('out-'+tool).textContent='❌ '+e.message;}
+}
+function pdfDownload(bytes,name){
+  const blob=new Blob([bytes],{type:'application/pdf'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();
+}
+function pdfSetOut(id,msg){document.getElementById('out-'+id).innerHTML=msg;}
+function pdfParsePages(str,total){
+  const pages=new Set();
+  str.split(',').forEach(part=>{
+    part=part.trim();
+    if(part.includes('-')){const[a,b]=part.split('-').map(Number);for(let i=a;i<=Math.min(b,total);i++)pages.add(i);}
+    else if(part){const n=parseInt(part);if(n>=1&&n<=total)pages.add(n);}
+  });
+  return[...pages].sort((a,b)=>a-b);
+}
+
+async function pdfMerge(){
+  const files=pdfFileArrays['pdfmerge']||[];
+  if(files.length<2){pdfSetOut('pdfmerge','⚠️ Please add at least 2 PDF files.');return;}
+  pdfSetOut('pdfmerge','⏳ Merging...');
+  try{
+    const merged=await PDFLib.PDFDocument.create();
+    for(const f of files){
+      const buf=await f.arrayBuffer();
+      const pdf=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+      const pages=await merged.copyPages(pdf,pdf.getPageIndices());
+      pages.forEach(p=>merged.addPage(p));
+    }
+    pdfDownload(await merged.save(),'merged.pdf');
+    pdfSetOut('pdfmerge','✅ Merged '+files.length+' files! Download started.');
+  }catch(e){pdfSetOut('pdfmerge','❌ Error: '+e.message);}
+}
+
+async function pdfExtract(){
+  const f=pdfFileStore['pdfextract'];if(!f){pdfSetOut('pdfextract','⚠️ Please select a PDF.');return;}
+  try{
+    const buf=await f.arrayBuffer();
+    const src=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+    const total=src.getPageCount();
+    const pages=pdfParsePages(document.getElementById('pdfextract-pages').value,total);
+    if(!pages.length){pdfSetOut('pdfextract','⚠️ No valid pages specified.');return;}
+    const out=await PDFLib.PDFDocument.create();
+    const copied=await out.copyPages(src,pages.map(n=>n-1));
+    copied.forEach(p=>out.addPage(p));
+    pdfDownload(await out.save(),'extracted.pdf');
+    pdfSetOut('pdfextract','✅ Extracted '+pages.length+' pages! Download started.');
+  }catch(e){pdfSetOut('pdfextract','❌ Error: '+e.message);}
+}
+
+async function pdfReorder(){
+  const f=pdfFileStore['pdfreorder'];if(!f){pdfSetOut('pdfreorder','⚠️ Please select a PDF.');return;}
+  try{
+    const buf=await f.arrayBuffer();
+    const src=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+    const total=src.getPageCount();
+    const order=document.getElementById('pdfreorder-pages').value.split(',').map(s=>parseInt(s.trim())).filter(n=>n>=1&&n<=total);
+    if(!order.length){pdfSetOut('pdfreorder','⚠️ Please enter page order.');return;}
+    const out=await PDFLib.PDFDocument.create();
+    const pages=await out.copyPages(src,order.map(n=>n-1));
+    pages.forEach(p=>out.addPage(p));
+    pdfDownload(await out.save(),'reordered.pdf');
+    pdfSetOut('pdfreorder','✅ Reordered! Download started.');
+  }catch(e){pdfSetOut('pdfreorder','❌ Error: '+e.message);}
+}
+
+async function pdfSplit(){
+  const f=pdfFileStore['pdfsplit'];if(!f){pdfSetOut('pdfsplit','⚠️ Please select a PDF.');return;}
+  const mode=document.getElementById('pdfsplit-mode').value;
+  const val=document.getElementById('pdfsplit-value').value.trim();
+  pdfSetOut('pdfsplit','⏳ Splitting...');
+  try{
+    const buf=await f.arrayBuffer();
+    const src=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+    const total=src.getPageCount();
+    if(mode==='all'){
+      for(let i=0;i<total;i++){const out=await PDFLib.PDFDocument.create();const[p]=await out.copyPages(src,[i]);out.addPage(p);pdfDownload(await out.save(),`page_${i+1}.pdf`);}
+      pdfSetOut('pdfsplit',`✅ Split into ${total} pages! Downloads started.`);
+    }else if(mode==='half'){
+      const mid=Math.floor(total/2);
+      for(const[s,e,n]of[[0,mid,'part1'],[mid,total,'part2']]){
+        const out=await PDFLib.PDFDocument.create();
+        const pages=await out.copyPages(src,[...Array(e-s).keys()].map(i=>i+s));
+        pages.forEach(p=>out.addPage(p));pdfDownload(await out.save(),n+'.pdf');
+      }
+      pdfSetOut('pdfsplit','✅ Split in half! 2 files downloaded.');
+    }else if(mode==='every'){
+      const n=parseInt(val)||2;let part=1;
+      for(let i=0;i<total;i+=n){
+        const out=await PDFLib.PDFDocument.create();const end=Math.min(i+n,total);
+        const pages=await out.copyPages(src,[...Array(end-i).keys()].map(k=>k+i));
+        pages.forEach(p=>out.addPage(p));pdfDownload(await out.save(),`part_${part++}.pdf`);
+      }
+      pdfSetOut('pdfsplit',`✅ Split every ${n} pages!`);
+    }else{
+      const ranges=val.split(',').map(r=>{const[a,b]=r.split('-').map(Number);return[a||1,b||a||1];});
+      for(const[a,b]of ranges){
+        const out=await PDFLib.PDFDocument.create();
+        const indices=[...Array(b-a+1).keys()].map(i=>i+a-1).filter(i=>i<total);
+        const pages=await out.copyPages(src,indices);pages.forEach(p=>out.addPage(p));
+        pdfDownload(await out.save(),`pages_${a}-${b}.pdf`);
+      }
+      pdfSetOut('pdfsplit',`✅ Split into ${ranges.length} parts!`);
+    }
+  }catch(e){pdfSetOut('pdfsplit','❌ Error: '+e.message);}
+}
+
+async function pdfDeletePages(){
+  const f=pdfFileStore['pdfdelete'];if(!f){pdfSetOut('pdfdelete','⚠️ Please select a PDF.');return;}
+  try{
+    const buf=await f.arrayBuffer();
+    const src=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+    const total=src.getPageCount();
+    const toDelete=new Set(pdfParsePages(document.getElementById('pdfdelete-pages').value,total));
+    const keep=[...Array(total).keys()].filter(i=>!toDelete.has(i+1));
+    if(!keep.length){pdfSetOut('pdfdelete','⚠️ Cannot delete all pages.');return;}
+    const out=await PDFLib.PDFDocument.create();
+    const pages=await out.copyPages(src,keep);
+    pages.forEach(p=>out.addPage(p));
+    pdfDownload(await out.save(),'deleted_pages.pdf');
+    pdfSetOut('pdfdelete',`✅ Deleted ${toDelete.size} pages. ${keep.length} remain. Download started.`);
+  }catch(e){pdfSetOut('pdfdelete','❌ Error: '+e.message);}
+}
+
+async function pdfCompress(input){
+  const f=input.files[0];if(!f)return;
+  pdfSetOut('pdfcompress','⏳ Compressing...');
+  try{
+    const buf=await f.arrayBuffer();
+    const pdf=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+    pdf.setTitle('');pdf.setAuthor('');pdf.setSubject('');pdf.setKeywords([]);pdf.setProducer('');pdf.setCreator('');
+    const bytes=await pdf.save({useObjectStreams:true});
+    pdfDownload(bytes,'compressed.pdf');
+    const saved=Math.max(0,((f.size-bytes.length)/f.size*100)).toFixed(1);
+    pdfSetOut('pdfcompress',`✅ Original: ${(f.size/1024).toFixed(1)}KB → Compressed: ${(bytes.length/1024).toFixed(1)}KB (${saved}% saved)`);
+  }catch(e){pdfSetOut('pdfcompress','❌ Error: '+e.message);}
+}
+
+async function pdfProtect(){
+  const f=pdfFileStore['pdfprotect'];if(!f){pdfSetOut('pdfprotect','⚠️ Please select a PDF.');return;}
+  const p1=document.getElementById('pdfprotect-pass').value;
+  const p2=document.getElementById('pdfprotect-pass2').value;
+  if(!p1){pdfSetOut('pdfprotect','⚠️ Please enter a password.');return;}
+  if(p1!==p2){pdfSetOut('pdfprotect','⚠️ Passwords do not match.');return;}
+  pdfSetOut('pdfprotect','⏳ Encrypting...');
+  try{
+    const buf=await f.arrayBuffer();
+    const pdf=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+    const bytes=await pdf.save({userPassword:p1,ownerPassword:p1+'_owner',permissions:{printing:'lowResolution',modifying:false,copying:false}});
+    pdfDownload(bytes,'protected.pdf');
+    pdfSetOut('pdfprotect','✅ PDF protected with password! Download started.');
+  }catch(e){pdfSetOut('pdfprotect','❌ Error: '+e.message);}
+}
+
+async function pdfWatermark(){
+  const f=pdfFileStore['pdfwm'];if(!f){pdfSetOut('pdfwm','⚠️ Please select a PDF.');return;}
+  const text=document.getElementById('pdfwm-text').value.trim();
+  if(!text){pdfSetOut('pdfwm','⚠️ Please enter watermark text.');return;}
+  const hex=document.getElementById('pdfwm-color').value;
+  const opacity=parseInt(document.getElementById('pdfwm-opacity').value)/100;
+  pdfSetOut('pdfwm','⏳ Adding watermark...');
+  try{
+    const buf=await f.arrayBuffer();
+    const pdf=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+    const font=await pdf.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    const r=parseInt(hex.slice(1,3),16)/255,g=parseInt(hex.slice(3,5),16)/255,b=parseInt(hex.slice(5,7),16)/255;
+    for(const page of pdf.getPages()){
+      const{width,height}=page.getSize();
+      page.drawText(text,{x:width/2-text.length*14,y:height/2,size:48,font,color:PDFLib.rgb(r,g,b),opacity,rotate:PDFLib.degrees(-45)});
+    }
+    pdfDownload(await pdf.save(),'watermarked.pdf');
+    pdfSetOut('pdfwm','✅ Watermark added! Download started.');
+  }catch(e){pdfSetOut('pdfwm','❌ Error: '+e.message);}
+}
+
+async function pdfRotate(){
+  const f=pdfFileStore['pdfrotate'];if(!f){pdfSetOut('pdfrotate','⚠️ Please select a PDF.');return;}
+  const deg=parseInt(document.getElementById('pdfrotate-deg').value);
+  const pagesStr=document.getElementById('pdfrotate-pages').value.trim();
+  try{
+    const buf=await f.arrayBuffer();
+    const pdf=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+    const total=pdf.getPageCount();
+    const targets=pagesStr?pdfParsePages(pagesStr,total):[...Array(total).keys()].map(i=>i+1);
+    targets.forEach(n=>{const page=pdf.getPage(n-1);page.setRotation(PDFLib.degrees((page.getRotation().angle+deg)%360));});
+    pdfDownload(await pdf.save(),'rotated.pdf');
+    pdfSetOut('pdfrotate',`✅ Rotated ${targets.length} pages by ${deg}°! Download started.`);
+  }catch(e){pdfSetOut('pdfrotate','❌ Error: '+e.message);}
+}
+
+async function pdfPageNumbers(){
+  const f=pdfFileStore['pdfpagenum'];if(!f){pdfSetOut('pdfpagenum','⚠️ Please select a PDF.');return;}
+  const pos=document.getElementById('pdfpagenum-pos').value;
+  const start=parseInt(document.getElementById('pdfpagenum-start').value)||1;
+  try{
+    const buf=await f.arrayBuffer();
+    const pdf=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+    const font=await pdf.embedFont(PDFLib.StandardFonts.Helvetica);
+    pdf.getPages().forEach((page,i)=>{
+      const{width,height}=page.getSize();const num=String(i+start);const size=12;
+      const tw=font.widthOfTextAtSize(num,size);
+      let x=width/2-tw/2,y=20;
+      if(pos==='bottom-right'){x=width-30;y=20;}else if(pos==='bottom-left'){x=10;y=20;}else if(pos==='top-center'){y=height-30;}
+      page.drawText(num,{x,y,size,font,color:PDFLib.rgb(0,0,0)});
+    });
+    pdfDownload(await pdf.save(),'numbered.pdf');
+    pdfSetOut('pdfpagenum','✅ Page numbers added! Download started.');
+  }catch(e){pdfSetOut('pdfpagenum','❌ Error: '+e.message);}
+}
+
+async function pdfLoadMeta(input){
+  const f=input.files[0];if(!f)return;
+  pdfFileStore['pdfmeta']=f;
+  try{
+    const buf=await f.arrayBuffer();
+    const pdf=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+    document.getElementById('pdfmeta-title').value=pdf.getTitle()||'';
+    document.getElementById('pdfmeta-author').value=pdf.getAuthor()||'';
+    document.getElementById('pdfmeta-subject').value=pdf.getSubject()||'';
+    document.getElementById('pdfmeta-keywords').value=(pdf.getKeywords()||[]).join(', ');
+    document.getElementById('pdfmeta-fields').style.display='block';
+  }catch(e){pdfSetOut('pdfmeta','❌ Error: '+e.message);}
+}
+async function pdfSaveMeta(){
+  const f=pdfFileStore['pdfmeta'];if(!f)return;
+  try{
+    const buf=await f.arrayBuffer();
+    const pdf=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+    pdf.setTitle(document.getElementById('pdfmeta-title').value);
+    pdf.setAuthor(document.getElementById('pdfmeta-author').value);
+    pdf.setSubject(document.getElementById('pdfmeta-subject').value);
+    pdf.setKeywords(document.getElementById('pdfmeta-keywords').value.split(',').map(k=>k.trim()));
+    pdfDownload(await pdf.save(),'edited_metadata.pdf');
+    pdfSetOut('pdfmeta','✅ Metadata saved! Download started.');
+  }catch(e){pdfSetOut('pdfmeta','❌ Error: '+e.message);}
+}
+
+async function pdfImgToPDF(){
+  const files=pdfFileArrays['pdfimg2pdf']||[];
+  if(!files.length){pdfSetOut('pdfimg2pdf','⚠️ Please add image files.');return;}
+  pdfSetOut('pdfimg2pdf','⏳ Converting...');
+  try{
+    const pdf=await PDFLib.PDFDocument.create();
+    for(const f of files){
+      const buf=await f.arrayBuffer();
+      let img;
+      if(f.type==='image/png')img=await pdf.embedPng(buf);
+      else img=await pdf.embedJpg(buf);
+      const page=pdf.addPage([img.width,img.height]);
+      page.drawImage(img,{x:0,y:0,width:img.width,height:img.height});
+    }
+    pdfDownload(await pdf.save(),'images.pdf');
+    pdfSetOut('pdfimg2pdf',`✅ ${files.length} image(s) converted! Download started.`);
+  }catch(e){pdfSetOut('pdfimg2pdf','❌ Error: '+e.message);}
+}
+
+async function pdfRename(){
+  const f=pdfFileStore['pdfrename'];if(!f){pdfSetOut('pdfrename','⚠️ Please select a PDF.');return;}
+  const name=document.getElementById('pdfrename-name').value.trim();
+  if(!name){pdfSetOut('pdfrename','⚠️ Please enter a filename.');return;}
+  pdfDownload(new Uint8Array(await f.arrayBuffer()),name+'.pdf');
+  pdfSetOut('pdfrename','✅ Renamed to "'+name+'.pdf"! Download started.');
+}
 </script>
 </body>
 </html>

@@ -1,0 +1,2601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PixelForge — Image & Design Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@300;400;500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --bg: #0a0b0e;
+    --bg2: #111318;
+    --bg3: #1a1d25;
+    --bg4: #222630;
+    --border: #2a2f3d;
+    --border2: #363d50;
+    --accent: #00e5ff;
+    --accent2: #ff6b35;
+    --accent3: #a855f7;
+    --text: #e8eaf0;
+    --text2: #8a90a8;
+    --text3: #555c73;
+    --success: #22c55e;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --sidebar-w: 260px;
+    --header-h: 56px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  /* LAYOUT */
+  #app { display: flex; height: 100vh; overflow: hidden; }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    z-index: 10;
+  }
+  .sidebar-logo {
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #000; font-weight: 700;
+  }
+  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1px; color: var(--text); }
+  .logo-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; background: var(--accent); color: #000;
+    padding: 2px 5px; border-radius: 3px; font-weight: 700; letter-spacing: 0.5px;
+  }
+
+  .sidebar-search {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-search input {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 6px; padding: 7px 10px 7px 30px; color: var(--text);
+    font-size: 12px; font-family: 'DM Sans', sans-serif; outline: none;
+    transition: border-color .2s;
+  }
+  .sidebar-search input:focus { border-color: var(--accent); }
+  .search-wrap { position: relative; }
+  .search-wrap i {
+    position: absolute; left: 9px; top: 50%; transform: translateY(-50%);
+    color: var(--text3); font-size: 11px;
+  }
+
+  .sidebar-nav { overflow-y: auto; flex: 1; padding: 8px 0; }
+  .nav-section { padding: 10px 14px 4px; }
+  .nav-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text3); padding-left: 4px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 18px; cursor: pointer; border-radius: 6px; margin: 1px 6px;
+    transition: all .15s; position: relative; border: 1px solid transparent;
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active {
+    background: rgba(0,229,255,0.08); border-color: rgba(0,229,255,0.2);
+    color: var(--accent);
+  }
+  .nav-item.active::before {
+    content: ''; position: absolute; left: -6px; top: 50%;
+    transform: translateY(-50%); width: 3px; height: 20px;
+    background: var(--accent); border-radius: 0 2px 2px 0;
+  }
+  .nav-item i { width: 16px; text-align: center; font-size: 12px; color: var(--text3); flex-shrink: 0; }
+  .nav-item.active i { color: var(--accent); }
+  .nav-item span { font-size: 12.5px; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nav-item .tool-tag {
+    margin-left: auto; font-size: 9px; padding: 2px 5px; border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace; font-weight: 700; flex-shrink: 0;
+  }
+  .tag-new { background: rgba(0,229,255,0.15); color: var(--accent); }
+  .tag-hot { background: rgba(255,107,53,0.15); color: var(--accent2); }
+
+  .sidebar-footer {
+    padding: 14px 20px; border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text3);
+  }
+  .sidebar-footer span { color: var(--accent); }
+
+  /* MAIN */
+  #main {
+    flex: 1; overflow: hidden; display: flex; flex-direction: column; background: var(--bg);
+  }
+
+  /* TOPBAR */
+  #topbar {
+    height: var(--header-h); min-height: var(--header-h);
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 24px; gap: 16px;
+    z-index: 5;
+  }
+  .topbar-breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text3);
+  }
+  .topbar-breadcrumb .current { color: var(--text); font-weight: 500; }
+  .topbar-actions { margin-left: auto; display: flex; gap: 8px; }
+  .btn {
+    padding: 7px 14px; border-radius: 6px; border: 1px solid var(--border2);
+    background: var(--bg3); color: var(--text); cursor: pointer; font-size: 12px;
+    font-family: 'DM Sans', sans-serif; transition: all .15s; display: inline-flex;
+    align-items: center; gap: 6px;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-primary {
+    background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600;
+  }
+  .btn-primary:hover { background: #00c8e0; border-color: #00c8e0; color: #000; }
+  .btn-sm { padding: 5px 10px; font-size: 11px; }
+
+  /* CONTENT */
+  #content {
+    flex: 1; overflow-y: auto; padding: 28px 30px;
+  }
+
+  /* TOOL PANEL */
+  .tool-panel { display: none; animation: fadeIn .25s ease; max-width: 900px; }
+  .tool-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* HOME GRID */
+  #home { display: none; animation: fadeIn .25s ease; }
+  #home.active { display: block; }
+
+  .home-hero {
+    margin-bottom: 32px;
+  }
+  .home-hero h1 {
+    font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 2px;
+    line-height: 1; margin-bottom: 8px;
+    background: linear-gradient(90deg, var(--text) 0%, var(--accent) 60%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .home-hero p { color: var(--text2); font-size: 15px; max-width: 500px; }
+  .home-stats {
+    display: flex; gap: 20px; margin-top: 18px;
+  }
+  .stat-chip {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 18px; text-align: center;
+  }
+  .stat-chip .val { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--accent); line-height: 1; }
+  .stat-chip .lbl { font-size: 10px; color: var(--text3); letter-spacing: 0.5px; font-family: 'JetBrains Mono', monospace; }
+
+  .tools-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;
+  }
+  .tool-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px; cursor: pointer;
+    transition: all .2s; position: relative; overflow: hidden;
+  }
+  .tool-card::after {
+    content: ''; position: absolute; top: 0; right: 0;
+    width: 60px; height: 60px;
+    background: radial-gradient(circle at top right, rgba(0,229,255,0.06), transparent 70%);
+    transition: all .3s;
+  }
+  .tool-card:hover {
+    border-color: var(--accent); transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,229,255,0.1);
+  }
+  .tool-card:hover::after { width: 100px; height: 100px; }
+  .tool-card .tc-icon {
+    width: 38px; height: 38px; border-radius: 8px; margin-bottom: 12px;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .tool-card .tc-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--text); }
+  .tool-card .tc-desc { font-size: 11px; color: var(--text3); line-height: 1.4; }
+
+  /* TOOL HEADER */
+  .tool-header { margin-bottom: 24px; }
+  .tool-header h2 {
+    font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 1px;
+    color: var(--text); display: flex; align-items: center; gap: 12px; line-height: 1;
+  }
+  .tool-header h2 .th-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .tool-header p { color: var(--text2); font-size: 13px; margin-top: 6px; }
+
+  /* CARD */
+  .card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px; margin-bottom: 16px;
+  }
+  .card-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--text3); margin-bottom: 14px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .card-title::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* UPLOAD ZONE */
+  .upload-zone {
+    border: 2px dashed var(--border2); border-radius: 8px; padding: 40px 20px;
+    text-align: center; cursor: pointer; transition: all .2s; position: relative;
+    background: var(--bg3);
+  }
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--accent); background: rgba(0,229,255,0.04);
+  }
+  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .upload-zone i { font-size: 28px; color: var(--text3); margin-bottom: 10px; display: block; }
+  .upload-zone p { color: var(--text2); font-size: 13px; }
+  .upload-zone small { color: var(--text3); font-size: 11px; margin-top: 4px; display: block; }
+
+  /* FORM ELEMENTS */
+  .form-row { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-end; flex-wrap: wrap; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label {
+    font-size: 11px; color: var(--text2); font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  input[type="text"], input[type="number"], input[type="email"],
+  select, textarea {
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: 6px; padding: 8px 10px; color: var(--text);
+    font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none;
+    transition: border-color .2s;
+  }
+  input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+  }
+  input[type="range"] {
+    -webkit-appearance: none; height: 4px; background: var(--border2);
+    border-radius: 2px; outline: none; cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--accent); cursor: pointer;
+  }
+  input[type="color"] {
+    width: 40px; height: 34px; border: 1px solid var(--border2); border-radius: 6px;
+    padding: 3px; background: var(--bg3); cursor: pointer; outline: none;
+  }
+  select { cursor: pointer; }
+  select option { background: var(--bg3); }
+
+  /* PREVIEW */
+  .preview-wrap {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+    min-height: 200px; display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+  }
+  .preview-wrap img, .preview-wrap canvas {
+    max-width: 100%; max-height: 400px; display: block; border-radius: 4px;
+  }
+  .preview-empty { color: var(--text3); font-size: 12px; text-align: center; }
+  .preview-empty i { font-size: 24px; margin-bottom: 8px; display: block; }
+
+  /* OUTPUT CODE */
+  .code-output {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--accent); white-space: pre-wrap; word-break: break-all;
+    max-height: 180px; overflow-y: auto; line-height: 1.6; position: relative;
+  }
+  .copy-btn {
+    position: absolute; top: 8px; right: 8px; background: var(--bg3);
+    border: 1px solid var(--border2); border-radius: 5px; padding: 4px 8px;
+    cursor: pointer; font-size: 10px; color: var(--text2); font-family: 'JetBrains Mono', monospace;
+    transition: all .2s; z-index: 2;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* COLOR SWATCH */
+  .color-swatch {
+    width: 40px; height: 40px; border-radius: 6px; border: 2px solid var(--border2);
+    cursor: pointer; flex-shrink: 0;
+  }
+  .palette-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .palette-item {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .palette-color {
+    width: 60px; height: 60px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer; transition: transform .15s;
+  }
+  .palette-color:hover { transform: scale(1.05); }
+  .palette-hex { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text3); }
+
+  /* GRADIENT PREVIEW */
+  .gradient-preview {
+    height: 100px; border-radius: 8px; border: 1px solid var(--border); margin: 12px 0;
+    transition: all .3s;
+  }
+
+  /* SHADOW PREVIEW */
+  .shadow-preview-box {
+    width: 120px; height: 80px; background: var(--bg3); border-radius: 8px;
+    margin: 16px auto; transition: box-shadow .3s;
+    border: 1px solid var(--border);
+  }
+
+  /* RADIUS PREVIEW */
+  .radius-preview-box {
+    width: 120px; height: 80px; background: linear-gradient(135deg, var(--accent), var(--accent3));
+    margin: 16px auto; transition: border-radius .3s;
+  }
+
+  /* CONTRAST CHECKER */
+  .contrast-preview {
+    padding: 20px; border-radius: 8px; text-align: center; margin: 12px 0;
+    font-size: 18px; font-weight: 600; transition: all .3s;
+  }
+  .wcag-badge {
+    display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
+    border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    font-weight: 700; margin: 4px;
+  }
+  .wcag-pass { background: rgba(34,197,94,0.15); color: var(--success); border: 1px solid rgba(34,197,94,0.3); }
+  .wcag-fail { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+
+  /* NOTIFICATION */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; background: var(--bg2);
+    border: 1px solid var(--border2); border-radius: 8px; padding: 12px 18px;
+    font-size: 13px; color: var(--text); z-index: 9999; transform: translateY(80px);
+    opacity: 0; transition: all .3s; display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: rgba(34,197,94,0.4); }
+  .toast.success i { color: var(--success); }
+
+  /* TWO-COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* GLASS PREVIEW */
+  .glass-demo {
+    height: 150px; border-radius: 10px; display: flex; align-items: center;
+    justify-content: center; font-size: 13px; margin: 12px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    position: relative; overflow: hidden;
+  }
+  .glass-inner {
+    backdrop-filter: blur(10px); background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3); border-radius: 10px;
+    padding: 20px 30px; color: #fff; font-size: 14px; font-weight: 600;
+    transition: all .3s;
+  }
+
+  /* NEUMORPHISM */
+  .neu-demo {
+    background: #e0e5ec; padding: 30px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; margin: 12px 0;
+  }
+  .neu-box {
+    width: 100px; height: 100px; border-radius: 16px; background: #e0e5ec;
+    transition: box-shadow .3s;
+  }
+
+  /* PATTERN PREVIEW */
+  .pattern-preview {
+    height: 140px; border-radius: 8px; border: 1px solid var(--border);
+    margin: 12px 0; transition: all .3s;
+  }
+
+  /* CLIP PATH DEMO */
+  .clip-demo-box {
+    width: 120px; height: 120px; background: linear-gradient(135deg, var(--accent), var(--accent3));
+    margin: 16px auto; transition: clip-path .3s;
+  }
+
+  /* ASPECT RATIO RESULT */
+  .ar-result {
+    font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--accent);
+    text-align: center; padding: 20px; line-height: 1;
+  }
+
+  /* PLACEHOLDER IMG PREVIEW */
+  .placeholder-preview canvas { border-radius: 6px; max-width: 100%; }
+
+  /* RESOLUTION FRAME */
+  .res-frame-wrap {
+    overflow: auto; background: #111; border: 2px solid var(--border2); border-radius: 8px;
+    height: 300px; display: flex; align-items: center; justify-content: center;
+  }
+  .res-frame {
+    background: var(--bg2); border: 1px solid var(--border2); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; transition: all .3s;
+  }
+
+  /* WATERMARK DEMO */
+  .watermark-position-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; width: 120px;
+  }
+  .pos-btn {
+    width: 36px; height: 36px; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 4px; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; transition: all .15s;
+  }
+  .pos-btn:hover, .pos-btn.active { background: rgba(0,229,255,0.15); border-color: var(--accent); }
+
+  /* ICON REFERENCE */
+  .icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; }
+  .icon-item {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 8px; text-align: center; cursor: pointer; transition: all .15s;
+  }
+  .icon-item:hover { border-color: var(--accent); background: rgba(0,229,255,0.06); }
+  .icon-item i { font-size: 20px; margin-bottom: 6px; display: block; color: var(--text2); }
+  .icon-item:hover i { color: var(--accent); }
+  .icon-item span { font-size: 9px; color: var(--text3); font-family: 'JetBrains Mono', monospace; word-break: break-all; }
+  .icon-search { margin-bottom: 12px; }
+  .icon-search input { width: 100%; }
+
+  /* SVG OPTIMIZER */
+  .svg-stats { display: flex; gap: 12px; margin: 10px 0; }
+  .svg-stat { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; flex: 1; text-align: center; }
+  .svg-stat .val { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--accent); }
+  .svg-stat .lbl { font-size: 10px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+
+  /* NOISE PREVIEW */
+  .noise-preview canvas { border-radius: 8px; border: 1px solid var(--border); display: block; width: 100%; max-height: 200px; }
+
+  /* FILTER PANEL */
+  .filter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin: 10px 0; }
+  .filter-card {
+    border: 1px solid var(--border); border-radius: 6px; overflow: hidden; cursor: pointer; transition: all .15s;
+  }
+  .filter-card:hover, .filter-card.active { border-color: var(--accent); }
+  .filter-card .fc-thumb { height: 50px; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .filter-card .fc-name { font-size: 9px; color: var(--text3); text-align: center; padding: 4px; font-family: 'JetBrains Mono', monospace; }
+
+  /* TAGS */
+  .tag { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+  .tag-cyan { background: rgba(0,229,255,0.12); color: var(--accent); border: 1px solid rgba(0,229,255,0.2); }
+  .tag-orange { background: rgba(255,107,53,0.12); color: var(--accent2); border: 1px solid rgba(255,107,53,0.2); }
+
+  /* INLINE FLEX UTILS */
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .items-center { align-items: center; }
+  .gap-8 { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .mt-8 { margin-top: 8px; }
+  .mt-12 { margin-top: 12px; }
+  .mt-16 { margin-top: 16px; }
+  .w-full { width: 100%; }
+  .relative { position: relative; }
+
+  /* TOPBAR toggle */
+  #menu-toggle { display: none; background: none; border: none; color: var(--text); font-size: 18px; cursor: pointer; padding: 4px; }
+  @media (max-width: 900px) {
+    #sidebar { position: fixed; top: 0; left: -280px; height: 100vh; z-index: 100; transition: left .3s; }
+    #sidebar.open { left: 0; box-shadow: 4px 0 30px rgba(0,0,0,0.6); }
+    #menu-toggle { display: flex; align-items: center; }
+    #content { padding: 18px; }
+  }
+
+  /* DOWNLOAD BTN */
+  #download-btn { display: none; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">P</div>
+      <span class="logo-text">PixelForge</span>
+      <span class="logo-badge">v2</span>
+    </div>
+    <div class="sidebar-search">
+      <div class="search-wrap">
+        <i class="fa fa-search"></i>
+        <input type="text" id="nav-search" placeholder="Search tools…" oninput="filterNav(this.value)">
+      </div>
+    </div>
+    <div class="sidebar-nav" id="nav-list">
+      <div class="nav-section"><span class="nav-section-label">Overview</span></div>
+      <div class="nav-item active" onclick="showTool('home')" data-name="home dashboard">
+        <i class="fa fa-th-large"></i><span>Dashboard</span>
+      </div>
+
+      <div class="nav-section"><span class="nav-section-label">Image Tools</span></div>
+      <div class="nav-item" onclick="showTool('compressor')" data-name="image compressor compress">
+        <i class="fa fa-compress-arrows-alt"></i><span>Image Compressor</span><span class="tool-tag tag-hot">HOT</span>
+      </div>
+      <div class="nav-item" onclick="showTool('resizer')" data-name="image resizer resize">
+        <i class="fa fa-expand-arrows-alt"></i><span>Image Resizer</span>
+      </div>
+      <div class="nav-item" onclick="showTool('cropper')" data-name="image cropper crop">
+        <i class="fa fa-crop-alt"></i><span>Image Cropper</span>
+      </div>
+      <div class="nav-item" onclick="showTool('converter')" data-name="image format converter jpg png webp">
+        <i class="fa fa-exchange-alt"></i><span>Format Converter</span>
+      </div>
+      <div class="nav-item" onclick="showTool('filter')" data-name="photo filter simulator effects">
+        <i class="fa fa-magic"></i><span>Photo Filters</span>
+      </div>
+      <div class="nav-item" onclick="showTool('watermark')" data-name="watermark image text logo">
+        <i class="fa fa-stamp"></i><span>Watermark Image</span>
+      </div>
+      <div class="nav-item" onclick="showTool('pixelate')" data-name="pixelate blur image mosaic">
+        <i class="fa fa-border-all"></i><span>Pixelate / Blur</span>
+      </div>
+      <div class="nav-item" onclick="showTool('img2base64')" data-name="image to base64 encode">
+        <i class="fa fa-code"></i><span>Image → Base64</span>
+      </div>
+      <div class="nav-item" onclick="showTool('base642img')" data-name="base64 to image decode">
+        <i class="fa fa-image"></i><span>Base64 → Image</span>
+      </div>
+
+      <div class="nav-section"><span class="nav-section-label">Generators</span></div>
+      <div class="nav-item" onclick="showTool('favicon')" data-name="favicon generator icon">
+        <i class="fa fa-star"></i><span>Favicon Generator</span>
+      </div>
+      <div class="nav-item" onclick="showTool('placeholder')" data-name="placeholder image generator dummy">
+        <i class="fa fa-photo-video"></i><span>Placeholder Image</span>
+      </div>
+      <div class="nav-item" onclick="showTool('noise')" data-name="noise grain texture generator">
+        <i class="fa fa-random"></i><span>Noise / Grain</span>
+      </div>
+      <div class="nav-item" onclick="showTool('pattern')" data-name="pattern background generator svg">
+        <i class="fa fa-th"></i><span>Pattern Background</span>
+      </div>
+
+      <div class="nav-section"><span class="nav-section-label">CSS Tools</span></div>
+      <div class="nav-item" onclick="showTool('gradient')" data-name="css gradient generator linear radial">
+        <i class="fa fa-paint-roller"></i><span>Gradient Generator</span><span class="tool-tag tag-new">NEW</span>
+      </div>
+      <div class="nav-item" onclick="showTool('shadow')" data-name="box shadow generator css">
+        <i class="fa fa-clone"></i><span>Box Shadow</span>
+      </div>
+      <div class="nav-item" onclick="showTool('radius')" data-name="border radius generator css rounded">
+        <i class="fa fa-vector-square"></i><span>Border Radius</span>
+      </div>
+      <div class="nav-item" onclick="showTool('glass')" data-name="glassmorphism css generator">
+        <i class="fa fa-glass-martini"></i><span>Glassmorphism</span>
+      </div>
+      <div class="nav-item" onclick="showTool('neumorphism')" data-name="neumorphism css generator soft ui">
+        <i class="fa fa-cube"></i><span>Neumorphism</span>
+      </div>
+      <div class="nav-item" onclick="showTool('clippath')" data-name="css clip path generator shape">
+        <i class="fa fa-cut"></i><span>Clip Path</span>
+      </div>
+
+      <div class="nav-section"><span class="nav-section-label">Color & Design</span></div>
+      <div class="nav-item" onclick="showTool('palette')" data-name="color palette generator extract">
+        <i class="fa fa-palette"></i><span>Color Palette</span>
+      </div>
+      <div class="nav-item" onclick="showTool('contrast')" data-name="color contrast checker wcag accessibility">
+        <i class="fa fa-adjust"></i><span>Contrast Checker</span>
+      </div>
+      <div class="nav-item" onclick="showTool('svgopt')" data-name="svg optimizer minify clean">
+        <i class="fab fa-sketch"></i><span>SVG Optimizer</span>
+      </div>
+      <div class="nav-item" onclick="showTool('aspect')" data-name="aspect ratio calculator">
+        <i class="fa fa-ruler-combined"></i><span>Aspect Ratio</span>
+      </div>
+      <div class="nav-item" onclick="showTool('resolution')" data-name="screen resolution simulator viewport">
+        <i class="fa fa-desktop"></i><span>Resolution Sim</span>
+      </div>
+      <div class="nav-item" onclick="showTool('icons')" data-name="icon font reference font awesome">
+        <i class="fa fa-icons"></i><span>Icon Reference</span>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <span>25</span> tools · Free & Open
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div id="topbar">
+      <button id="menu-toggle" onclick="toggleSidebar()"><i class="fa fa-bars"></i></button>
+      <div class="topbar-breadcrumb">
+        <span>PixelForge</span>
+        <i class="fa fa-chevron-right" style="font-size:9px"></i>
+        <span class="current" id="breadcrumb-current">Dashboard</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-sm" onclick="window.print()"><i class="fa fa-share-alt"></i> Share</button>
+        <a id="download-btn" class="btn btn-primary btn-sm" download><i class="fa fa-download"></i> Download</a>
+      </div>
+    </div>
+
+    <div id="content">
+
+      <!-- HOME -->
+      <div id="home" class="active">
+        <div class="home-hero">
+          <h1>Image & Design<br>Tools Suite</h1>
+          <p>Professional-grade image editing, CSS generation, and design utilities — all in one place, running in your browser.</p>
+          <div class="home-stats">
+            <div class="stat-chip"><div class="val">25</div><div class="lbl">TOOLS</div></div>
+            <div class="stat-chip"><div class="val">0</div><div class="lbl">UPLOADS</div></div>
+            <div class="stat-chip"><div class="val">100%</div><div class="lbl">PRIVATE</div></div>
+          </div>
+        </div>
+        <div class="tools-grid">
+          <!-- Cards rendered by JS -->
+        </div>
+      </div>
+
+      <!-- ==================== IMAGE COMPRESSOR ==================== -->
+      <div id="tool-compressor" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(0,229,255,0.12);color:var(--accent)"><i class="fa fa-compress-arrows-alt"></i></span> Image Compressor</h2>
+          <p>Reduce image file size while maintaining visual quality using adjustable compression.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Upload Image</div>
+              <div class="upload-zone" id="comp-drop" ondragover="ev.preventDefault()" ondrop="handleDrop(event,'comp-upload')">
+                <input type="file" id="comp-upload" accept="image/*" onchange="loadCompressor(this)">
+                <i class="fa fa-cloud-upload-alt"></i>
+                <p>Drop image here or click to browse</p>
+                <small>JPG, PNG, WebP, GIF supported</small>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Settings</div>
+              <div class="form-group" style="margin-bottom:12px">
+                <label>Quality: <span id="comp-q-val">80</span>%</label>
+                <input type="range" id="comp-quality" min="1" max="100" value="80" oninput="document.getElementById('comp-q-val').textContent=this.value;runCompressor()">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Output Format</label>
+                  <select id="comp-fmt" onchange="runCompressor()">
+                    <option value="image/jpeg">JPEG</option>
+                    <option value="image/png">PNG</option>
+                    <option value="image/webp">WebP</option>
+                  </select>
+                </div>
+              </div>
+              <div id="comp-info" style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-top:8px"></div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Preview</div>
+              <div class="preview-wrap" id="comp-preview">
+                <div class="preview-empty"><i class="fa fa-image"></i>No image loaded</div>
+              </div>
+              <button class="btn btn-primary w-full mt-12" onclick="downloadResult('comp-canvas','compressed')"><i class="fa fa-download"></i> Download Compressed</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== IMAGE RESIZER ==================== -->
+      <div id="tool-resizer" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(255,107,53,0.12);color:var(--accent2)"><i class="fa fa-expand-arrows-alt"></i></span> Image Resizer</h2>
+          <p>Resize images to any dimension with optional aspect ratio lock.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Upload Image</div>
+              <div class="upload-zone">
+                <input type="file" id="resize-upload" accept="image/*" onchange="loadResizer(this)">
+                <i class="fa fa-image"></i><p>Drop or click to upload</p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Dimensions</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Width (px)</label>
+                  <input type="number" id="resize-w" value="800" style="width:100px" oninput="syncResize('w')">
+                </div>
+                <div style="display:flex;align-items:flex-end;padding-bottom:2px">
+                  <button class="btn btn-sm" id="lock-btn" onclick="toggleLock()" title="Lock aspect ratio">
+                    <i class="fa fa-lock" id="lock-icon"></i>
+                  </button>
+                </div>
+                <div class="form-group">
+                  <label>Height (px)</label>
+                  <input type="number" id="resize-h" value="600" style="width:100px" oninput="syncResize('h')">
+                </div>
+              </div>
+              <div class="form-group" style="margin-top:8px">
+                <label>Preset Sizes</label>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">
+                  <button class="btn btn-sm" onclick="setSize(1920,1080)">1080p</button>
+                  <button class="btn btn-sm" onclick="setSize(1280,720)">720p</button>
+                  <button class="btn btn-sm" onclick="setSize(800,600)">800×600</button>
+                  <button class="btn btn-sm" onclick="setSize(512,512)">512²</button>
+                  <button class="btn btn-sm" onclick="setSize(256,256)">256²</button>
+                </div>
+              </div>
+              <button class="btn btn-primary w-full mt-12" onclick="runResizer()"><i class="fa fa-check"></i> Resize</button>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Result</div>
+              <div class="preview-wrap" id="resize-preview">
+                <div class="preview-empty"><i class="fa fa-expand-arrows-alt"></i>No image yet</div>
+              </div>
+              <div id="resize-info" style="font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-top:8px"></div>
+              <button class="btn btn-primary w-full mt-8" onclick="downloadResult('resize-canvas','resized')"><i class="fa fa-download"></i> Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== IMAGE CROPPER ==================== -->
+      <div id="tool-cropper" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(168,85,247,0.12);color:var(--accent3)"><i class="fa fa-crop-alt"></i></span> Image Cropper</h2>
+          <p>Crop images with custom dimensions and position control.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Upload</div>
+              <div class="upload-zone">
+                <input type="file" id="crop-upload" accept="image/*" onchange="loadCropper(this)">
+                <i class="fa fa-crop-alt"></i><p>Upload image to crop</p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Crop Area</div>
+              <div class="form-row">
+                <div class="form-group"><label>X</label><input type="number" id="crop-x" value="0" style="width:70px" oninput="runCrop()"></div>
+                <div class="form-group"><label>Y</label><input type="number" id="crop-y" value="0" style="width:70px" oninput="runCrop()"></div>
+                <div class="form-group"><label>Width</label><input type="number" id="crop-w" value="200" style="width:70px" oninput="runCrop()"></div>
+                <div class="form-group"><label>Height</label><input type="number" id="crop-h" value="200" style="width:70px" oninput="runCrop()"></div>
+              </div>
+              <div class="form-group" style="margin-top:8px">
+                <label>Preset Ratios</label>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">
+                  <button class="btn btn-sm" onclick="setCropRatio(1,1)">1:1</button>
+                  <button class="btn btn-sm" onclick="setCropRatio(16,9)">16:9</button>
+                  <button class="btn btn-sm" onclick="setCropRatio(4,3)">4:3</button>
+                  <button class="btn btn-sm" onclick="setCropRatio(3,2)">3:2</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Cropped Result</div>
+              <div class="preview-wrap" id="crop-preview">
+                <div class="preview-empty"><i class="fa fa-crop-alt"></i>No image yet</div>
+              </div>
+              <button class="btn btn-primary w-full mt-12" onclick="downloadResult('crop-canvas','cropped')"><i class="fa fa-download"></i> Download Cropped</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== IMAGE TO BASE64 ==================== -->
+      <div id="tool-img2base64" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(0,229,255,0.12);color:var(--accent)"><i class="fa fa-code"></i></span> Image → Base64</h2>
+          <p>Convert any image file to a Base64-encoded string for use in HTML, CSS, or JSON.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Upload Image</div>
+          <div class="upload-zone">
+            <input type="file" id="i2b-upload" accept="image/*" onchange="imgToBase64(this)">
+            <i class="fa fa-upload"></i><p>Click or drag to upload image</p>
+          </div>
+        </div>
+        <div class="card" id="i2b-result" style="display:none">
+          <div class="card-title">Base64 Output</div>
+          <div id="i2b-info" style="font-size:12px;color:var(--text3);margin-bottom:8px;font-family:'JetBrains Mono',monospace"></div>
+          <div class="relative">
+            <button class="copy-btn" onclick="copyText('i2b-output')">Copy</button>
+            <div class="code-output" id="i2b-output"></div>
+          </div>
+          <div class="form-group" style="margin-top:12px">
+            <label>Use as HTML img src</label>
+            <div class="relative">
+              <button class="copy-btn" onclick="copyText('i2b-html')">Copy</button>
+              <div class="code-output" id="i2b-html"></div>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:12px">
+            <label>Use as CSS background</label>
+            <div class="relative">
+              <button class="copy-btn" onclick="copyText('i2b-css')">Copy</button>
+              <div class="code-output" id="i2b-css"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== BASE64 TO IMAGE ==================== -->
+      <div id="tool-base642img" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(168,85,247,0.12);color:var(--accent3)"><i class="fa fa-image"></i></span> Base64 → Image</h2>
+          <p>Decode a Base64 string and render it as an image you can download.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Paste Base64 String</div>
+          <textarea id="b2i-input" rows="5" placeholder="Paste base64 string here (with or without data:image/... prefix)..." style="width:100%;font-family:'JetBrains Mono',monospace;font-size:11px"></textarea>
+          <button class="btn btn-primary mt-12" onclick="base64ToImg()"><i class="fa fa-sync"></i> Convert</button>
+        </div>
+        <div class="card" id="b2i-result" style="display:none">
+          <div class="card-title">Result</div>
+          <div class="preview-wrap"><img id="b2i-img" src="" alt="decoded"></div>
+          <button class="btn btn-primary mt-12" onclick="downloadBase64Img()"><i class="fa fa-download"></i> Download Image</button>
+        </div>
+      </div>
+
+      <!-- ==================== FAVICON GENERATOR ==================== -->
+      <div id="tool-favicon" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(255,107,53,0.12);color:var(--accent2)"><i class="fa fa-star"></i></span> Favicon Generator</h2>
+          <p>Generate favicons in all standard sizes from any image.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Upload Image</div>
+              <div class="upload-zone">
+                <input type="file" id="fav-upload" accept="image/*" onchange="loadFavicon(this)">
+                <i class="fa fa-star"></i><p>Upload source image (square recommended)</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Generated Sizes</div>
+              <div id="fav-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:10px">
+                <div style="color:var(--text3);font-size:12px;padding:12px">Upload an image to generate favicons</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== CSS GRADIENT ==================== -->
+      <div id="tool-gradient" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(0,229,255,0.12);color:var(--accent)"><i class="fa fa-paint-roller"></i></span> CSS Gradient Generator</h2>
+          <p>Create beautiful linear and radial CSS gradients with multiple color stops.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Configuration</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Type</label>
+                  <select id="grad-type" onchange="updateGradient()">
+                    <option>linear</option>
+                    <option>radial</option>
+                    <option>conic</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Angle</label>
+                  <input type="number" id="grad-angle" value="135" style="width:80px" oninput="updateGradient()">
+                </div>
+              </div>
+              <div id="grad-stops">
+                <div class="form-row" style="align-items:center">
+                  <div class="form-group"><label>Color 1</label><input type="color" id="gc1" value="#00e5ff" oninput="updateGradient()"></div>
+                  <div class="form-group"><label>Stop 1 %</label><input type="number" id="gs1" value="0" style="width:70px" oninput="updateGradient()"></div>
+                </div>
+                <div class="form-row" style="align-items:center">
+                  <div class="form-group"><label>Color 2</label><input type="color" id="gc2" value="#a855f7" oninput="updateGradient()"></div>
+                  <div class="form-group"><label>Stop 2 %</label><input type="number" id="gs2" value="100" style="width:70px" oninput="updateGradient()"></div>
+                </div>
+              </div>
+              <button class="btn btn-sm mt-8" onclick="addGradientStop()"><i class="fa fa-plus"></i> Add Stop</button>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Preview</div>
+              <div class="gradient-preview" id="grad-preview"></div>
+              <div class="card-title" style="margin-top:12px">CSS Output</div>
+              <div class="relative">
+                <button class="copy-btn" onclick="copyText('grad-output')">Copy</button>
+                <div class="code-output" id="grad-output"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== BOX SHADOW ==================== -->
+      <div id="tool-shadow" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(168,85,247,0.12);color:var(--accent3)"><i class="fa fa-clone"></i></span> Box Shadow Generator</h2>
+          <p>Create and customize CSS box shadows with live preview.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Shadow Controls</div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Horizontal Offset: <span id="sh-x-val">10</span>px</label>
+                <input type="range" id="sh-x" min="-50" max="50" value="10" oninput="updateShadow()">
+              </div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Vertical Offset: <span id="sh-y-val">10</span>px</label>
+                <input type="range" id="sh-y" min="-50" max="50" value="10" oninput="updateShadow()">
+              </div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Blur Radius: <span id="sh-blur-val">20</span>px</label>
+                <input type="range" id="sh-blur" min="0" max="100" value="20" oninput="updateShadow()">
+              </div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Spread Radius: <span id="sh-spread-val">0</span>px</label>
+                <input type="range" id="sh-spread" min="-30" max="50" value="0" oninput="updateShadow()">
+              </div>
+              <div class="form-row" style="margin-bottom:10px">
+                <div class="form-group"><label>Color</label><input type="color" id="sh-color" value="#000000" oninput="updateShadow()"></div>
+                <div class="form-group"><label>Opacity %</label><input type="number" id="sh-opacity" value="30" min="0" max="100" style="width:70px" oninput="updateShadow()"></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <label style="font-size:12px;color:var(--text2)">Inset</label>
+                <input type="checkbox" id="sh-inset" onchange="updateShadow()" style="cursor:pointer">
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Preview</div>
+              <div class="shadow-preview-box" id="shadow-box"></div>
+              <div class="card-title" style="margin-top:12px">CSS Output</div>
+              <div class="relative">
+                <button class="copy-btn" onclick="copyText('shadow-output')">Copy</button>
+                <div class="code-output" id="shadow-output"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== BORDER RADIUS ==================== -->
+      <div id="tool-radius" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(0,229,255,0.12);color:var(--accent)"><i class="fa fa-vector-square"></i></span> Border Radius Generator</h2>
+          <p>Generate custom CSS border-radius values with live preview.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Controls</div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>All Corners: <span id="br-all-val">16</span>px</label>
+                <input type="range" id="br-all" min="0" max="100" value="16" oninput="updateRadius('all')">
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+                <div class="form-group">
+                  <label>Top-Left: <span id="br-tl-val">16</span>px</label>
+                  <input type="range" id="br-tl" min="0" max="100" value="16" oninput="updateRadius()">
+                </div>
+                <div class="form-group">
+                  <label>Top-Right: <span id="br-tr-val">16</span>px</label>
+                  <input type="range" id="br-tr" min="0" max="100" value="16" oninput="updateRadius()">
+                </div>
+                <div class="form-group">
+                  <label>Bottom-Left: <span id="br-bl-val">16</span>px</label>
+                  <input type="range" id="br-bl" min="0" max="100" value="16" oninput="updateRadius()">
+                </div>
+                <div class="form-group">
+                  <label>Bottom-Right: <span id="br-br-val">16</span>px</label>
+                  <input type="range" id="br-br" min="0" max="100" value="16" oninput="updateRadius()">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Preview</div>
+              <div class="radius-preview-box" id="radius-box"></div>
+              <div class="card-title" style="margin-top:12px">CSS Output</div>
+              <div class="relative">
+                <button class="copy-btn" onclick="copyText('radius-output')">Copy</button>
+                <div class="code-output" id="radius-output"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== COLOR PALETTE ==================== -->
+      <div id="tool-palette" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(255,107,53,0.12);color:var(--accent2)"><i class="fa fa-palette"></i></span> Color Palette Generator</h2>
+          <p>Extract dominant colors from an image or generate a harmonious palette.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Generate Palette</div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+            <button class="btn" onclick="genRandomPalette()"><i class="fa fa-random"></i> Random Palette</button>
+            <button class="btn" onclick="genMonoPalette()"><i class="fa fa-layer-group"></i> Monochromatic</button>
+            <button class="btn" onclick="genComplementPalette()"><i class="fa fa-sync"></i> Complementary</button>
+            <button class="btn" onclick="genAnalogous()"><i class="fa fa-adjust"></i> Analogous</button>
+          </div>
+          <div class="card-title">Or Extract from Image</div>
+          <div class="upload-zone" style="padding:20px">
+            <input type="file" id="pal-upload" accept="image/*" onchange="extractPalette(this)">
+            <i class="fa fa-upload"></i><p>Upload image to extract colors</p>
+          </div>
+        </div>
+        <div class="card" id="palette-result">
+          <div class="card-title">Color Palette</div>
+          <div class="palette-grid" id="palette-colors"></div>
+          <div id="palette-css" style="margin-top:12px"></div>
+        </div>
+      </div>
+
+      <!-- ==================== CONTRAST CHECKER ==================== -->
+      <div id="tool-contrast" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(34,197,94,0.12);color:var(--success)"><i class="fa fa-adjust"></i></span> Color Contrast Checker</h2>
+          <p>Check WCAG 2.1 color contrast compliance for accessibility.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Colors</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Foreground</label>
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <input type="color" id="con-fg" value="#ffffff" oninput="updateContrast()">
+                    <input type="text" id="con-fg-hex" value="#ffffff" style="width:90px" oninput="syncContrast('fg')">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Background</label>
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <input type="color" id="con-bg" value="#1a1d25" oninput="updateContrast()">
+                    <input type="text" id="con-bg-hex" value="#1a1d25" style="width:90px" oninput="syncContrast('bg')">
+                  </div>
+                </div>
+              </div>
+              <div class="contrast-preview" id="con-preview">Sample Text — Preview</div>
+              <div id="con-ratio" style="text-align:center;font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--accent);margin:8px 0"></div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">WCAG Results</div>
+              <div id="wcag-results" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px"></div>
+              <div style="margin-top:16px;font-size:11px;color:var(--text3);line-height:1.8;font-family:'JetBrains Mono',monospace">
+                AA Normal: ≥ 4.5:1<br>
+                AA Large: ≥ 3:1<br>
+                AAA Normal: ≥ 7:1<br>
+                AAA Large: ≥ 4.5:1
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PLACEHOLDER ==================== -->
+      <div id="tool-placeholder" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(168,85,247,0.12);color:var(--accent3)"><i class="fa fa-photo-video"></i></span> Placeholder Image Generator</h2>
+          <p>Generate custom placeholder images for prototyping and mockups.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Settings</div>
+              <div class="form-row">
+                <div class="form-group"><label>Width</label><input type="number" id="ph-w" value="400" style="width:80px" oninput="genPlaceholder()"></div>
+                <div class="form-group"><label>Height</label><input type="number" id="ph-h" value="300" style="width:80px" oninput="genPlaceholder()"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>BG Color</label><input type="color" id="ph-bg" value="#222630" oninput="genPlaceholder()"></div>
+                <div class="form-group"><label>Text Color</label><input type="color" id="ph-tc" value="#8a90a8" oninput="genPlaceholder()"></div>
+              </div>
+              <div class="form-group" style="margin-top:8px">
+                <label>Label Text</label>
+                <input type="text" id="ph-text" value="" placeholder="Auto (uses dimensions)" oninput="genPlaceholder()">
+              </div>
+              <div class="form-group" style="margin-top:8px">
+                <label>Format</label>
+                <select id="ph-fmt" onchange="genPlaceholder()">
+                  <option value="png">PNG</option>
+                  <option value="jpeg">JPEG</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Preview</div>
+              <div class="preview-wrap placeholder-preview"><canvas id="ph-canvas"></canvas></div>
+              <div id="ph-url" style="margin-top:10px"></div>
+              <button class="btn btn-primary w-full mt-8" onclick="downloadResult('ph-canvas','placeholder')"><i class="fa fa-download"></i> Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== SVG OPTIMIZER ==================== -->
+      <div id="tool-svgopt" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(255,107,53,0.12);color:var(--accent2)"><i class="fab fa-sketch"></i></span> SVG Optimizer</h2>
+          <p>Minify and optimize SVG code by removing comments, whitespace, and redundant attributes.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Input SVG</div>
+          <textarea id="svg-input" rows="8" placeholder="Paste your SVG code here…" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:11px"></textarea>
+          <button class="btn btn-primary mt-12" onclick="optimizeSVG()"><i class="fa fa-magic"></i> Optimize SVG</button>
+        </div>
+        <div class="card" id="svg-result" style="display:none">
+          <div class="card-title">Optimized Output</div>
+          <div class="svg-stats" id="svg-stats"></div>
+          <div class="relative">
+            <button class="copy-btn" onclick="copyText('svg-output')">Copy</button>
+            <div class="code-output" id="svg-output"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== FORMAT CONVERTER ==================== -->
+      <div id="tool-converter" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(0,229,255,0.12);color:var(--accent)"><i class="fa fa-exchange-alt"></i></span> Image Format Converter</h2>
+          <p>Convert between JPG, PNG, and WebP with quality control.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Upload</div>
+              <div class="upload-zone">
+                <input type="file" id="conv-upload" accept="image/*" onchange="loadConverter(this)">
+                <i class="fa fa-exchange-alt"></i><p>Drop or click to upload</p>
+              </div>
+              <div id="conv-source-info" style="font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-top:8px"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Convert To</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn" onclick="convertTo('image/jpeg')"><i class="fa fa-file-image"></i> JPG</button>
+                <button class="btn" onclick="convertTo('image/png')"><i class="fa fa-file-image"></i> PNG</button>
+                <button class="btn" onclick="convertTo('image/webp')"><i class="fa fa-file-image"></i> WebP</button>
+              </div>
+              <div class="form-group" style="margin-top:12px">
+                <label>Quality: <span id="conv-q-val">90</span>%</label>
+                <input type="range" id="conv-quality" min="1" max="100" value="90" oninput="document.getElementById('conv-q-val').textContent=this.value">
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Result</div>
+              <div class="preview-wrap" id="conv-preview">
+                <div class="preview-empty"><i class="fa fa-exchange-alt"></i>Upload an image first</div>
+              </div>
+              <div id="conv-info" style="font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-top:8px"></div>
+              <button class="btn btn-primary w-full mt-8" id="conv-dl" onclick="downloadResult('conv-canvas','converted')" style="display:none"><i class="fa fa-download"></i> Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PHOTO FILTER ==================== -->
+      <div id="tool-filter" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(168,85,247,0.12);color:var(--accent3)"><i class="fa fa-magic"></i></span> Photo Filter Simulator</h2>
+          <p>Apply Instagram-style filters and custom adjustments to your photos.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Upload</div>
+              <div class="upload-zone">
+                <input type="file" id="filt-upload" accept="image/*" onchange="loadFilter(this)">
+                <i class="fa fa-magic"></i><p>Upload image to filter</p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Adjustments</div>
+              <div class="form-group" style="margin-bottom:8px"><label>Brightness: <span id="filt-b-val">100</span>%</label><input type="range" id="filt-brightness" min="0" max="200" value="100" oninput="applyFilters()"></div>
+              <div class="form-group" style="margin-bottom:8px"><label>Contrast: <span id="filt-c-val">100</span>%</label><input type="range" id="filt-contrast" min="0" max="200" value="100" oninput="applyFilters()"></div>
+              <div class="form-group" style="margin-bottom:8px"><label>Saturation: <span id="filt-s-val">100</span>%</label><input type="range" id="filt-saturation" min="0" max="200" value="100" oninput="applyFilters()"></div>
+              <div class="form-group" style="margin-bottom:8px"><label>Hue Rotate: <span id="filt-h-val">0</span>°</label><input type="range" id="filt-hue" min="0" max="360" value="0" oninput="applyFilters()"></div>
+              <div class="form-group" style="margin-bottom:8px"><label>Blur: <span id="filt-bl-val">0</span>px</label><input type="range" id="filt-blur" min="0" max="20" value="0" oninput="applyFilters()"></div>
+              <div class="form-group"><label>Grayscale: <span id="filt-g-val">0</span>%</label><input type="range" id="filt-gray" min="0" max="100" value="0" oninput="applyFilters()"></div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Presets</div>
+              <div class="filter-grid" id="filter-presets"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Result</div>
+              <div class="preview-wrap" id="filt-preview">
+                <div class="preview-empty"><i class="fa fa-magic"></i>No image</div>
+              </div>
+              <button class="btn btn-primary w-full mt-8" onclick="downloadResult('filt-canvas','filtered')"><i class="fa fa-download"></i> Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== NOISE/GRAIN ==================== -->
+      <div id="tool-noise" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(255,107,53,0.12);color:var(--accent2)"><i class="fa fa-random"></i></span> Noise / Grain Texture Generator</h2>
+          <p>Generate procedural noise and grain textures for backgrounds and overlays.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Settings</div>
+              <div class="form-row">
+                <div class="form-group"><label>Width</label><input type="number" id="noise-w" value="400" style="width:80px" oninput="genNoise()"></div>
+                <div class="form-group"><label>Height</label><input type="number" id="noise-h" value="400" style="width:80px" oninput="genNoise()"></div>
+              </div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Opacity: <span id="noise-op-val">30</span>%</label>
+                <input type="range" id="noise-op" min="1" max="100" value="30" oninput="genNoise()">
+              </div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Grain Size: <span id="noise-size-val">1</span></label>
+                <input type="range" id="noise-size" min="1" max="5" value="1" oninput="genNoise()">
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>Base Color</label><input type="color" id="noise-color" value="#1a1d25" oninput="genNoise()"></div>
+              </div>
+              <div class="form-group" style="margin-top:8px">
+                <label>Type</label>
+                <select id="noise-type" onchange="genNoise()">
+                  <option>Monochrome</option>
+                  <option>Color</option>
+                  <option>Sepia</option>
+                </select>
+              </div>
+              <button class="btn mt-12" onclick="genNoise()"><i class="fa fa-sync"></i> Regenerate</button>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Preview</div>
+              <div class="noise-preview"><canvas id="noise-canvas"></canvas></div>
+              <button class="btn btn-primary w-full mt-12" onclick="downloadResult('noise-canvas','noise-texture')"><i class="fa fa-download"></i> Download PNG</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PATTERN ==================== -->
+      <div id="tool-pattern" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(0,229,255,0.12);color:var(--accent)"><i class="fa fa-th"></i></span> Pattern Background Generator</h2>
+          <p>Generate seamless CSS/SVG pattern backgrounds for web projects.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Pattern Type</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="pattern-types">
+                <button class="btn active-pattern" data-pattern="dots" onclick="selectPattern('dots',this)">Dots</button>
+                <button class="btn" data-pattern="lines" onclick="selectPattern('lines',this)">Lines</button>
+                <button class="btn" data-pattern="grid" onclick="selectPattern('grid',this)">Grid</button>
+                <button class="btn" data-pattern="diagonal" onclick="selectPattern('diagonal',this)">Diagonal</button>
+                <button class="btn" data-pattern="waves" onclick="selectPattern('waves',this)">Waves</button>
+                <button class="btn" data-pattern="hexagon" onclick="selectPattern('hexagon',this)">Hexagons</button>
+              </div>
+              <div class="form-row" style="margin-top:14px">
+                <div class="form-group"><label>Color 1</label><input type="color" id="pat-c1" value="#00e5ff" oninput="updatePattern()"></div>
+                <div class="form-group"><label>Color 2</label><input type="color" id="pat-c2" value="#0a0b0e" oninput="updatePattern()"></div>
+              </div>
+              <div class="form-group" style="margin-top:8px">
+                <label>Size: <span id="pat-size-val">20</span>px</label>
+                <input type="range" id="pat-size" min="5" max="80" value="20" oninput="updatePattern()">
+              </div>
+              <div class="form-group" style="margin-top:8px">
+                <label>Opacity: <span id="pat-op-val">100</span>%</label>
+                <input type="range" id="pat-op" min="10" max="100" value="100" oninput="updatePattern()">
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Preview</div>
+              <div class="pattern-preview" id="pat-preview"></div>
+              <div class="card-title" style="margin-top:12px">CSS Output</div>
+              <div class="relative">
+                <button class="copy-btn" onclick="copyText('pat-output')">Copy</button>
+                <div class="code-output" id="pat-output"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== GLASSMORPHISM ==================== -->
+      <div id="tool-glass" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(168,85,247,0.12);color:var(--accent3)"><i class="fa fa-glass-martini"></i></span> Glassmorphism CSS Generator</h2>
+          <p>Create frosted glass UI components with modern CSS blur effects.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Controls</div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Blur: <span id="glass-blur-val">10</span>px</label>
+                <input type="range" id="glass-blur" min="0" max="40" value="10" oninput="updateGlass()">
+              </div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Transparency: <span id="glass-alpha-val">15</span>%</label>
+                <input type="range" id="glass-alpha" min="0" max="80" value="15" oninput="updateGlass()">
+              </div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Border Opacity: <span id="glass-border-val">30</span>%</label>
+                <input type="range" id="glass-border" min="0" max="100" value="30" oninput="updateGlass()">
+              </div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Border Radius: <span id="glass-radius-val">10</span>px</label>
+                <input type="range" id="glass-radius" min="0" max="50" value="10" oninput="updateGlass()">
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>Glass Color</label><input type="color" id="glass-color" value="#ffffff" oninput="updateGlass()"></div>
+                <div class="form-group"><label>Border Color</label><input type="color" id="glass-border-color" value="#ffffff" oninput="updateGlass()"></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Live Preview</div>
+              <div class="glass-demo">
+                <div class="glass-inner" id="glass-preview-inner">Glassmorphism Card</div>
+              </div>
+              <div class="card-title" style="margin-top:12px">CSS Output</div>
+              <div class="relative">
+                <button class="copy-btn" onclick="copyText('glass-output')">Copy</button>
+                <div class="code-output" id="glass-output"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== NEUMORPHISM ==================== -->
+      <div id="tool-neumorphism" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(0,229,255,0.12);color:var(--accent)"><i class="fa fa-cube"></i></span> Neumorphism CSS Generator</h2>
+          <p>Generate soft UI neumorphism effects with customizable shadows.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Controls</div>
+              <div class="form-group" style="margin-bottom:10px"><label>BG Color</label><input type="color" id="neu-bg" value="#e0e5ec" oninput="updateNeu()"></div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Distance: <span id="neu-d-val">10</span>px</label>
+                <input type="range" id="neu-dist" min="2" max="30" value="10" oninput="updateNeu()">
+              </div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Blur: <span id="neu-b-val">20</span>px</label>
+                <input type="range" id="neu-blur" min="5" max="50" value="20" oninput="updateNeu()">
+              </div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Intensity: <span id="neu-i-val">15</span>%</label>
+                <input type="range" id="neu-int" min="1" max="50" value="15" oninput="updateNeu()">
+              </div>
+              <div class="form-group">
+                <label>Shape</label>
+                <select id="neu-shape" onchange="updateNeu()">
+                  <option>Flat</option>
+                  <option>Concave</option>
+                  <option>Convex</option>
+                  <option>Pressed</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Preview</div>
+              <div class="neu-demo" id="neu-demo-bg">
+                <div class="neu-box" id="neu-box"></div>
+              </div>
+              <div class="card-title" style="margin-top:12px">CSS Output</div>
+              <div class="relative">
+                <button class="copy-btn" onclick="copyText('neu-output')">Copy</button>
+                <div class="code-output" id="neu-output"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== CLIP PATH ==================== -->
+      <div id="tool-clippath" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(255,107,53,0.12);color:var(--accent2)"><i class="fa fa-cut"></i></span> CSS Clip Path Generator</h2>
+          <p>Generate polygon, circle, and ellipse CSS clip-path shapes.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Shape Presets</div>
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+                <button class="btn btn-sm" onclick="setClip('polygon(50% 0%, 100% 100%, 0% 100%)')">Triangle</button>
+                <button class="btn btn-sm" onclick="setClip('polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)')">Diamond</button>
+                <button class="btn btn-sm" onclick="setClip('circle(50%)')">Circle</button>
+                <button class="btn btn-sm" onclick="setClip('ellipse(50% 35% at 50% 50%)')">Ellipse</button>
+                <button class="btn btn-sm" onclick="setClip('polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)')">Parallelogram</button>
+                <button class="btn btn-sm" onclick="setClip('polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)')">Star</button>
+                <button class="btn btn-sm" onclick="setClip('polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)')">Octagon</button>
+                <button class="btn btn-sm" onclick="setClip('inset(10% round 20px)')">Rounded Inset</button>
+              </div>
+              <div class="form-group" style="margin-top:14px">
+                <label>Custom Clip Path</label>
+                <input type="text" id="clip-input" value="polygon(50% 0%, 100% 100%, 0% 100%)" oninput="applyClip(this.value)">
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Preview</div>
+              <div class="clip-demo-box" id="clip-box"></div>
+              <div class="card-title" style="margin-top:12px">CSS Output</div>
+              <div class="relative">
+                <button class="copy-btn" onclick="copyText('clip-output')">Copy</button>
+                <div class="code-output" id="clip-output"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== ASPECT RATIO ==================== -->
+      <div id="tool-aspect" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(0,229,255,0.12);color:var(--accent)"><i class="fa fa-ruler-combined"></i></span> Aspect Ratio Calculator</h2>
+          <p>Calculate aspect ratios and find missing dimensions for any size.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Calculate</div>
+          <div class="form-row">
+            <div class="form-group"><label>Width</label><input type="number" id="ar-w" value="1920" style="width:100px" oninput="calcAR('w')"></div>
+            <div class="form-group"><label>Height</label><input type="number" id="ar-h" value="1080" style="width:100px" oninput="calcAR('h')"></div>
+            <div class="form-group"><label>Ratio W</label><input type="number" id="ar-rw" value="16" style="width:80px" oninput="calcAR('rw')"></div>
+            <div class="form-group"><label>Ratio H</label><input type="number" id="ar-rh" value="9" style="width:80px" oninput="calcAR('rh')"></div>
+          </div>
+          <div id="ar-result-main" class="ar-result">16:9</div>
+          <div id="ar-result-details" style="text-align:center;color:var(--text2);font-size:13px"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Common Ratios</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <button class="btn btn-sm" onclick="setAR(16,9)">16:9 HD</button>
+            <button class="btn btn-sm" onclick="setAR(4,3)">4:3 Classic</button>
+            <button class="btn btn-sm" onclick="setAR(1,1)">1:1 Square</button>
+            <button class="btn btn-sm" onclick="setAR(21,9)">21:9 Ultra</button>
+            <button class="btn btn-sm" onclick="setAR(3,2)">3:2 Photo</button>
+            <button class="btn btn-sm" onclick="setAR(9,16)">9:16 Mobile</button>
+            <button class="btn btn-sm" onclick="setAR(2,1)">2:1 Wide</button>
+            <button class="btn btn-sm" onclick="setAR(5,4)">5:4</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== RESOLUTION SIM ==================== -->
+      <div id="tool-resolution" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(168,85,247,0.12);color:var(--accent3)"><i class="fa fa-desktop"></i></span> Screen Resolution Simulator</h2>
+          <p>Preview your content at different screen resolutions and device sizes.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Device Presets</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px">
+            <button class="btn btn-sm" onclick="setRes(1920,1080,'Desktop FHD')"><i class="fa fa-desktop"></i> 1080p</button>
+            <button class="btn btn-sm" onclick="setRes(1440,900,'Laptop')"><i class="fa fa-laptop"></i> Laptop</button>
+            <button class="btn btn-sm" onclick="setRes(1280,800,'MacBook')"><i class="fab fa-apple"></i> MacBook</button>
+            <button class="btn btn-sm" onclick="setRes(768,1024,'iPad')"><i class="fa fa-tablet-alt"></i> iPad</button>
+            <button class="btn btn-sm" onclick="setRes(375,812,'iPhone X')"><i class="fa fa-mobile-alt"></i> iPhone X</button>
+            <button class="btn btn-sm" onclick="setRes(360,800,'Android')"><i class="fab fa-android"></i> Android</button>
+            <button class="btn btn-sm" onclick="setRes(320,568,'iPhone 5')"><i class="fa fa-mobile-alt"></i> iPhone 5</button>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Width</label><input type="number" id="res-w" value="1920" style="width:90px" oninput="updateResFrame()"></div>
+            <div class="form-group"><label>Height</label><input type="number" id="res-h" value="1080" style="width:90px" oninput="updateResFrame()"></div>
+            <div class="form-group"><label>Scale %</label><input type="number" id="res-scale" value="25" style="width:80px" oninput="updateResFrame()"></div>
+          </div>
+          <div id="res-label" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);margin:8px 0">1920 × 1080 — Desktop FHD</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Viewport Preview</div>
+          <div class="res-frame-wrap">
+            <div class="res-frame" id="res-frame">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);text-align:center">
+                <i class="fa fa-desktop" style="font-size:24px;display:block;margin-bottom:8px"></i>
+                Resolution Frame
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== WATERMARK ==================== -->
+      <div id="tool-watermark" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(255,107,53,0.12);color:var(--accent2)"><i class="fa fa-stamp"></i></span> Watermark Image</h2>
+          <p>Add text or logo watermarks to your images with position and opacity control.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Upload Image</div>
+              <div class="upload-zone">
+                <input type="file" id="wm-upload" accept="image/*" onchange="loadWatermark(this)">
+                <i class="fa fa-stamp"></i><p>Upload base image</p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Watermark Settings</div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Watermark Text</label>
+                <input type="text" id="wm-text" value="© PixelForge" oninput="applyWatermark()">
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>Color</label><input type="color" id="wm-color" value="#ffffff" oninput="applyWatermark()"></div>
+                <div class="form-group"><label>Font Size</label><input type="number" id="wm-size" value="24" style="width:70px" oninput="applyWatermark()"></div>
+              </div>
+              <div class="form-group" style="margin-top:8px">
+                <label>Opacity: <span id="wm-op-val">50</span>%</label>
+                <input type="range" id="wm-opacity" min="1" max="100" value="50" oninput="applyWatermark()">
+              </div>
+              <div class="form-group" style="margin-top:8px">
+                <label>Position</label>
+                <div class="watermark-position-grid" style="margin-top:6px">
+                  <div class="pos-btn" data-pos="top-left" onclick="setWMPos('top-left',this)">↖</div>
+                  <div class="pos-btn" data-pos="top-center" onclick="setWMPos('top-center',this)">↑</div>
+                  <div class="pos-btn" data-pos="top-right" onclick="setWMPos('top-right',this)">↗</div>
+                  <div class="pos-btn" data-pos="mid-left" onclick="setWMPos('mid-left',this)">←</div>
+                  <div class="pos-btn active" data-pos="center" onclick="setWMPos('center',this)">+</div>
+                  <div class="pos-btn" data-pos="mid-right" onclick="setWMPos('mid-right',this)">→</div>
+                  <div class="pos-btn" data-pos="bot-left" onclick="setWMPos('bot-left',this)">↙</div>
+                  <div class="pos-btn" data-pos="bot-center" onclick="setWMPos('bot-center',this)">↓</div>
+                  <div class="pos-btn" data-pos="bot-right" onclick="setWMPos('bot-right',this)">↘</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Result</div>
+              <div class="preview-wrap" id="wm-preview">
+                <div class="preview-empty"><i class="fa fa-stamp"></i>No image</div>
+              </div>
+              <button class="btn btn-primary w-full mt-12" onclick="downloadResult('wm-canvas','watermarked')"><i class="fa fa-download"></i> Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PIXELATE/BLUR ==================== -->
+      <div id="tool-pixelate" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(0,229,255,0.12);color:var(--accent)"><i class="fa fa-border-all"></i></span> Pixelate / Blur Image Tool</h2>
+          <p>Apply pixelation mosaic or blur effects to your images.</p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title">Upload</div>
+              <div class="upload-zone">
+                <input type="file" id="pix-upload" accept="image/*" onchange="loadPixelate(this)">
+                <i class="fa fa-border-all"></i><p>Upload image</p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Effect</div>
+              <div style="display:flex;gap:8px;margin-bottom:12px">
+                <button class="btn" id="pix-mode-btn" onclick="setPixMode('pixelate')">Pixelate</button>
+                <button class="btn" id="blur-mode-btn" onclick="setPixMode('blur')">Blur</button>
+              </div>
+              <div class="form-group" id="pix-ctrl">
+                <label>Pixel Size: <span id="pix-val">10</span>px</label>
+                <input type="range" id="pix-size" min="2" max="50" value="10" oninput="applyPixelate()">
+              </div>
+              <div class="form-group" id="blur-ctrl" style="display:none">
+                <label>Blur Radius: <span id="blur-val">5</span>px</label>
+                <input type="range" id="blur-size" min="1" max="30" value="5" oninput="applyPixelate()">
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Result</div>
+              <div class="preview-wrap" id="pix-preview">
+                <div class="preview-empty"><i class="fa fa-border-all"></i>No image</div>
+              </div>
+              <button class="btn btn-primary w-full mt-12" onclick="downloadResult('pix-canvas','pixel-blur')"><i class="fa fa-download"></i> Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== ICON REFERENCE ==================== -->
+      <div id="tool-icons" class="tool-panel">
+        <div class="tool-header">
+          <h2><span class="th-icon" style="background:rgba(255,107,53,0.12);color:var(--accent2)"><i class="fa fa-icons"></i></span> Icon Font Reference</h2>
+          <p>Browse and copy Font Awesome 6 icon class names.</p>
+        </div>
+        <div class="card">
+          <div class="icon-search">
+            <input type="text" id="icon-search" placeholder="Search icons…" oninput="filterIcons(this.value)" style="width:100%">
+          </div>
+          <div id="icon-count" style="font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:10px"></div>
+          <div class="icon-grid" id="icon-grid"></div>
+        </div>
+      </div>
+
+    </div><!-- end content -->
+  </div><!-- end main -->
+</div><!-- end app -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fa fa-check-circle"></i><span id="toast-msg">Copied!</span></div>
+
+<canvas id="comp-canvas" style="display:none"></canvas>
+<canvas id="resize-canvas" style="display:none"></canvas>
+<canvas id="crop-canvas" style="display:none"></canvas>
+<canvas id="conv-canvas" style="display:none"></canvas>
+<canvas id="filt-canvas" style="display:none"></canvas>
+<canvas id="wm-canvas" style="display:none"></canvas>
+<canvas id="pix-canvas" style="display:none"></canvas>
+
+<script>
+// ================== STATE ==================
+const state = {
+  compImg: null, resizeImg: null, cropImg: null, convImg: null,
+  filtImg: null, wmImg: null, pixImg: null, favImg: null, palImg: null,
+  lockAspect: true, aspectRatio: 1,
+  wmPos: 'center', pixMode: 'pixelate',
+  patternType: 'dots', clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)',
+  gradStops: 2, noExtraStops: []
+};
+
+// ================== NAVIGATION ==================
+const toolMeta = {
+  home: { name: 'Dashboard', icon: 'fa-th-large', color: '#00e5ff', bg: 'rgba(0,229,255,0.12)' },
+  compressor: { name: 'Image Compressor', icon: 'fa-compress-arrows-alt', color: '#00e5ff', bg: 'rgba(0,229,255,0.12)', desc: 'Reduce file size' },
+  resizer: { name: 'Image Resizer', icon: 'fa-expand-arrows-alt', color: '#ff6b35', bg: 'rgba(255,107,53,0.12)', desc: 'Resize to any dimension' },
+  cropper: { name: 'Image Cropper', icon: 'fa-crop-alt', color: '#a855f7', bg: 'rgba(168,85,247,0.12)', desc: 'Crop with precision' },
+  converter: { name: 'Format Converter', icon: 'fa-exchange-alt', color: '#00e5ff', bg: 'rgba(0,229,255,0.12)', desc: 'JPG ↔ PNG ↔ WebP' },
+  filter: { name: 'Photo Filters', icon: 'fa-magic', color: '#a855f7', bg: 'rgba(168,85,247,0.12)', desc: 'Apply visual effects' },
+  watermark: { name: 'Watermark Image', icon: 'fa-stamp', color: '#ff6b35', bg: 'rgba(255,107,53,0.12)', desc: 'Add text or logo' },
+  pixelate: { name: 'Pixelate / Blur', icon: 'fa-border-all', color: '#00e5ff', bg: 'rgba(0,229,255,0.12)', desc: 'Mosaic and blur FX' },
+  img2base64: { name: 'Image → Base64', icon: 'fa-code', color: '#22c55e', bg: 'rgba(34,197,94,0.12)', desc: 'Encode to data URI' },
+  base642img: { name: 'Base64 → Image', icon: 'fa-image', color: '#a855f7', bg: 'rgba(168,85,247,0.12)', desc: 'Decode data URI' },
+  favicon: { name: 'Favicon Generator', icon: 'fa-star', color: '#ff6b35', bg: 'rgba(255,107,53,0.12)', desc: 'All favicon sizes' },
+  placeholder: { name: 'Placeholder Image', icon: 'fa-photo-video', color: '#a855f7', bg: 'rgba(168,85,247,0.12)', desc: 'Dummy image generator' },
+  noise: { name: 'Noise / Grain', icon: 'fa-random', color: '#ff6b35', bg: 'rgba(255,107,53,0.12)', desc: 'Procedural textures' },
+  pattern: { name: 'Pattern Background', icon: 'fa-th', color: '#00e5ff', bg: 'rgba(0,229,255,0.12)', desc: 'Seamless CSS patterns' },
+  gradient: { name: 'CSS Gradient', icon: 'fa-paint-roller', color: '#00e5ff', bg: 'rgba(0,229,255,0.12)', desc: 'Linear & radial gradients' },
+  shadow: { name: 'Box Shadow', icon: 'fa-clone', color: '#a855f7', bg: 'rgba(168,85,247,0.12)', desc: 'CSS shadow builder' },
+  radius: { name: 'Border Radius', icon: 'fa-vector-square', color: '#00e5ff', bg: 'rgba(0,229,255,0.12)', desc: 'CSS rounded corners' },
+  glass: { name: 'Glassmorphism', icon: 'fa-glass-martini', color: '#a855f7', bg: 'rgba(168,85,247,0.12)', desc: 'Frosted glass CSS' },
+  neumorphism: { name: 'Neumorphism', icon: 'fa-cube', color: '#00e5ff', bg: 'rgba(0,229,255,0.12)', desc: 'Soft UI effects' },
+  clippath: { name: 'Clip Path', icon: 'fa-cut', color: '#ff6b35', bg: 'rgba(255,107,53,0.12)', desc: 'CSS shape masking' },
+  palette: { name: 'Color Palette', icon: 'fa-palette', color: '#ff6b35', bg: 'rgba(255,107,53,0.12)', desc: 'Extract & generate' },
+  contrast: { name: 'Contrast Checker', icon: 'fa-adjust', color: '#22c55e', bg: 'rgba(34,197,94,0.12)', desc: 'WCAG compliance' },
+  svgopt: { name: 'SVG Optimizer', icon: 'fa-compress', color: '#ff6b35', bg: 'rgba(255,107,53,0.12)', desc: 'Minify SVG code' },
+  aspect: { name: 'Aspect Ratio', icon: 'fa-ruler-combined', color: '#00e5ff', bg: 'rgba(0,229,255,0.12)', desc: 'Calculate dimensions' },
+  resolution: { name: 'Resolution Sim', icon: 'fa-desktop', color: '#a855f7', bg: 'rgba(168,85,247,0.12)', desc: 'Device viewport preview' },
+  icons: { name: 'Icon Reference', icon: 'fa-icons', color: '#ff6b35', bg: 'rgba(255,107,53,0.12)', desc: 'Font Awesome browser' }
+};
+
+// Build home grid
+function buildHomeGrid() {
+  const grid = document.querySelector('.tools-grid');
+  const tools = Object.entries(toolMeta).filter(([k]) => k !== 'home');
+  grid.innerHTML = tools.map(([id, t]) => `
+    <div class="tool-card" onclick="showTool('${id}')">
+      <div class="tc-icon" style="background:${t.bg};color:${t.color}"><i class="fa ${t.icon}"></i></div>
+      <div class="tc-name">${t.name}</div>
+      <div class="tc-desc">${t.desc || ''}</div>
+    </div>
+  `).join('');
+}
+
+function showTool(id) {
+  document.querySelectorAll('.tool-panel, #home').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const panel = document.getElementById(id === 'home' ? 'home' : `tool-${id}`);
+  if (panel) panel.classList.add('active');
+  const navItem = document.querySelector(`.nav-item[onclick="showTool('${id}')"]`);
+  if (navItem) navItem.classList.add('active');
+  const meta = toolMeta[id];
+  document.getElementById('breadcrumb-current').textContent = meta ? meta.name : id;
+  if (window.innerWidth < 900) document.getElementById('sidebar').classList.remove('open');
+  // Init tools
+  if (id === 'gradient') updateGradient();
+  if (id === 'shadow') updateShadow();
+  if (id === 'radius') updateRadius('all');
+  if (id === 'contrast') updateContrast();
+  if (id === 'glass') updateGlass();
+  if (id === 'neumorphism') updateNeu();
+  if (id === 'clippath') applyClip(state.clipPath);
+  if (id === 'aspect') calcAR('w');
+  if (id === 'resolution') updateResFrame();
+  if (id === 'placeholder') genPlaceholder();
+  if (id === 'noise') genNoise();
+  if (id === 'pattern') { selectPattern('dots'); updatePattern(); }
+  if (id === 'icons') loadIcons();
+  if (id === 'filter') buildFilterPresets();
+}
+
+function filterNav(q) {
+  const items = document.querySelectorAll('.nav-item');
+  const low = q.toLowerCase();
+  items.forEach(item => {
+    const name = item.dataset.name || '';
+    item.style.display = (!q || name.includes(low)) ? '' : 'none';
+  });
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ================== UTILITIES ==================
+function toast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.className = `toast show ${type}`;
+  document.getElementById('toast-msg').textContent = msg;
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function copyText(id) {
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.textContent).then(() => toast('Copied to clipboard!'));
+}
+
+function downloadResult(canvasId, filename) {
+  const c = document.getElementById(canvasId);
+  if (!c || !c.width) { toast('No image to download', 'error'); return; }
+  const a = document.createElement('a');
+  a.href = c.toDataURL('image/png');
+  a.download = filename + '.png';
+  a.click();
+  toast('Downloading ' + filename + '.png');
+}
+
+function loadImageFile(file, callback) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => callback(img);
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function hexToRgb(hex) {
+  hex = hex.replace('#','');
+  if (hex.length === 3) hex = hex.split('').map(c=>c+c).join('');
+  const n = parseInt(hex,16);
+  return { r: (n>>16)&255, g: (n>>8)&255, b: n&255 };
+}
+
+function rgbToHex(r,g,b) {
+  return '#' + [r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+}
+
+function luminance(r,g,b) {
+  const s = [r,g,b].map(v => { v/=255; return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4); });
+  return 0.2126*s[0]+0.7152*s[1]+0.0722*s[2];
+}
+
+// ================== IMAGE COMPRESSOR ==================
+function loadCompressor(input) {
+  if (!input.files[0]) return;
+  loadImageFile(input.files[0], img => { state.compImg = img; runCompressor(); });
+}
+
+function runCompressor() {
+  if (!state.compImg) return;
+  const c = document.getElementById('comp-canvas');
+  const q = parseInt(document.getElementById('comp-quality').value)/100;
+  const fmt = document.getElementById('comp-fmt').value;
+  c.width = state.compImg.width; c.height = state.compImg.height;
+  c.getContext('2d').drawImage(state.compImg, 0, 0);
+  const dataUrl = c.toDataURL(fmt, q);
+  const prev = document.getElementById('comp-preview');
+  prev.innerHTML = `<img src="${dataUrl}" style="max-width:100%;max-height:350px;border-radius:6px">`;
+  const origSize = Math.round(dataUrl.length * 0.75 / 1024);
+  document.getElementById('comp-info').textContent = `Original: ~${Math.round(state.compImg.width*state.compImg.height*3/1024)}KB → Compressed: ~${origSize}KB`;
+}
+
+// ================== IMAGE RESIZER ==================
+let resizeLocked = true;
+function loadResizer(input) {
+  if (!input.files[0]) return;
+  loadImageFile(input.files[0], img => {
+    state.resizeImg = img;
+    state.aspectRatio = img.width / img.height;
+    document.getElementById('resize-w').value = img.width;
+    document.getElementById('resize-h').value = img.height;
+  });
+}
+
+function toggleLock() {
+  resizeLocked = !resizeLocked;
+  document.getElementById('lock-icon').className = resizeLocked ? 'fa fa-lock' : 'fa fa-unlock';
+}
+
+function syncResize(changed) {
+  if (!resizeLocked || !state.resizeImg) return;
+  const ratio = state.resizeImg.width / state.resizeImg.height;
+  if (changed === 'w') {
+    document.getElementById('resize-h').value = Math.round(parseInt(document.getElementById('resize-w').value)/ratio);
+  } else {
+    document.getElementById('resize-w').value = Math.round(parseInt(document.getElementById('resize-h').value)*ratio);
+  }
+}
+
+function setSize(w,h) {
+  document.getElementById('resize-w').value = w;
+  document.getElementById('resize-h').value = h;
+}
+
+function runResizer() {
+  if (!state.resizeImg) { toast('Upload an image first','error'); return; }
+  const w = parseInt(document.getElementById('resize-w').value);
+  const h = parseInt(document.getElementById('resize-h').value);
+  const c = document.getElementById('resize-canvas');
+  c.width = w; c.height = h;
+  c.getContext('2d').drawImage(state.resizeImg, 0, 0, w, h);
+  const prev = document.getElementById('resize-preview');
+  prev.innerHTML = `<img src="${c.toDataURL()}" style="max-width:100%;max-height:350px;border-radius:6px">`;
+  document.getElementById('resize-info').textContent = `Output: ${w} × ${h}px`;
+  toast(`Resized to ${w}×${h}`);
+}
+
+// ================== IMAGE CROPPER ==================
+function loadCropper(input) {
+  if (!input.files[0]) return;
+  loadImageFile(input.files[0], img => {
+    state.cropImg = img;
+    document.getElementById('crop-w').value = Math.min(img.width, 300);
+    document.getElementById('crop-h').value = Math.min(img.height, 300);
+    runCrop();
+  });
+}
+
+function setCropRatio(rw, rh) {
+  if (!state.cropImg) return;
+  const w = parseInt(document.getElementById('crop-w').value) || 200;
+  document.getElementById('crop-h').value = Math.round(w * rh / rw);
+  runCrop();
+}
+
+function runCrop() {
+  if (!state.cropImg) return;
+  const x=parseInt(document.getElementById('crop-x').value)||0;
+  const y=parseInt(document.getElementById('crop-y').value)||0;
+  const w=parseInt(document.getElementById('crop-w').value)||100;
+  const h=parseInt(document.getElementById('crop-h').value)||100;
+  const c = document.getElementById('crop-canvas');
+  c.width = w; c.height = h;
+  c.getContext('2d').drawImage(state.cropImg, x, y, w, h, 0, 0, w, h);
+  document.getElementById('crop-preview').innerHTML = `<img src="${c.toDataURL()}" style="max-width:100%;max-height:350px;border-radius:6px">`;
+}
+
+// ================== IMAGE TO BASE64 ==================
+function imgToBase64(input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const b64 = e.target.result;
+    document.getElementById('i2b-result').style.display = '';
+    document.getElementById('i2b-output').textContent = b64;
+    document.getElementById('i2b-html').textContent = `<img src="${b64}" alt="image">`;
+    document.getElementById('i2b-css').textContent = `background-image: url("${b64}");`;
+    document.getElementById('i2b-info').textContent = `Size: ${Math.round(b64.length/1024)}KB · Format: ${input.files[0].type}`;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// ================== BASE64 TO IMAGE ==================
+function base64ToImg() {
+  let b64 = document.getElementById('b2i-input').value.trim();
+  if (!b64) { toast('Paste a Base64 string first','error'); return; }
+  if (!b64.startsWith('data:')) b64 = 'data:image/png;base64,' + b64;
+  document.getElementById('b2i-img').src = b64;
+  document.getElementById('b2i-result').style.display = '';
+}
+
+function downloadBase64Img() {
+  const src = document.getElementById('b2i-img').src;
+  const a = document.createElement('a');
+  a.href = src; a.download = 'decoded-image.png'; a.click();
+}
+
+// ================== FAVICON GENERATOR ==================
+function loadFavicon(input) {
+  if (!input.files[0]) return;
+  loadImageFile(input.files[0], img => {
+    state.favImg = img;
+    const sizes = [16,32,48,64,96,128,192,256];
+    const grid = document.getElementById('fav-grid');
+    grid.innerHTML = sizes.map(s => {
+      const c = document.createElement('canvas');
+      c.width = s; c.height = s;
+      c.getContext('2d').drawImage(img,0,0,s,s);
+      const url = c.toDataURL('image/png');
+      return `<div style="text-align:center">
+        <img src="${url}" width="${Math.min(s,48)}" height="${Math.min(s,48)}" style="border:1px solid var(--border);border-radius:4px;display:block;margin:0 auto 4px">
+        <div style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace">${s}×${s}</div>
+        <a href="${url}" download="favicon-${s}x${s}.png" class="btn btn-sm" style="margin-top:4px;font-size:9px;padding:2px 6px">DL</a>
+      </div>`;
+    }).join('');
+  });
+}
+
+// ================== CSS GRADIENT ==================
+let extraStops = [];
+function updateGradient() {
+  const type = document.getElementById('grad-type').value;
+  const angle = document.getElementById('grad-angle').value;
+  const c1 = document.getElementById('gc1').value;
+  const s1 = document.getElementById('gs1').value;
+  const c2 = document.getElementById('gc2').value;
+  const s2 = document.getElementById('gs2').value;
+  let stops = `${c1} ${s1}%, ${c2} ${s2}%`;
+  let css;
+  if (type === 'linear') css = `linear-gradient(${angle}deg, ${stops})`;
+  else if (type === 'radial') css = `radial-gradient(circle, ${stops})`;
+  else css = `conic-gradient(from ${angle}deg, ${stops})`;
+  document.getElementById('grad-preview').style.background = css;
+  document.getElementById('grad-output').textContent = `background: ${css};`;
+}
+
+function addGradientStop() {
+  toast('Add more stops by editing the CSS output directly');
+}
+
+// ================== BOX SHADOW ==================
+function updateShadow() {
+  const x = document.getElementById('sh-x').value;
+  const y = document.getElementById('sh-y').value;
+  const blur = document.getElementById('sh-blur').value;
+  const spread = document.getElementById('sh-spread').value;
+  const color = document.getElementById('sh-color').value;
+  const op = parseInt(document.getElementById('sh-opacity').value)/100;
+  const inset = document.getElementById('sh-inset').checked ? 'inset ' : '';
+  document.getElementById('sh-x-val').textContent = x;
+  document.getElementById('sh-y-val').textContent = y;
+  document.getElementById('sh-blur-val').textContent = blur;
+  document.getElementById('sh-spread-val').textContent = spread;
+  const rgb = hexToRgb(color);
+  const shadow = `${inset}${x}px ${y}px ${blur}px ${spread}px rgba(${rgb.r},${rgb.g},${rgb.b},${op})`;
+  document.getElementById('shadow-box').style.boxShadow = shadow;
+  document.getElementById('shadow-output').textContent = `box-shadow: ${shadow};`;
+}
+
+// ================== BORDER RADIUS ==================
+function updateRadius(mode) {
+  if (mode === 'all') {
+    const v = document.getElementById('br-all').value;
+    ['tl','tr','bl','br'].forEach(c => {
+      document.getElementById(`br-${c}`).value = v;
+      document.getElementById(`br-${c}-val`).textContent = v;
+    });
+    document.getElementById('br-all-val').textContent = v;
+  } else {
+    ['tl','tr','bl','br'].forEach(c => {
+      document.getElementById(`br-${c}-val`).textContent = document.getElementById(`br-${c}`).value;
+    });
+  }
+  const tl = document.getElementById('br-tl').value;
+  const tr = document.getElementById('br-tr').value;
+  const br2 = document.getElementById('br-br').value;
+  const bl = document.getElementById('br-bl').value;
+  const css = `${tl}px ${tr}px ${br2}px ${bl}px`;
+  document.getElementById('radius-box').style.borderRadius = css;
+  document.getElementById('radius-output').textContent = `border-radius: ${css};`;
+}
+
+// ================== COLOR PALETTE ==================
+function hslToHex(h,s,l) {
+  s/=100; l/=100;
+  const a=s*Math.min(l,1-l);
+  const f=n=>{const k=(n+h/30)%12;const c=l-a*Math.max(Math.min(k-3,9-k,1),-1);return Math.round(255*c).toString(16).padStart(2,'0');}
+  return `#${f(0)}${f(8)}${f(4)}`;
+}
+
+function renderPalette(colors) {
+  const el = document.getElementById('palette-colors');
+  el.innerHTML = colors.map(c => `
+    <div class="palette-item" onclick="navigator.clipboard.writeText('${c}');toast('Copied ${c}')">
+      <div class="palette-color" style="background:${c}" title="${c}"></div>
+      <span class="palette-hex">${c}</span>
+    </div>
+  `).join('');
+  const css = colors.map((c,i)=>`  --color-${i+1}: ${c};`).join('\n');
+  document.getElementById('palette-css').innerHTML = `<div class="relative"><button class="copy-btn" onclick="copyText('pal-css-output')">Copy CSS</button><div class="code-output" id="pal-css-output">:root {\n${css}\n}</div></div>`;
+}
+
+function genRandomPalette() { renderPalette(Array.from({length:5},()=>'#'+Math.floor(Math.random()*0xffffff).toString(16).padStart(6,'0'))); }
+function genMonoPalette() {
+  const h = Math.floor(Math.random()*360);
+  renderPalette([20,35,50,65,80].map(l=>hslToHex(h,70,l)));
+}
+function genComplementPalette() {
+  const h = Math.floor(Math.random()*360);
+  renderPalette([hslToHex(h,70,45),hslToHex(h,70,60),hslToHex(h,50,75),hslToHex((h+180)%360,70,45),hslToHex((h+180)%360,70,60)]);
+}
+function genAnalogous() {
+  const h = Math.floor(Math.random()*360);
+  renderPalette([-30,-15,0,15,30].map(d=>hslToHex((h+d+360)%360,70,55)));
+}
+
+function extractPalette(input) {
+  if (!input.files[0]) return;
+  loadImageFile(input.files[0], img => {
+    const c = document.createElement('canvas');
+    c.width=50; c.height=50;
+    c.getContext('2d').drawImage(img,0,0,50,50);
+    const d = c.getContext('2d').getImageData(0,0,50,50).data;
+    const cols = {};
+    for (let i=0;i<d.length;i+=16) {
+      const r=Math.round(d[i]/32)*32, g=Math.round(d[i+1]/32)*32, b=Math.round(d[i+2]/32)*32;
+      const k=rgbToHex(r,g,b);
+      cols[k]=(cols[k]||0)+1;
+    }
+    const sorted = Object.entries(cols).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([c])=>c);
+    renderPalette(sorted);
+  });
+}
+
+// ================== CONTRAST CHECKER ==================
+function updateContrast() {
+  const fg = document.getElementById('con-fg').value;
+  const bg = document.getElementById('con-bg').value;
+  document.getElementById('con-fg-hex').value = fg;
+  document.getElementById('con-bg-hex').value = bg;
+  const prev = document.getElementById('con-preview');
+  prev.style.background = bg; prev.style.color = fg;
+  const fgRgb = hexToRgb(fg), bgRgb = hexToRgb(bg);
+  const L1 = luminance(fgRgb.r,fgRgb.g,fgRgb.b);
+  const L2 = luminance(bgRgb.r,bgRgb.g,bgRgb.b);
+  const ratio = (Math.max(L1,L2)+0.05)/(Math.min(L1,L2)+0.05);
+  document.getElementById('con-ratio').textContent = ratio.toFixed(2)+':1';
+  const results = [
+    { label:'AA Normal', req:4.5, pass:ratio>=4.5 },
+    { label:'AA Large', req:3, pass:ratio>=3 },
+    { label:'AAA Normal', req:7, pass:ratio>=7 },
+    { label:'AAA Large', req:4.5, pass:ratio>=4.5 },
+  ];
+  document.getElementById('wcag-results').innerHTML = results.map(r=>`
+    <span class="wcag-badge ${r.pass?'wcag-pass':'wcag-fail'}">
+      <i class="fa fa-${r.pass?'check':'times'}"></i> ${r.label}
+    </span>`).join('');
+}
+
+function syncContrast(which) {
+  const hex = document.getElementById(`con-${which}-hex`).value;
+  if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+    document.getElementById(`con-${which}`).value = hex;
+    updateContrast();
+  }
+}
+
+// ================== PLACEHOLDER ==================
+function genPlaceholder() {
+  const w = parseInt(document.getElementById('ph-w').value)||400;
+  const h = parseInt(document.getElementById('ph-h').value)||300;
+  const bg = document.getElementById('ph-bg').value;
+  const tc = document.getElementById('ph-tc').value;
+  const txt = document.getElementById('ph-text').value || `${w} × ${h}`;
+  const c = document.getElementById('ph-canvas');
+  c.width=w; c.height=h;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = bg; ctx.fillRect(0,0,w,h);
+  // Draw diagonal lines
+  ctx.strokeStyle = tc+'33'; ctx.lineWidth=1;
+  for(let i=-h;i<w+h;i+=30){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+h,h);ctx.stroke();}
+  // Cross
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(w,h); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(w,0); ctx.lineTo(0,h); ctx.stroke();
+  // Border
+  ctx.strokeStyle = tc+'66'; ctx.lineWidth=2; ctx.strokeRect(1,1,w-2,h-2);
+  // Text
+  const fs = Math.max(12, Math.min(w/10, 40));
+  ctx.font = `${fs}px JetBrains Mono, monospace`; ctx.fillStyle = tc;
+  ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(txt, w/2, h/2);
+}
+
+// ================== SVG OPTIMIZER ==================
+function optimizeSVG() {
+  const input = document.getElementById('svg-input').value.trim();
+  if (!input) { toast('Paste SVG code first','error'); return; }
+  let opt = input;
+  opt = opt.replace(/<!--[\s\S]*?-->/g,'');
+  opt = opt.replace(/\s+/g,' ');
+  opt = opt.replace(/> </g,'><');
+  opt = opt.replace(/ (id|class|style)=""/g,'');
+  opt = opt.replace(/\s*([\{:;,>~\+\[\]])\s*/g,'$1');
+  opt = opt.trim();
+  document.getElementById('svg-result').style.display='';
+  document.getElementById('svg-output').textContent = opt;
+  const orig = input.length; const comp = opt.length;
+  const pct = Math.round((1-comp/orig)*100);
+  document.getElementById('svg-stats').innerHTML = `
+    <div class="svg-stat"><div class="val">${orig}</div><div class="lbl">ORIGINAL BYTES</div></div>
+    <div class="svg-stat"><div class="val">${comp}</div><div class="lbl">OPTIMIZED BYTES</div></div>
+    <div class="svg-stat"><div class="val">${pct}%</div><div class="lbl">REDUCTION</div></div>`;
+}
+
+// ================== FORMAT CONVERTER ==================
+function loadConverter(input) {
+  if (!input.files[0]) return;
+  loadImageFile(input.files[0], img => {
+    state.convImg = img;
+    document.getElementById('conv-preview').innerHTML = `<img src="${img.src}" style="max-width:100%;max-height:300px;border-radius:6px">`;
+    document.getElementById('conv-source-info').textContent = `Source: ${img.width}×${img.height} · ${input.files[0].type}`;
+  });
+}
+
+function convertTo(fmt) {
+  if (!state.convImg) { toast('Upload an image first','error'); return; }
+  const q = parseInt(document.getElementById('conv-quality').value)/100;
+  const c = document.getElementById('conv-canvas');
+  c.width = state.convImg.width; c.height = state.convImg.height;
+  if (fmt === 'image/jpeg') {
+    c.getContext('2d').fillStyle = '#fff';
+    c.getContext('2d').fillRect(0,0,c.width,c.height);
+  }
+  c.getContext('2d').drawImage(state.convImg,0,0);
+  const url = c.toDataURL(fmt,q);
+  document.getElementById('conv-preview').innerHTML = `<img src="${url}" style="max-width:100%;max-height:300px;border-radius:6px">`;
+  const ext = {['image/jpeg']:'jpg',['image/png']:'png',['image/webp']:'webp'}[fmt];
+  document.getElementById('conv-info').textContent = `Format: ${fmt} · ~${Math.round(url.length*0.75/1024)}KB`;
+  document.getElementById('conv-dl').style.display='';
+  document.getElementById('conv-dl').onclick = ()=>{
+    const a=document.createElement('a'); a.href=url; a.download=`converted.${ext}`; a.click();
+    toast(`Downloaded as .${ext}`);
+  };
+}
+
+// ================== PHOTO FILTERS ==================
+const filterPresets = [
+  {name:'Normal', b:100,c:100,s:100,h:0,bl:0,g:0},
+  {name:'Vivid', b:110,c:120,s:140,h:0,bl:0,g:0},
+  {name:'B&W', b:100,c:110,s:0,h:0,bl:0,g:100},
+  {name:'Sepia', b:100,c:100,s:50,h:30,bl:0,g:30},
+  {name:'Cool', b:100,c:100,s:90,h:200,bl:0,g:0},
+  {name:'Warm', b:105,c:100,s:110,h:15,bl:0,g:0},
+  {name:'Fade', b:110,c:80,s:80,h:0,bl:0,g:0},
+  {name:'Matte', b:105,c:90,s:70,h:0,bl:0,g:10},
+  {name:'Chrome', b:110,c:130,s:110,h:0,bl:0,g:0},
+  {name:'Dreamy', b:110,c:90,s:110,h:30,bl:2,g:0}
+];
+
+function buildFilterPresets() {
+  const emojis=['🖼️','✨','⬛','🟫','❄️','🔥','🌫️','📸','💎','🌙'];
+  document.getElementById('filter-presets').innerHTML = filterPresets.map((p,i)=>`
+    <div class="filter-card" onclick="applyPreset(${i})" id="fp-${i}">
+      <div class="fc-thumb">${emojis[i]}</div>
+      <div class="fc-name">${p.name}</div>
+    </div>`).join('');
+}
+
+function applyPreset(i) {
+  const p = filterPresets[i];
+  document.getElementById('filt-brightness').value=p.b;
+  document.getElementById('filt-contrast').value=p.c;
+  document.getElementById('filt-saturation').value=p.s;
+  document.getElementById('filt-hue').value=p.h;
+  document.getElementById('filt-blur').value=p.bl;
+  document.getElementById('filt-gray').value=p.g;
+  document.querySelectorAll('.filter-card').forEach(c=>c.classList.remove('active'));
+  document.getElementById('fp-'+i).classList.add('active');
+  applyFilters();
+}
+
+function loadFilter(input) {
+  if (!input.files[0]) return;
+  loadImageFile(input.files[0], img => { state.filtImg = img; applyFilters(); });
+}
+
+function applyFilters() {
+  if (!state.filtImg) return;
+  const b = document.getElementById('filt-brightness').value;
+  const c = document.getElementById('filt-contrast').value;
+  const s = document.getElementById('filt-saturation').value;
+  const h = document.getElementById('filt-hue').value;
+  const bl = document.getElementById('filt-blur').value;
+  const g = document.getElementById('filt-gray').value;
+  document.getElementById('filt-b-val').textContent=b;
+  document.getElementById('filt-c-val').textContent=c;
+  document.getElementById('filt-s-val').textContent=s;
+  document.getElementById('filt-h-val').textContent=h;
+  document.getElementById('filt-bl-val').textContent=bl;
+  document.getElementById('filt-g-val').textContent=g;
+  const canvas = document.getElementById('filt-canvas');
+  canvas.width=state.filtImg.width; canvas.height=state.filtImg.height;
+  const ctx = canvas.getContext('2d');
+  ctx.filter=`brightness(${b}%) contrast(${c}%) saturate(${s}%) hue-rotate(${h}deg) blur(${bl}px) grayscale(${g}%)`;
+  ctx.drawImage(state.filtImg,0,0);
+  document.getElementById('filt-preview').innerHTML=`<img src="${canvas.toDataURL()}" style="max-width:100%;max-height:300px;border-radius:6px">`;
+}
+
+// ================== NOISE GENERATOR ==================
+function genNoise() {
+  const w=parseInt(document.getElementById('noise-w').value)||400;
+  const h=parseInt(document.getElementById('noise-h').value)||400;
+  const op=parseInt(document.getElementById('noise-op').value)/100;
+  const sz=parseInt(document.getElementById('noise-size').value)||1;
+  const baseColor=document.getElementById('noise-color').value;
+  const type=document.getElementById('noise-type').value;
+  document.getElementById('noise-op-val').textContent=document.getElementById('noise-op').value;
+  document.getElementById('noise-size-val').textContent=sz;
+  const c=document.getElementById('noise-canvas');
+  c.width=w; c.height=h;
+  const ctx=c.getContext('2d');
+  const base=hexToRgb(baseColor);
+  ctx.fillStyle=baseColor; ctx.fillRect(0,0,w,h);
+  const id=ctx.createImageData(w,h);
+  const d=id.data;
+  for(let y=0;y<h;y+=sz) for(let x=0;x<w;x+=sz) {
+    for(let dy=0;dy<sz&&y+dy<h;dy++) for(let dx=0;dx<sz&&x+dx<w;dx++) {
+      const i=(((y+dy)*w+(x+dx))*4);
+      if(type==='Monochrome'){const v=Math.random()*255*op;d[i]=base.r+v;d[i+1]=base.g+v;d[i+2]=base.b+v;d[i+3]=255;}
+      else if(type==='Color'){d[i]=Math.random()*255*op+base.r*(1-op);d[i+1]=Math.random()*255*op+base.g*(1-op);d[i+2]=Math.random()*255*op+base.b*(1-op);d[i+3]=255;}
+      else {const v=Math.random()*255*op; const s=Math.floor(v*0.8); d[i]=Math.min(255,base.r+v);d[i+1]=Math.min(255,base.g+s);d[i+2]=Math.min(255,base.b+s*0.5);d[i+3]=255;}
+    }
+  }
+  ctx.putImageData(id,0,0);
+}
+
+// ================== PATTERN GENERATOR ==================
+function selectPattern(type, btn) {
+  state.patternType = type;
+  document.querySelectorAll('#pattern-types .btn').forEach(b=>b.style.borderColor='');
+  if(btn) btn.style.borderColor='var(--accent)';
+  updatePattern();
+}
+
+function updatePattern() {
+  const c1=document.getElementById('pat-c1').value;
+  const c2=document.getElementById('pat-c2').value;
+  const sz=parseInt(document.getElementById('pat-size').value);
+  const op=parseInt(document.getElementById('pat-op').value)/100;
+  document.getElementById('pat-size-val').textContent=sz;
+  document.getElementById('pat-op-val').textContent=document.getElementById('pat-op').value;
+  let svgPat='', css='';
+  if(state.patternType==='dots'){
+    svgPat=`<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}"><circle cx="${sz/2}" cy="${sz/2}" r="${sz/6}" fill="${c1}" opacity="${op}"/></svg>`;
+    css=`background-color: ${c2};\nbackground-image: radial-gradient(${c1} ${sz/6}px, transparent 0);\nbackground-size: ${sz}px ${sz}px;`;
+  } else if(state.patternType==='lines'){
+    svgPat=`<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="2"><rect width="${sz}" height="1" fill="${c1}" opacity="${op}"/></svg>`;
+    css=`background-color: ${c2};\nbackground-image: repeating-linear-gradient(0deg, ${c1}, ${c1} 1px, transparent 1px, transparent ${sz}px);`;
+  } else if(state.patternType==='grid'){
+    svgPat=`<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}"><path d="M ${sz} 0 L 0 0 0 ${sz}" fill="none" stroke="${c1}" stroke-width="0.5" opacity="${op}"/></svg>`;
+    css=`background-color: ${c2};\nbackground-image: linear-gradient(${c1} 1px, transparent 1px), linear-gradient(to right, ${c1} 1px, transparent 1px);\nbackground-size: ${sz}px ${sz}px;`;
+  } else if(state.patternType==='diagonal'){
+    css=`background-color: ${c2};\nbackground-image: repeating-linear-gradient(45deg, ${c1} 0, ${c1} 1px, ${c2} 0, ${c2} 50%);\nbackground-size: ${sz}px ${sz}px;`;
+  } else if(state.patternType==='waves'){
+    css=`background-color: ${c2};\nbackground-image: repeating-radial-gradient(circle at 0 50%, transparent 0, ${c2} ${sz}px), repeating-linear-gradient(${c1}55, ${c1});`;
+  } else {
+    const h=sz*0.866; css=`background-color: ${c2};\nbackground-image: radial-gradient(circle farthest-side at 0% 50%, ${c2} 23.5%, rgba(240,166,17,0) 0) 21px 30px, radial-gradient(circle farthest-side at 0% 50%, ${c1} 24%, rgba(240,166,17,0) 0) 19px 30px;\nbackground-size: ${sz}px ${sz}px;`;
+  }
+  document.getElementById('pat-preview').style.cssText = css.replace(/\n/g,'');
+  document.getElementById('pat-output').textContent = css;
+}
+
+// ================== GLASSMORPHISM ==================
+function updateGlass() {
+  const blur=document.getElementById('glass-blur').value;
+  const alpha=document.getElementById('glass-alpha').value/100;
+  const borderOp=document.getElementById('glass-border').value/100;
+  const radius=document.getElementById('glass-radius').value;
+  const color=document.getElementById('glass-color').value;
+  const borderColor=document.getElementById('glass-border-color').value;
+  document.getElementById('glass-blur-val').textContent=blur;
+  document.getElementById('glass-alpha-val').textContent=document.getElementById('glass-alpha').value;
+  document.getElementById('glass-border-val').textContent=document.getElementById('glass-border').value;
+  document.getElementById('glass-radius-val').textContent=radius;
+  const rgb=hexToRgb(color), bc=hexToRgb(borderColor);
+  const css=`backdrop-filter: blur(${blur}px);\n-webkit-backdrop-filter: blur(${blur}px);\nbackground: rgba(${rgb.r},${rgb.g},${rgb.b},${alpha});\nborder: 1px solid rgba(${bc.r},${bc.g},${bc.b},${borderOp});\nborder-radius: ${radius}px;`;
+  const inner=document.getElementById('glass-preview-inner');
+  inner.style.backdropFilter=`blur(${blur}px)`;
+  inner.style.webkitBackdropFilter=`blur(${blur}px)`;
+  inner.style.background=`rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`;
+  inner.style.border=`1px solid rgba(${bc.r},${bc.g},${bc.b},${borderOp})`;
+  inner.style.borderRadius=`${radius}px`;
+  document.getElementById('glass-output').textContent=css;
+}
+
+// ================== NEUMORPHISM ==================
+function updateNeu() {
+  const bg=document.getElementById('neu-bg').value;
+  const dist=parseInt(document.getElementById('neu-dist').value);
+  const blur=parseInt(document.getElementById('neu-blur').value);
+  const intens=parseInt(document.getElementById('neu-int').value)/100;
+  const shape=document.getElementById('neu-shape').value;
+  document.getElementById('neu-d-val').textContent=dist;
+  document.getElementById('neu-b-val').textContent=blur;
+  document.getElementById('neu-i-val').textContent=document.getElementById('neu-int').value;
+  const rgb=hexToRgb(bg);
+  const darken=(v,f)=>Math.max(0,v-255*f);
+  const lighten=(v,f)=>Math.min(255,v+255*f);
+  const dark=`rgba(${darken(rgb.r,intens)},${darken(rgb.g,intens)},${darken(rgb.b,intens)},1)`;
+  const light=`rgba(${lighten(rgb.r,intens)},${lighten(rgb.g,intens)},${lighten(rgb.b,intens)},1)`;
+  let boxShadow,bg2=bg;
+  if(shape==='Flat'){boxShadow=`${dist}px ${dist}px ${blur}px ${dark}, -${dist}px -${dist}px ${blur}px ${light}`;}
+  else if(shape==='Concave'){boxShadow=`${dist}px ${dist}px ${blur}px ${dark}, -${dist}px -${dist}px ${blur}px ${light}`;bg2=`linear-gradient(145deg, ${dark}, ${light})`;}
+  else if(shape==='Convex'){boxShadow=`${dist}px ${dist}px ${blur}px ${dark}, -${dist}px -${dist}px ${blur}px ${light}`;bg2=`linear-gradient(145deg, ${light}, ${dark})`;}
+  else{boxShadow=`inset ${dist}px ${dist}px ${blur}px ${dark}, inset -${dist}px -${dist}px ${blur}px ${light}`;}
+  document.getElementById('neu-demo-bg').style.background=bg;
+  document.getElementById('neu-box').style.boxShadow=boxShadow;
+  document.getElementById('neu-box').style.background=bg2;
+  document.getElementById('neu-output').textContent=`background: ${bg};\nbox-shadow: ${boxShadow};`;
+}
+
+// ================== CLIP PATH ==================
+function setClip(val){
+  document.getElementById('clip-input').value=val;
+  applyClip(val);
+}
+function applyClip(val){
+  state.clipPath=val;
+  document.getElementById('clip-box').style.clipPath=val;
+  document.getElementById('clip-output').textContent=`clip-path: ${val};`;
+}
+
+// ================== ASPECT RATIO ==================
+function gcd(a,b){return b?gcd(b,a%b):a;}
+function calcAR(changed){
+  let w=parseInt(document.getElementById('ar-w').value)||1920;
+  let h=parseInt(document.getElementById('ar-h').value)||1080;
+  const rw=parseInt(document.getElementById('ar-rw').value)||16;
+  const rh=parseInt(document.getElementById('ar-rh').value)||9;
+  if(changed==='rw'||changed==='rh'){
+    h=Math.round(w*rh/rw);
+    document.getElementById('ar-h').value=h;
+  }
+  const g=gcd(w,h);
+  const rStr=`${w/g}:${h/g}`;
+  document.getElementById('ar-rw').value=w/g;
+  document.getElementById('ar-rh').value=h/g;
+  document.getElementById('ar-result-main').textContent=rStr;
+  document.getElementById('ar-result-details').textContent=`${w} × ${h} pixels`;
+}
+function setAR(rw,rh){
+  document.getElementById('ar-rw').value=rw;
+  document.getElementById('ar-rh').value=rh;
+  document.getElementById('ar-w').value=rw*100;
+  document.getElementById('ar-h').value=rh*100;
+  calcAR('rw');
+}
+
+// ================== RESOLUTION SIM ==================
+function setRes(w,h,label){
+  document.getElementById('res-w').value=w;
+  document.getElementById('res-h').value=h;
+  document.getElementById('res-label').textContent=`${w} × ${h} — ${label}`;
+  updateResFrame();
+}
+function updateResFrame(){
+  const w=parseInt(document.getElementById('res-w').value)||1920;
+  const h=parseInt(document.getElementById('res-h').value)||1080;
+  const scale=parseInt(document.getElementById('res-scale').value)||25;
+  const frame=document.getElementById('res-frame');
+  frame.style.width=Math.round(w*scale/100)+'px';
+  frame.style.height=Math.round(h*scale/100)+'px';
+}
+
+// ================== WATERMARK ==================
+function loadWatermark(input){
+  if(!input.files[0]) return;
+  loadImageFile(input.files[0], img=>{ state.wmImg=img; applyWatermark(); });
+}
+function setWMPos(pos,el){
+  state.wmPos=pos;
+  document.querySelectorAll('.pos-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  applyWatermark();
+}
+function applyWatermark(){
+  if(!state.wmImg) return;
+  const c=document.getElementById('wm-canvas');
+  c.width=state.wmImg.width; c.height=state.wmImg.height;
+  const ctx=c.getContext('2d');
+  ctx.drawImage(state.wmImg,0,0);
+  const text=document.getElementById('wm-text').value||'Watermark';
+  const color=document.getElementById('wm-color').value;
+  const size=parseInt(document.getElementById('wm-size').value)||24;
+  const op=parseInt(document.getElementById('wm-opacity').value)/100;
+  document.getElementById('wm-op-val').textContent=document.getElementById('wm-opacity').value;
+  ctx.globalAlpha=op;
+  ctx.font=`${size}px 'DM Sans', sans-serif`;
+  ctx.fillStyle=color;
+  const tw=ctx.measureText(text).width;
+  const pad=20;
+  const pos=state.wmPos;
+  let x=c.width/2-tw/2, y=c.height/2;
+  if(pos.includes('left')) x=pad;
+  else if(pos.includes('right')) x=c.width-tw-pad;
+  if(pos.includes('top')) y=size+pad;
+  else if(pos.includes('bot')) y=c.height-pad;
+  ctx.fillText(text,x,y);
+  ctx.globalAlpha=1;
+  document.getElementById('wm-preview').innerHTML=`<img src="${c.toDataURL()}" style="max-width:100%;max-height:300px;border-radius:6px">`;
+}
+
+// ================== PIXELATE / BLUR ==================
+function loadPixelate(input){
+  if(!input.files[0]) return;
+  loadImageFile(input.files[0], img=>{ state.pixImg=img; applyPixelate(); });
+}
+function setPixMode(mode){
+  state.pixMode=mode;
+  document.getElementById('pix-ctrl').style.display=mode==='pixelate'?'':'none';
+  document.getElementById('blur-ctrl').style.display=mode==='blur'?'':'none';
+  document.getElementById('pix-mode-btn').style.borderColor=mode==='pixelate'?'var(--accent)':'';
+  document.getElementById('blur-mode-btn').style.borderColor=mode==='blur'?'var(--accent)':'';
+  applyPixelate();
+}
+function applyPixelate(){
+  if(!state.pixImg) return;
+  const c=document.getElementById('pix-canvas');
+  c.width=state.pixImg.width; c.height=state.pixImg.height;
+  const ctx=c.getContext('2d');
+  if(state.pixMode==='pixelate'){
+    const sz=parseInt(document.getElementById('pix-size').value)||10;
+    document.getElementById('pix-val').textContent=sz;
+    ctx.imageSmoothingEnabled=false;
+    const tw=Math.ceil(c.width/sz), th=Math.ceil(c.height/sz);
+    ctx.drawImage(state.pixImg,0,0,tw,th);
+    ctx.drawImage(c,0,0,tw,th,0,0,c.width,c.height);
+  } else {
+    const r=parseInt(document.getElementById('blur-size').value)||5;
+    document.getElementById('blur-val').textContent=r;
+    ctx.filter=`blur(${r}px)`;
+    ctx.drawImage(state.pixImg,0,0);
+    ctx.filter='none';
+  }
+  document.getElementById('pix-preview').innerHTML=`<img src="${c.toDataURL()}" style="max-width:100%;max-height:300px;border-radius:6px">`;
+}
+
+// ================== ICON REFERENCE ==================
+const iconList = [
+  'fa-home','fa-user','fa-cog','fa-search','fa-bell','fa-heart','fa-star',
+  'fa-check','fa-times','fa-plus','fa-minus','fa-trash','fa-edit','fa-save',
+  'fa-download','fa-upload','fa-share','fa-copy','fa-paste','fa-cut',
+  'fa-image','fa-video','fa-music','fa-file','fa-folder','fa-archive',
+  'fa-camera','fa-microphone','fa-headphones','fa-phone','fa-envelope',
+  'fa-lock','fa-unlock','fa-key','fa-shield-alt','fa-bug','fa-code',
+  'fa-terminal','fa-database','fa-server','fa-cloud','fa-wifi','fa-bluetooth',
+  'fa-map','fa-map-marker-alt','fa-compass','fa-globe','fa-flag',
+  'fa-calendar','fa-clock','fa-hourglass','fa-stopwatch','fa-alarm-clock',
+  'fa-chart-bar','fa-chart-line','fa-chart-pie','fa-table','fa-list',
+  'fa-th','fa-th-large','fa-bars','fa-ellipsis-h','fa-ellipsis-v',
+  'fa-arrow-up','fa-arrow-down','fa-arrow-left','fa-arrow-right',
+  'fa-chevron-up','fa-chevron-down','fa-chevron-left','fa-chevron-right',
+  'fa-expand','fa-compress','fa-external-link-alt','fa-link','fa-unlink',
+  'fa-bold','fa-italic','fa-underline','fa-strikethrough','fa-align-left',
+  'fa-align-center','fa-align-right','fa-align-justify','fa-indent',
+  'fa-palette','fa-paint-brush','fa-fill-drip','fa-magic','fa-eraser',
+  'fa-ruler','fa-ruler-combined','fa-drafting-compass','fa-vector-square',
+  'fa-crop-alt','fa-cut','fa-layer-group','fa-object-group','fa-clone',
+  'fa-shopping-cart','fa-shopping-bag','fa-tag','fa-tags','fa-gift',
+  'fa-credit-card','fa-wallet','fa-money-bill','fa-coins','fa-receipt',
+  'fa-thumbs-up','fa-thumbs-down','fa-comments','fa-comment','fa-reply',
+  'fa-forward','fa-backward','fa-play','fa-pause','fa-stop','fa-record',
+  'fa-sun','fa-moon','fa-cloud-sun','fa-cloud-rain','fa-snowflake',
+  'fab fa-github','fab fa-twitter','fab fa-instagram','fab fa-facebook',
+  'fab fa-linkedin','fab fa-youtube','fab fa-tiktok','fab fa-discord',
+  'fab fa-slack','fab fa-figma','fab fa-sketch','fab fa-react','fab fa-vuejs',
+  'fab fa-node','fab fa-python','fab fa-js','fab fa-css3','fab fa-html5'
+];
+
+let iconsLoaded = false;
+function loadIcons() {
+  if (iconsLoaded) return;
+  iconsLoaded = true;
+  renderIcons(iconList);
+  document.getElementById('icon-count').textContent = iconList.length + ' icons';
+}
+
+function renderIcons(icons) {
+  document.getElementById('icon-grid').innerHTML = icons.map(ic=>`
+    <div class="icon-item" onclick="copyIconClass('${ic}')">
+      <i class="${ic}"></i>
+      <span>${ic.replace('fab ','').replace('fa-','')}</span>
+    </div>`).join('');
+}
+
+function copyIconClass(ic) {
+  navigator.clipboard.writeText(`<i class="${ic}"></i>`);
+  toast('Copied: ' + ic);
+}
+
+function filterIcons(q) {
+  const filtered = !q ? iconList : iconList.filter(i=>i.includes(q.toLowerCase()));
+  renderIcons(filtered);
+  document.getElementById('icon-count').textContent = filtered.length + ' icons';
+}
+
+// ================== INIT ==================
+buildHomeGrid();
+updateGradient();
+updateShadow();
+updateRadius('all');
+updateContrast();
+updateGlass();
+updateNeu();
+applyClip('polygon(50% 0%, 100% 100%, 0% 100%)');
+genRandomPalette();
+genPlaceholder();
+genNoise();
+updatePattern();
+selectPattern('dots');
+
+// Init filter presets
+buildFilterPresets();
+
+// Init pixel mode
+setPixMode('pixelate');
+
+// Resolution init
+updateResFrame();
+
+// Drag and drop
+document.addEventListener('dragover', e=>e.preventDefault());
+
+// Close sidebar on outside click (mobile)
+document.getElementById('content').addEventListener('click', () => {
+  if(window.innerWidth < 900) document.getElementById('sidebar').classList.remove('open');
+});
+</script>
+</body>
+</html>

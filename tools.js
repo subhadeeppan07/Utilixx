@@ -911,3 +911,277 @@ async function pdfRename(){
   pdfDownload(new Uint8Array(await f.arrayBuffer()),name+'.pdf');
   pdfSetOut('pdfrename','✅ Renamed to "'+name+'.pdf"! Download started.');
 }
+
+// ===== CODE FORMATTER =====
+function formatCode(){
+  const code=document.getElementById('codefmt-input').value.trim();
+  const lang=document.getElementById('codefmt-lang').value;
+  if(!code){document.getElementById('codefmt-output').textContent='Please paste some code.';return;}
+  try{
+    if(lang==='json'){
+      const parsed=JSON.parse(code);
+      document.getElementById('codefmt-output').textContent=JSON.stringify(parsed,null,2);
+      return;
+    }
+    if(lang==='html'){
+      let out='';let indent=0;
+      const tags=code.replace(/>\s*</g,'>\n<').split('\n');
+      tags.forEach(line=>{
+        line=line.trim();
+        if(!line)return;
+        if(line.match(/^<\//)&&indent>0)indent--;
+        out+='  '.repeat(indent)+line+'\n';
+        if(line.match(/^<[^/!][^>]*[^/]>$/)&&!line.match(/^<(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)/i))indent++;
+      });
+      document.getElementById('codefmt-output').textContent=out.trim();
+      return;
+    }
+    if(lang==='css'){
+      let out=code.replace(/\{/g,' {\n').replace(/\}/g,'}\n').replace(/;/g,';\n').replace(/\n\s*\n/g,'\n');
+      const lines=out.split('\n');let ind=0;out='';
+      lines.forEach(l=>{l=l.trim();if(!l)return;if(l==='}')ind=Math.max(0,ind-1);out+='  '.repeat(ind)+l+'\n';if(l.endsWith('{'))ind++;});
+      document.getElementById('codefmt-output').textContent=out.trim();
+      return;
+    }
+    if(lang==='sql'){
+      const keywords=['SELECT','FROM','WHERE','JOIN','LEFT','RIGHT','INNER','OUTER','ON','AND','OR','NOT','IN','BETWEEN','LIKE','ORDER BY','GROUP BY','HAVING','LIMIT','INSERT INTO','VALUES','UPDATE','SET','DELETE FROM','CREATE TABLE','DROP TABLE','ALTER TABLE'];
+      let out=code;
+      keywords.forEach(k=>out=out.replace(new RegExp('\\b'+k+'\\b','gi'),'\n'+k.toUpperCase()));
+      document.getElementById('codefmt-output').textContent=out.trim();
+      return;
+    }
+    document.getElementById('codefmt-output').textContent=code;
+  }catch(e){document.getElementById('codefmt-output').textContent='Error: '+e.message;}
+}
+
+// ===== NOTEPAD =====
+(function initNotepad(){
+  try{const saved=localStorage.getItem('utilixx_notepad');if(saved){const el=document.getElementById('notepad-input');if(el){el.value=saved;updateNotepadStats(saved);}}}catch(e){}
+})();
+function saveNotepad(){
+  const v=document.getElementById('notepad-input').value;
+  try{localStorage.setItem('utilixx_notepad',v);}catch(e){}
+  updateNotepadStats(v);
+  document.getElementById('notepad-status').textContent='✅ Saved at '+new Date().toLocaleTimeString();
+}
+function updateNotepadStats(v){
+  document.getElementById('notepad-words').textContent=v.trim()?v.trim().split(/\s+/).length:0;
+  document.getElementById('notepad-chars').textContent=v.length;
+  document.getElementById('notepad-lines').textContent=v.split('\n').length;
+}
+function clearNotepad(){if(confirm('Clear all notes?')){document.getElementById('notepad-input').value='';saveNotepad();}}
+
+// ===== HTML LIVE PREVIEW =====
+function updateHtmlPreview(){
+  const html=document.getElementById('htmlprev-input').value;
+  const frame=document.getElementById('htmlprev-frame');
+  const doc=frame.contentDocument||frame.contentWindow.document;
+  doc.open();doc.write(`<style>body{font-family:system-ui;padding:12px;margin:0;font-size:14px;line-height:1.6;}*{box-sizing:border-box;}</style>${html}`);doc.close();
+}
+
+// ===== WORD FREQUENCY ANALYZER =====
+const STOP_WORDS=new Set('i me my myself we our ours ourselves you your yours yourself yourselves he him his himself she her hers herself it its itself they them their theirs themselves what which who whom this that these those am is are was were be been being have has had having do does did doing a an the and but if or because as until while of at by for with about against between into through during before after above below to from up down in out on off over under again further then once here there when where why how all both each few more most other some such no nor not only own same so than too very s t can will just don should now d ll m o re ve y ain aren couldn didn doesn hadn hasn haven isn ma mightn mustn needn shan shouldn wasn weren won wouldn'.split(' '));
+function analyzeWordFreq(){
+  const text=document.getElementById('wfreq-input').value.toLowerCase();
+  const top=parseInt(document.getElementById('wfreq-top').value)||15;
+  const minLen=parseInt(document.getElementById('wfreq-minlen').value)||4;
+  const filterStop=document.getElementById('wfreq-stop').checked;
+  const words=text.match(/\b[a-z]{2,}\b/g)||[];
+  const freq={};
+  words.forEach(w=>{if(w.length>=minLen&&(!filterStop||!STOP_WORDS.has(w)))freq[w]=(freq[w]||0)+1;});
+  const sorted=Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,top);
+  if(!sorted.length){document.getElementById('wfreq-chart').innerHTML='<p style="color:var(--muted);font-size:13px;text-align:center;padding:16px;">No words found. Try reducing minimum length.</p>';return;}
+  const max=sorted[0][1];
+  const colors=['#f0ff44','#44f0c8','#ff6b6b','#b464f0','#6495ed','#50d890','#f4a040'];
+  let html='<div style="font-size:12px;">';
+  sorted.forEach(([word,count],i)=>{
+    const pct=Math.round(count/max*100);
+    const color=colors[i%colors.length];
+    html+=`<div style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+        <span style="font-weight:600;color:var(--text);">${word}</span>
+        <span style="color:var(--muted);">${count}×</span>
+      </div>
+      <div style="height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:${color};border-radius:4px;transition:width 0.5s;"></div>
+      </div>
+    </div>`;
+  });
+  html+=`</div><div style="margin-top:10px;font-size:11px;color:var(--muted);">Total words: ${words.length} · Unique: ${Object.keys(freq).length}</div>`;
+  document.getElementById('wfreq-chart').innerHTML=html;
+}
+
+// ===== IMAGE CROPPER =====
+let cropImg=null,cropFile=null,cropRatio='free';
+let cropStartX=0,cropStartY=0,cropCurX=0,cropCurY=0,isCropping=false,isDragging=false;
+let cropX=0,cropY=0,cropW=0,cropH=0;
+function loadCropImage(input){
+  const f=input.files[0];if(!f)return;
+  cropFile=f;
+  const img=document.getElementById('imgcrop-img');
+  img.onload=()=>{
+    cropImg=img;
+    document.querySelector('.ws-dropzone[onclick*="imgcrop"]').style.display='none';
+    document.getElementById('imgcrop-workspace').style.display='block';
+    updateCropStats();
+    setupCropEvents();
+  };
+  img.src=URL.createObjectURL(f);
+}
+function setupCropEvents(){
+  const container=document.getElementById('imgcrop-container');
+  const sel=document.getElementById('imgcrop-selection');
+  container.onmousedown=e=>{
+    const rect=container.getBoundingClientRect();
+    cropStartX=e.clientX-rect.left;cropStartY=e.clientY-rect.top;
+    isCropping=true;sel.style.display='block';
+    e.preventDefault();
+  };
+  document.onmousemove=e=>{
+    if(!isCropping)return;
+    const rect=container.getBoundingClientRect();
+    cropCurX=Math.max(0,Math.min(e.clientX-rect.left,rect.width));
+    cropCurY=Math.max(0,Math.min(e.clientY-rect.top,rect.height));
+    let x=Math.min(cropStartX,cropCurX),y=Math.min(cropStartY,cropCurY);
+    let w=Math.abs(cropCurX-cropStartX),h=Math.abs(cropCurY-cropStartY);
+    if(cropRatio!=='free'&&w>0){
+      const[rw,rh]=cropRatio.split(':').map(Number);
+      h=w*rh/rw;
+      if(y+h>rect.height)h=rect.height-y;
+    }
+    cropX=x;cropY=y;cropW=w;cropH=h;
+    sel.style.left=x+'px';sel.style.top=y+'px';sel.style.width=w+'px';sel.style.height=h+'px';
+    const scaleX=cropImg.naturalWidth/rect.width;const scaleY=cropImg.naturalHeight/rect.height;
+    document.getElementById('imgcrop-stats').innerHTML=`<div class="ws-stat"><strong>${Math.round(w*scaleX)}</strong>Crop W</div><div class="ws-stat"><strong>${Math.round(h*scaleY)}</strong>Crop H</div><div class="ws-stat"><strong>${cropImg.naturalWidth}×${cropImg.naturalHeight}</strong>Original</div>`;
+  };
+  document.onmouseup=()=>{isCropping=false;};
+}
+function setCropRatio(r){
+  cropRatio=r;
+  document.querySelectorAll('#ws-imgcrop .ws-btn').forEach(b=>b.style.borderColor='');
+  event.target.style.borderColor='var(--accent)';
+}
+function updateCropStats(){
+  if(!cropImg)return;
+  document.getElementById('imgcrop-stats').innerHTML=`<div class="ws-stat"><strong>${cropImg.naturalWidth}×${cropImg.naturalHeight}</strong>Original Size</div>`;
+}
+function cropImage(){
+  if(!cropImg||cropW<2||cropH<2){document.getElementById('imgcrop-output').textContent='⚠️ Please drag to select a crop area first.';return;}
+  const container=document.getElementById('imgcrop-container');
+  const rect=container.getBoundingClientRect();
+  const scaleX=cropImg.naturalWidth/rect.width;const scaleY=cropImg.naturalHeight/rect.height;
+  const canvas=document.getElementById('mainCanvas');
+  canvas.width=Math.round(cropW*scaleX);canvas.height=Math.round(cropH*scaleY);
+  canvas.getContext('2d').drawImage(cropImg,cropX*scaleX,cropY*scaleY,cropW*scaleX,cropH*scaleY,0,0,canvas.width,canvas.height);
+  canvas.toBlob(blob=>{
+    const url=URL.createObjectURL(blob);
+    document.getElementById('imgcrop-output').innerHTML=`✅ Cropped to ${canvas.width}×${canvas.height}px (${(blob.size/1024).toFixed(1)}KB)<br/><a href="${url}" download="cropped.png"><button class="ws-btn" style="margin-top:8px;">⬇ Download Cropped Image</button></a>`;
+  });
+}
+
+// ===== AI SOCIAL MEDIA CAPTIONS =====
+async function aiCaptions(){
+  const topic=document.getElementById('captions-input').value.trim();
+  const platform=document.getElementById('captions-platform').value;
+  const tone=document.getElementById('captions-tone').value;
+  const hashtags=document.getElementById('captions-hashtags').checked;
+  if(!topic){document.getElementById('captions-output').textContent='Please describe your post topic.';return;}
+  document.getElementById('captions-output').textContent='⏳ AI is writing captions...';
+  const hashtagNote=hashtags?'Include 5-10 relevant hashtags at the end of each caption.':'Do not include hashtags.';
+  const result=await callAI(`Generate exactly 3 ${tone} ${platform} captions for this topic: "${topic}". ${hashtagNote} Format as:\n\nCaption 1:\n[caption text]\n\nCaption 2:\n[caption text]\n\nCaption 3:\n[caption text]\n\nOnly provide the captions, nothing else.`);
+  document.getElementById('captions-output').textContent=result;
+}
+
+// ===== ROMAN NUMERAL CONVERTER =====
+const romanVals=[[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+function toRoman(num){
+  if(num<1||num>3999)return'Out of range (1–3999)';
+  let result='';
+  for(const[val,sym]of romanVals){while(num>=val){result+=sym;num-=val;}}
+  return result;
+}
+function fromRoman(str){
+  const map={I:1,V:5,X:10,L:50,C:100,D:500,M:1000};
+  str=str.toUpperCase();
+  let result=0;
+  for(let i=0;i<str.length;i++){
+    const curr=map[str[i]];const next=map[str[i+1]];
+    if(!curr)return null;
+    if(next&&curr<next){result+=next-curr;i++;}
+    else result+=curr;
+  }
+  return result;
+}
+function convertRoman(){
+  const mode=document.querySelector('#ws-roman [data-tab="roman-mode"]')?.dataset.val||'to-roman';
+  const input=document.getElementById('roman-input').value.trim();
+  const output=document.getElementById('roman-output');
+  const breakdown=document.getElementById('roman-breakdown');
+  if(!input){output.textContent='';breakdown.textContent='';return;}
+  // Auto-detect mode
+  if(/^[0-9]+$/.test(input)){
+    const num=parseInt(input);
+    const roman=toRoman(num);
+    output.textContent=roman;
+    breakdown.textContent=`${num} in Roman numerals`;
+  } else if(/^[IVXLCDM]+$/i.test(input)){
+    const num=fromRoman(input);
+    if(num===null){output.textContent='Invalid Roman numeral';breakdown.textContent='';}
+    else{output.textContent=num;breakdown.textContent=`${input.toUpperCase()} = ${num}`;}
+  } else {
+    output.textContent='Enter a number (1–3999) or Roman numeral';breakdown.textContent='';
+  }
+}
+
+// ===== TIP & BILL SPLITTER =====
+function setTipPct(pct){document.getElementById('tip-pct').value=pct;document.getElementById('tip-pct-val').textContent=pct;calcTip();}
+function calcTip(){
+  const bill=parseFloat(document.getElementById('tip-bill').value)||0;
+  const pct=parseFloat(document.getElementById('tip-pct').value)||0;
+  const people=parseInt(document.getElementById('tip-people').value)||1;
+  const curr=document.getElementById('tip-currency').value;
+  if(!bill){document.getElementById('tip-output').textContent='Please enter a bill amount.';return;}
+  const tipAmt=bill*pct/100;
+  const total=bill+tipAmt;
+  const perPerson=total/people;
+  const tipPerPerson=tipAmt/people;
+  document.getElementById('tip-output').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+<div class="result-card"><h4>Tip Amount</h4><div style="font-size:22px;font-family:Syne;font-weight:800;color:var(--accent);">${curr}${tipAmt.toFixed(2)}</div></div>
+<div class="result-card"><h4>Total Bill</h4><div style="font-size:22px;font-family:Syne;font-weight:800;color:var(--text);">${curr}${total.toFixed(2)}</div></div>
+<div class="result-card"><h4>Per Person</h4><div style="font-size:22px;font-family:Syne;font-weight:800;color:var(--accent2);">${curr}${perPerson.toFixed(2)}</div></div>
+<div class="result-card"><h4>Tip Per Person</h4><div style="font-size:22px;font-family:Syne;font-weight:800;color:var(--muted);">${curr}${tipPerPerson.toFixed(2)}</div></div>
+</div>`;
+}
+
+// ===== COLOR TEMPERATURE CONVERTER =====
+function setColorTemp(k){document.getElementById('colortemp-slider').value=k;document.getElementById('colortemp-val').textContent=k;updateColorTemp();}
+function kelvinToRgb(k){
+  k=k/100;let r,g,b;
+  if(k<=66){r=255;g=Math.min(255,Math.max(0,99.4708025861*Math.log(k)-161.1195681661));}
+  else{r=Math.min(255,Math.max(0,329.698727446*Math.pow(k-60,-0.1332047592)));g=Math.min(255,Math.max(0,288.1221695283*Math.pow(k-60,-0.0755148492)));}
+  if(k>=66)b=255;
+  else if(k<=19)b=0;
+  else b=Math.min(255,Math.max(0,138.5177312231*Math.log(k-10)-305.0447927307));
+  return[Math.round(r),Math.round(g),Math.round(b)];
+}
+function updateColorTemp(){
+  const k=parseInt(document.getElementById('colortemp-slider').value);
+  document.getElementById('colortemp-val').textContent=k;
+  const[r,g,b]=kelvinToRgb(k);
+  const hex=`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+  document.getElementById('colortemp-preview').style.background=`rgb(${r},${g},${b})`;
+  let label='',use='',emoji='';
+  if(k<=1900){label='Candlelight';use='Romantic, moody photography';emoji='🕯️';}
+  else if(k<=2500){label='Warm White / Incandescent';use='Home lighting, warm portraits';emoji='💡';}
+  else if(k<=3200){label='Halogen / Tungsten';use='Studio warm lighting';emoji='🎬';}
+  else if(k<=4000){label='Fluorescent / Cool White';use='Office lighting, product shots';emoji='🏢';}
+  else if(k<=5000){label='Horizon Daylight';use='Morning/evening sunlight';emoji='🌅';}
+  else if(k<=5500){label='Direct Sunlight / Flash';use='Outdoor photography, neutral';emoji='☀️';}
+  else if(k<=6500){label='Overcast Sky / Daylight';use='Cloudy day, natural colors';emoji='🌤️';}
+  else if(k<=7500){label='Slightly Overcast';use='Shade, slightly cool tones';emoji='🌥️';}
+  else if(k<=10000){label='Blue Sky / Shade';use='Deep shade, very cool blue tones';emoji='🔵';}
+  else{label='Clear Blue Sky';use='Extreme blue tones, artistic use';emoji='🌌';}
+  document.getElementById('colortemp-output').innerHTML=`<strong>${emoji} ${label}</strong>\nKelvin: ${k}K\nRGB: rgb(${r}, ${g}, ${b})\nHEX: ${hex.toUpperCase()}\n\n💡 Use for: ${use}`;
+}
+// Init color temp on load
+setTimeout(()=>{if(document.getElementById('colortemp-slider'))updateColorTemp();},100);

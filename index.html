@@ -100,6 +100,160 @@ canvas{display:none;}
 .pdf-file-item span{color:var(--muted);}
 .pdf-file-item button{background:none;border:none;color:var(--accent3);cursor:pointer;font-size:14px;}
 @media(max-width:640px){.tools-grid{grid-template-columns:1fr;}.hero h1{letter-spacing:-1px;}.nav-links{display:none;}}
+
+/* ===== FULL MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+
+  /* NAV */
+  nav { padding: 0 14px; height: 52px; }
+  .logo { font-size: 17px; }
+  .nav-links { display: none; }
+
+  /* HERO */
+  .hero { padding: 40px 16px 32px; }
+  .hero-tag { font-size: 10px; padding: 4px 10px; }
+  .hero h1 { font-size: clamp(28px, 8vw, 44px); letter-spacing: -1px; margin-bottom: 12px; }
+  .hero p { font-size: 14px; margin-bottom: 20px; }
+  .search-bar { max-width: 100%; }
+  .search-bar input { font-size: 14px; padding: 12px 44px 12px 16px; }
+
+  /* AD BANNER */
+  .ad-banner { height: 60px; font-size: 11px; margin-bottom: 16px; }
+
+  /* CATEGORIES */
+  .categories { padding: 0 12px 24px; gap: 8px; justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 12px; }
+  .categories::-webkit-scrollbar { display: none; }
+  .cat-btn { padding: 7px 14px; font-size: 12px; flex-shrink: 0; white-space: nowrap; }
+
+  /* TOOLS SECTION */
+  .tools-section { padding: 0 12px 60px; }
+  .section-title { font-size: 18px; margin-bottom: 14px; }
+
+  /* TOOL CARDS */
+  .tools-grid { grid-template-columns: 1fr; gap: 14px; margin-bottom: 32px; }
+  .tool-card { padding: 18px; }
+  .tool-title { font-size: 15px; }
+  .tool-desc { font-size: 12px; }
+  .tool-icon { width: 38px; height: 38px; font-size: 17px; }
+
+  /* WORKSPACE INPUTS */
+  .ws-textarea { font-size: 14px; min-height: 100px; }
+  .ws-input { font-size: 14px; padding: 10px 12px; }
+  .ws-select { font-size: 14px; padding: 10px 12px; }
+  .ws-btn { padding: 9px 14px; font-size: 12px; }
+  .ws-stats { gap: 8px; }
+  .ws-stat { padding: 7px 10px; min-width: 60px; }
+  .ws-stat strong { font-size: 16px; }
+
+  /* ROW → COLUMN on mobile */
+  .ws-row { flex-direction: column; gap: 0; }
+  .ws-row .ws-input, .ws-row .ws-select { flex: none; width: 100%; }
+
+  /* TABS */
+  .ws-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .ws-tabs::-webkit-scrollbar { display: none; }
+  .ws-tab { flex-shrink: 0; font-size: 11px; padding: 6px 10px; }
+
+  /* GRID BUTTONS (case converter, etc.) */
+  .tool-card [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr 1fr !important; gap: 5px !important; }
+  .tool-card [style*="grid-template-columns:repeat(5"] { grid-template-columns: repeat(5,1fr) !important; gap: 4px !important; }
+  .tool-card [style*="grid-template-columns:repeat(6"] { grid-template-columns: repeat(5,1fr) !important; gap: 3px !important; }
+
+  /* FOOTER */
+  footer { padding: 28px 16px; }
+  footer .footer-logo { font-size: 18px; }
+  footer a { margin: 0 6px; font-size: 12px; }
+
+  /* DROPZONE */
+  .ws-dropzone { padding: 16px 12px; }
+
+  /* PDF FILE ITEMS */
+  .pdf-file-item { font-size: 11px; }
+
+  /* RESULT CARDS */
+  .result-card { padding: 10px; }
+  .result-card h4 { font-size: 12px; }
+
+  /* AI KEY SECTION */
+  #ai-tools + div { padding: 12px; }
+  #ai-tools + div .ws-input { font-size: 13px; }
+
+  /* SWATCH ROW */
+  .swatch-row { gap: 5px; }
+  .swatch { width: 28px; height: 28px; }
+
+  /* PROGRESS BAR */
+  .prog-wrap { height: 6px; }
+
+  /* COLOR PREVIEW */
+  .color-preview-big { height: 48px; }
+
+  /* HERO TAG COUNTS */
+  .hero-tag { letter-spacing: 0.5px; }
+}
+
+/* SMALL PHONES */
+@media (max-width: 380px) {
+  .hero h1 { font-size: 26px; }
+  .tool-card { padding: 14px; }
+  .ws-btn { font-size: 11px; padding: 8px 10px; margin-right: 4px; }
+  .ws-stat strong { font-size: 14px; }
+  .cat-btn { font-size: 11px; padding: 6px 10px; }
+}
+
+/* HAMBURGER MENU FOR MOBILE */
+.hamburger { display: none; }
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    margin-left: auto;
+  }
+  .hamburger span {
+    display: block;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 52px;
+    left: 0;
+    right: 0;
+    background: rgba(11,12,15,0.98);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px;
+    z-index: 99;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 10px 14px;
+    border-radius: 10px;
+    transition: all 0.2s;
+  }
+  .mobile-menu a:hover, .mobile-menu a:active {
+    background: var(--card);
+    color: var(--text);
+  }
+}
 </style>
 </head>
 <body>
@@ -120,7 +274,25 @@ canvas{display:none;}
     <a href="#ai-tools">🤖 AI</a>
     <a href="#pdf-tools">📄 PDF</a>
   </div>
+  <!-- MOBILE HAMBURGER -->
+  <div class="hamburger" onclick="toggleMobileMenu()" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
 </nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#editor-tools" onclick="closeMobileMenu()">✏️ Editor</a>
+  <a href="#tts-tools" onclick="closeMobileMenu()">🎙️ Text to Speech</a>
+  <a href="#pixelforge-tools" onclick="closeMobileMenu()">🎨 PixelForge</a>
+  <a href="#text-tools" onclick="closeMobileMenu()">✍️ Text & Writing</a>
+  <a href="#image-tools" onclick="closeMobileMenu()">🖼️ Image & Design</a>
+  <a href="#seo-tools" onclick="closeMobileMenu()">🔍 SEO & Marketing</a>
+  <a href="#math-tools" onclick="closeMobileMenu()">🔢 Math & Converter</a>
+  <a href="#dev-tools" onclick="closeMobileMenu()">🔐 Developer Tools</a>
+  <a href="#ai-tools" onclick="closeMobileMenu()">🤖 AI Tools</a>
+  <a href="#pdf-tools" onclick="closeMobileMenu()">📄 PDF Tools</a>
+</div>
 
 <!-- HERO -->
 <div class="hero">

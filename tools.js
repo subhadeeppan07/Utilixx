@@ -1303,3 +1303,53 @@ function calcSpeechTime(){
     `📢 Podcast (150 wpm): ${fmt(Math.ceil(words/150*60))}`+
     `</div>`;
 }
+
+// ===== COMPOUND INTEREST CALCULATOR =====
+function calcCompound(){
+  const P=parseFloat(document.getElementById('ci-principal').value);
+  const r=parseFloat(document.getElementById('ci-rate').value)/100;
+  const t=parseFloat(document.getElementById('ci-years').value);
+  const n=parseInt(document.getElementById('ci-freq').value);
+  const monthly=parseFloat(document.getElementById('ci-monthly').value)||0;
+  const curr=document.getElementById('ci-currency').value;
+
+  if(!P||!r||!t){document.getElementById('ci-output').textContent='Please fill in Principal, Rate and Years.';return;}
+
+  // A = P(1 + r/n)^(nt)
+  const A=P*Math.pow(1+r/n,n*t);
+  const interest=A-P;
+
+  // With monthly contributions (FV of annuity)
+  let totalWithContrib=A;
+  if(monthly>0){
+    // FV of recurring monthly payments
+    const monthlyRate=r/12;
+    const months=t*12;
+    const fvContrib=monthly*(Math.pow(1+monthlyRate,months)-1)/monthlyRate;
+    totalWithContrib=A+fvContrib;
+  }
+
+  const totalContributions=monthly*t*12;
+  const totalInterest=totalWithContrib-P-totalContributions;
+
+  document.getElementById('ci-output').innerHTML=
+    `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div class="result-card"><h4>Final Amount</h4><div style="font-size:22px;font-family:'Syne',sans-serif;font-weight:800;color:var(--accent);">${curr}${totalWithContrib.toFixed(2)}</div></div>
+      <div class="result-card"><h4>Total Interest</h4><div style="font-size:22px;font-family:'Syne',sans-serif;font-weight:800;color:var(--accent2);">${curr}${totalInterest.toFixed(2)}</div></div>
+      <div class="result-card"><h4>Principal</h4><div style="font-size:18px;font-family:'Syne',sans-serif;font-weight:700;color:var(--text);">${curr}${P.toFixed(2)}</div></div>
+      <div class="result-card"><h4>Growth Rate</h4><div style="font-size:18px;font-family:'Syne',sans-serif;font-weight:700;color:var(--muted);">${((totalWithContrib/P-1)*100).toFixed(1)}%</div></div>
+    </div>
+    ${monthly>0?`<div style="font-size:12px;color:var(--muted);margin-top:8px;">Total contributions: ${curr}${totalContributions.toFixed(2)}</div>`:''}`;
+
+  // Year-by-year schedule
+  let schedHTML='<div style="color:var(--muted);font-size:11px;margin-bottom:4px;padding:4px 0;border-bottom:1px solid var(--border);">📅 Year-by-Year Growth</div>';
+  schedHTML+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;font-size:11px;"><span style="color:var(--accent);">Year</span><span style="color:var(--accent);">Balance</span><span style="color:var(--accent);">Interest</span>';
+  for(let y=1;y<=t;y++){
+    const bal=P*Math.pow(1+r/n,n*y)+(monthly>0?monthly*(Math.pow(1+r/12,y*12)-1)/(r/12):0);
+    const prevBal=y===1?P:P*Math.pow(1+r/n,n*(y-1))+(monthly>0?monthly*(Math.pow(1+r/12,(y-1)*12)-1)/(r/12):0);
+    const yr_interest=bal-prevBal-(monthly*12);
+    schedHTML+=`<span>${y}</span><span>${curr}${bal.toFixed(0)}</span><span style="color:var(--accent2);">+${curr}${Math.max(0,yr_interest).toFixed(0)}</span>`;
+  }
+  schedHTML+='</div>';
+  document.getElementById('ci-schedule').innerHTML=schedHTML;
+}

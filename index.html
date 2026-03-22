@@ -116,6 +116,7 @@ canvas{display:none;}
     <a href="#dev-tools">Dev</a>
     <a href="#ai-tools">AI</a>
     <a href="#pdf-tools">📄 PDF</a>
+    <a href="#editor-tools">✏️ Editor</a>
   </div>
 </nav>
 
@@ -145,6 +146,7 @@ canvas{display:none;}
   <button class="cat-btn" onclick="filterCat('dev',this)">🔐 Developer Tools</button>
   <button class="cat-btn" onclick="filterCat('ai',this)">🤖 AI Tools</button>
   <button class="cat-btn" onclick="filterCat('pdf',this)">📄 PDF Tools</button>
+  <button class="cat-btn" onclick="filterCat('editor',this)">✏️ Editor</button>
 </div>
 
 <div class="tools-section">
@@ -305,6 +307,25 @@ canvas{display:none;}
     <button class="ws-btn" onclick="generateLorem()">Generate</button>
     <button class="ws-btn secondary" onclick="copyOutput('li-output')">Copy</button>
     <div class="ws-output" id="li-output" style="max-height:160px;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<!-- Word Frequency Analyzer -->
+<div class="tool-card" data-cat="text">
+  <div class="tool-header"><div class="tool-icon yellow">📊</div><span class="tool-badge badge-new">New</span></div>
+  <div class="tool-title">Word Frequency Analyzer</div>
+  <div class="tool-desc">See the most used words in your text as a visual bar chart. Filter stop words and set minimum frequency.</div>
+  <button class="use-btn" onclick="T('wfreq')">Use Tool →</button>
+  <div class="workspace" id="ws-wfreq">
+    <textarea class="ws-textarea" id="wfreq-input" placeholder="Paste your text here to analyze word frequency..." style="min-height:110px;"></textarea>
+    <div class="ws-row" style="margin-top:8px;">
+      <div style="flex:1;"><label class="ws-label">Top N words</label><input class="ws-input" id="wfreq-top" type="number" value="15" min="5" max="50" style="margin:0;"/></div>
+      <div style="flex:1;"><label class="ws-label">Min length</label><input class="ws-input" id="wfreq-minlen" type="number" value="4" min="1" style="margin:0;"/></div>
+    </div>
+    <label style="font-size:13px;display:flex;align-items:center;gap:8px;color:var(--muted);margin-bottom:8px;"><input type="checkbox" id="wfreq-stop" checked/> Filter common stop words</label>
+    <button class="ws-btn" onclick="analyzeWordFreq()">📊 Analyze & Chart</button>
+    <div id="wfreq-chart" style="margin-top:12px;"></div>
+    <div class="ws-output" id="wfreq-output" style="display:none;"></div>
   </div>
 </div>
 
@@ -472,6 +493,39 @@ canvas{display:none;}
   </div>
 </div>
 
+<!-- Image Cropper -->
+<div class="tool-card" data-cat="image">
+  <div class="tool-header"><div class="tool-icon teal">✂️</div><span class="tool-badge badge-new">New</span></div>
+  <div class="tool-title">Image Cropper</div>
+  <div class="tool-desc">Drag to crop images in-browser. Aspect ratio presets for Profile, Banner, Instagram, YouTube thumbnail and more.</div>
+  <button class="use-btn" onclick="T('imgcrop')">Use Tool →</button>
+  <div class="workspace" id="ws-imgcrop">
+    <input type="file" id="imgcrop-file" accept="image/*" style="display:none;" onchange="loadCropImage(this)"/>
+    <div class="ws-dropzone" onclick="document.getElementById('imgcrop-file').click()">
+      <div style="font-size:28px;">🖼️</div><strong>Click or drop image here</strong>
+      <p style="color:var(--muted);font-size:12px;">JPG, PNG, WebP</p>
+    </div>
+    <div id="imgcrop-workspace" style="display:none;">
+      <label class="ws-label">Aspect Ratio Presets</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+        <button class="ws-btn sec" onclick="setCropRatio('free')" style="margin:0;font-size:11px;padding:4px 8px;" id="crop-btn-free">Free</button>
+        <button class="ws-btn sec" onclick="setCropRatio('1:1')" style="margin:0;font-size:11px;padding:4px 8px;">1:1 Square</button>
+        <button class="ws-btn sec" onclick="setCropRatio('4:3')" style="margin:0;font-size:11px;padding:4px 8px;">4:3</button>
+        <button class="ws-btn sec" onclick="setCropRatio('16:9')" style="margin:0;font-size:11px;padding:4px 8px;">16:9 HD</button>
+        <button class="ws-btn sec" onclick="setCropRatio('9:16')" style="margin:0;font-size:11px;padding:4px 8px;">9:16 Story</button>
+        <button class="ws-btn sec" onclick="setCropRatio('3:2')" style="margin:0;font-size:11px;padding:4px 8px;">3:2 Photo</button>
+      </div>
+      <div style="position:relative;display:inline-block;max-width:100%;overflow:hidden;border:1px solid var(--border);border-radius:8px;cursor:crosshair;" id="imgcrop-container">
+        <img id="imgcrop-img" style="display:block;max-width:100%;max-height:300px;" draggable="false"/>
+        <div id="imgcrop-selection" style="position:absolute;border:2px solid var(--accent);box-shadow:0 0 0 9999px rgba(0,0,0,0.5);display:none;cursor:move;"></div>
+      </div>
+      <div class="ws-stats" id="imgcrop-stats" style="margin-top:8px;"></div>
+      <button class="ws-btn" onclick="cropImage()" style="margin-top:8px;">✂️ Crop & Download</button>
+    </div>
+    <div class="ws-output" id="imgcrop-output"></div>
+  </div>
+</div>
+
 </div><!-- end image grid -->
 
 <!-- AD BANNER MID -->
@@ -604,6 +658,40 @@ canvas{display:none;}
     <input class="ws-input" id="utm-content" placeholder="Content (optional)" oninput="buildUTM()"/>
     <div class="ws-output" id="utm-output" style="color:var(--accent2);word-break:break-all;"></div>
     <button class="ws-btn secondary" onclick="copyOutput('utm-output')" style="margin-top:8px;">Copy Link</button>
+  </div>
+</div>
+
+<!-- Social Media Caption Generator AI -->
+<div class="tool-card" data-cat="seo">
+  <div class="tool-header"><div class="tool-icon red">📸</div><span class="tool-badge badge-ai">🤖 AI</span></div>
+  <div class="tool-title">Social Media Caption Generator</div>
+  <div class="tool-desc">Generate engaging captions for Instagram, LinkedIn, Twitter and Facebook posts using AI. Includes hashtags.</div>
+  <button class="use-btn" onclick="T('captions')">Use Tool →</button>
+  <div class="workspace" id="ws-captions">
+    <textarea class="ws-textarea" id="captions-input" placeholder="Describe your post, photo or topic... e.g. 'Launching our new product — a smart water bottle'" style="min-height:80px;"></textarea>
+    <div class="ws-row">
+      <div style="flex:1;"><label class="ws-label">Platform</label>
+        <select class="ws-select" id="captions-platform" style="margin:0;">
+          <option value="instagram">Instagram</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="twitter">Twitter / X</option>
+          <option value="facebook">Facebook</option>
+        </select>
+      </div>
+      <div style="flex:1;"><label class="ws-label">Tone</label>
+        <select class="ws-select" id="captions-tone" style="margin:0;">
+          <option value="engaging">Engaging</option>
+          <option value="professional">Professional</option>
+          <option value="funny">Funny</option>
+          <option value="inspirational">Inspirational</option>
+          <option value="promotional">Promotional</option>
+        </select>
+      </div>
+    </div>
+    <label style="font-size:13px;display:flex;align-items:center;gap:8px;color:var(--muted);margin-bottom:8px;margin-top:4px;"><input type="checkbox" id="captions-hashtags" checked/> Include hashtags</label>
+    <button class="ws-btn" onclick="aiCaptions()" style="margin-top:4px;">✨ Generate 3 Captions</button>
+    <button class="ws-btn sec" onclick="copyOut('captions-output')">📋 Copy</button>
+    <div class="ws-output" id="captions-output"></div>
   </div>
 </div>
 
@@ -806,6 +894,71 @@ canvas{display:none;}
     </select>
     <button class="ws-btn" onclick="convertTZ()">Convert Time</button>
     <div class="ws-output" id="tz-output"></div>
+  </div>
+</div>
+
+<!-- Roman Numeral Converter -->
+<div class="tool-card" data-cat="math">
+  <div class="tool-header"><div class="tool-icon blue">🏛️</div><span class="tool-badge badge-new">New</span></div>
+  <div class="tool-title">Roman Numeral Converter</div>
+  <div class="tool-desc">Convert between Roman numerals and Arabic numbers instantly. Supports numbers from 1 to 3999.</div>
+  <button class="use-btn" onclick="T('roman')">Use Tool →</button>
+  <div class="workspace" id="ws-roman">
+    <div class="ws-tabs">
+      <button class="ws-tab active" onclick="setTab('roman-mode','to-roman',this)">Number → Roman</button>
+      <button class="ws-tab" onclick="setTab('roman-mode','from-roman',this)">Roman → Number</button>
+    </div>
+    <input class="ws-input" id="roman-input" placeholder="Enter a number (1–3999) or Roman numeral..." oninput="convertRoman()"/>
+    <div class="ws-output" id="roman-output" style="font-size:28px;font-family:'Syne',sans-serif;font-weight:800;color:var(--accent);text-align:center;padding:20px;"></div>
+    <div id="roman-breakdown" style="font-size:12px;color:var(--muted);text-align:center;margin-top:-8px;"></div>
+  </div>
+</div>
+
+<!-- Tip & Bill Splitter -->
+<div class="tool-card" data-cat="math">
+  <div class="tool-header"><div class="tool-icon blue">🍽️</div><span class="tool-badge badge-new">New</span></div>
+  <div class="tool-title">Tip & Bill Splitter</div>
+  <div class="tool-desc">Calculate tip amount and split the bill among any number of people. Shows per-person totals.</div>
+  <button class="use-btn" onclick="T('tip')">Use Tool →</button>
+  <div class="workspace" id="ws-tip">
+    <div class="ws-row">
+      <div style="flex:2;"><label class="ws-label">Bill Amount</label><input class="ws-input" id="tip-bill" type="number" placeholder="e.g. 1200" oninput="calcTip()" style="margin:0;"/></div>
+      <div style="flex:1;"><label class="ws-label">Currency</label><select class="ws-select" id="tip-currency" style="margin:0;" onchange="calcTip()"><option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option></select></div>
+    </div>
+    <label class="ws-label">Tip: <span id="tip-pct-val">15</span>%</label>
+    <input type="range" id="tip-pct" min="0" max="30" value="15" style="width:100%;margin-bottom:10px;" oninput="document.getElementById('tip-pct-val').textContent=this.value;calcTip()"/>
+    <div style="display:flex;gap:6px;margin-bottom:10px;">
+      <button class="ws-btn sec" onclick="setTipPct(10)" style="margin:0;flex:1;font-size:12px;">10%</button>
+      <button class="ws-btn sec" onclick="setTipPct(15)" style="margin:0;flex:1;font-size:12px;">15%</button>
+      <button class="ws-btn sec" onclick="setTipPct(18)" style="margin:0;flex:1;font-size:12px;">18%</button>
+      <button class="ws-btn sec" onclick="setTipPct(20)" style="margin:0;flex:1;font-size:12px;">20%</button>
+      <button class="ws-btn sec" onclick="setTipPct(25)" style="margin:0;flex:1;font-size:12px;">25%</button>
+    </div>
+    <label class="ws-label">Number of People</label>
+    <input class="ws-input" id="tip-people" type="number" value="2" min="1" max="50" oninput="calcTip()"/>
+    <div class="ws-output" id="tip-output"></div>
+  </div>
+</div>
+
+<!-- Color Temperature Converter -->
+<div class="tool-card" data-cat="math">
+  <div class="tool-header"><div class="tool-icon blue">🌡️</div><span class="tool-badge badge-new">New</span></div>
+  <div class="tool-title">Color Temperature Converter</div>
+  <div class="tool-desc">Convert Kelvin to warm/cool/daylight labels and RGB preview. Essential for designers and photographers.</div>
+  <button class="use-btn" onclick="T('colortemp')">Use Tool →</button>
+  <div class="workspace" id="ws-colortemp">
+    <label class="ws-label">Color Temperature: <span id="colortemp-val">5500</span>K</label>
+    <input type="range" id="colortemp-slider" min="1000" max="12000" value="5500" style="width:100%;margin-bottom:10px;accent-color:var(--accent);" oninput="updateColorTemp()"/>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+      <button class="ws-btn sec" onclick="setColorTemp(1800)" style="margin:0;font-size:11px;padding:4px 8px;">🕯️ Candle</button>
+      <button class="ws-btn sec" onclick="setColorTemp(2700)" style="margin:0;font-size:11px;padding:4px 8px;">💡 Warm White</button>
+      <button class="ws-btn sec" onclick="setColorTemp(4000)" style="margin:0;font-size:11px;padding:4px 8px;">⚪ Cool White</button>
+      <button class="ws-btn sec" onclick="setColorTemp(5500)" style="margin:0;font-size:11px;padding:4px 8px;">☀️ Daylight</button>
+      <button class="ws-btn sec" onclick="setColorTemp(6500)" style="margin:0;font-size:11px;padding:4px 8px;">🌤️ Overcast</button>
+      <button class="ws-btn sec" onclick="setColorTemp(10000)" style="margin:0;font-size:11px;padding:4px 8px;">🔵 Blue Sky</button>
+    </div>
+    <div id="colortemp-preview" style="width:100%;height:70px;border-radius:10px;border:1px solid var(--border);transition:background 0.4s;margin-bottom:10px;"></div>
+    <div class="ws-output" id="colortemp-output"></div>
   </div>
 </div>
 
@@ -1357,6 +1510,92 @@ canvas{display:none;}
 </div>
 
 </div><!-- end pdf grid -->
+
+<!-- ===== EDITOR TOOLS ===== -->
+<div class="section-title" id="editor-tools"><span style="background:rgba(68,240,200,0.1)">✏️</span>Editor Tools</div>
+<div class="tools-grid">
+
+<!-- Markdown Editor Pro -->
+<div class="tool-card" data-cat="editor" style="border-color:rgba(68,240,200,0.25);">
+  <div class="tool-header"><div class="tool-icon teal">📝</div><span class="tool-badge badge-hot">🔥 Featured</span></div>
+  <div class="tool-title">Markdown Editor Pro</div>
+  <div class="tool-desc">Professional full-featured markdown editor with live preview, multi-tab support, Find & Replace, Table of Contents, themes, line numbers, and export to HTML/MD/TXT.</div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Live Preview</span>
+    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Multi-Tab</span>
+    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Find & Replace</span>
+    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Auto-Save</span>
+    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">3 Themes</span>
+    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Export HTML/MD/TXT</span>
+  </div>
+  <a href="editor.html" target="_blank" style="display:block;width:100%;padding:11px;background:rgba(68,240,200,0.08);border:1px solid rgba(68,240,200,0.3);border-radius:10px;color:var(--accent2);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--accent2)';this.style.color='#0b0c0f'" onmouseout="this.style.background='rgba(68,240,200,0.08)';this.style.color='var(--accent2)'">
+    ✏️ Open Markdown Editor →
+  </a>
+</div>
+
+<!-- Code Editor / Formatter placeholder -->
+<div class="tool-card" data-cat="editor">
+  <div class="tool-header"><div class="tool-icon teal">💻</div><span class="tool-badge badge-new">New</span></div>
+  <div class="tool-title">Code Formatter</div>
+  <div class="tool-desc">Format and beautify HTML, CSS, JavaScript and JSON code with syntax highlighting.</div>
+  <button class="use-btn" onclick="T('codefmt')">Use Tool →</button>
+  <div class="workspace" id="ws-codefmt">
+    <select class="ws-select" id="codefmt-lang">
+      <option value="html">HTML</option>
+      <option value="css">CSS</option>
+      <option value="js">JavaScript</option>
+      <option value="json">JSON</option>
+      <option value="sql">SQL</option>
+    </select>
+    <textarea class="ws-textarea" id="codefmt-input" placeholder="Paste your code here..." style="min-height:140px;font-family:monospace;font-size:12px;"></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <button class="ws-btn" onclick="formatCode()">✨ Format Code</button>
+      <button class="ws-btn sec" onclick="copyOut('codefmt-output')">📋 Copy</button>
+    </div>
+    <div class="ws-output mono" id="codefmt-output" style="max-height:200px;overflow-y:auto;font-size:12px;"></div>
+  </div>
+</div>
+
+<!-- Text Notepad -->
+<div class="tool-card" data-cat="editor">
+  <div class="tool-header"><div class="tool-icon teal">🗒️</div><span class="tool-badge badge-free">Free</span></div>
+  <div class="tool-title">Quick Notepad</div>
+  <div class="tool-desc">A simple distraction-free notepad that auto-saves to your browser. Never lose your notes.</div>
+  <button class="use-btn" onclick="T('notepad')">Use Tool →</button>
+  <div class="workspace" id="ws-notepad">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <span style="font-size:12px;color:var(--muted);" id="notepad-status">Auto-saved</span>
+      <div style="display:flex;gap:6px;">
+        <button class="ws-btn sec" onclick="copyOut('notepad-input')" style="margin:0;padding:5px 10px;font-size:12px;">📋 Copy</button>
+        <button class="ws-btn danger" onclick="clearNotepad()" style="margin:0;padding:5px 10px;font-size:12px;">🗑️ Clear</button>
+      </div>
+    </div>
+    <textarea class="ws-textarea" id="notepad-input" placeholder="Start typing your notes here... everything is auto-saved!" oninput="saveNotepad()" style="min-height:220px;font-size:14px;"></textarea>
+    <div class="ws-stats" id="notepad-stats">
+      <div class="ws-stat"><strong id="notepad-words">0</strong>Words</div>
+      <div class="ws-stat"><strong id="notepad-chars">0</strong>Chars</div>
+      <div class="ws-stat"><strong id="notepad-lines">0</strong>Lines</div>
+    </div>
+  </div>
+</div>
+
+<!-- HTML Preview -->
+<div class="tool-card" data-cat="editor">
+  <div class="tool-header"><div class="tool-icon teal">🌐</div><span class="tool-badge badge-new">New</span></div>
+  <div class="tool-title">HTML Live Preview</div>
+  <div class="tool-desc">Write HTML code and see the live rendered output instantly in your browser.</div>
+  <button class="use-btn" onclick="T('htmlprev')">Use Tool →</button>
+  <div class="workspace" id="ws-htmlprev">
+    <textarea class="ws-textarea" id="htmlprev-input" placeholder="&lt;h1&gt;Hello World&lt;/h1&gt;&#10;&lt;p&gt;Type HTML here...&lt;/p&gt;" oninput="updateHtmlPreview()" style="min-height:120px;font-family:monospace;font-size:12px;"></textarea>
+    <button class="ws-btn" onclick="updateHtmlPreview()" style="margin-top:8px;">▶ Run Preview</button>
+    <div style="margin-top:10px;border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+      <div style="background:rgba(0,0,0,0.3);padding:6px 12px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);">Preview</div>
+      <iframe id="htmlprev-frame" style="width:100%;height:200px;border:none;background:white;" sandbox="allow-scripts"></iframe>
+    </div>
+  </div>
+</div>
+
+</div><!-- end editor grid -->
 
 </div><!-- end tools-section -->
 

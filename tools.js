@@ -141,7 +141,7 @@ function generateQR(){
   const text=encodeURIComponent(document.getElementById('qr-input').value.trim());
   const size=document.getElementById('qr-size').value;
   if(!text){document.getElementById('qr-result').innerHTML='<p style="color:var(--accent3);margin-top:8px;">Please enter text or URL.</p>';return;}
-  const url=`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${text}&bgcolor=0b0c0f&color=f0ff44`;
+  const url=`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${text}&bgcolor=0b0c0f&color=a78bfa`;
   document.getElementById('qr-result').innerHTML=`<img src="${url}" style="margin-top:12px;display:block;border-radius:10px;" width="${size}" height="${size}" alt="QR Code"/><br/><a href="${url}" download="qrcode.png"><button class="ws-btn" style="margin-top:8px;">⬇ Download QR</button></a>`;
 }
 
@@ -615,7 +615,42 @@ async function aiSummarize(){
   document.getElementById('summ-output').textContent=result;
 }
 
-// ===== INIT =====
+// ===== MOBILE MENU =====
+function toggleMobileMenu(){
+  const menu=document.getElementById('mobile-menu');
+  const hb=document.getElementById('hamburger');
+  menu.classList.toggle('open');
+  // Animate hamburger to X
+  const spans=hb.querySelectorAll('span');
+  if(menu.classList.contains('open')){
+    spans[0].style.transform='rotate(45deg) translate(5px,5px)';
+    spans[1].style.opacity='0';
+    spans[2].style.transform='rotate(-45deg) translate(5px,-5px)';
+  } else {
+    spans[0].style.transform='';
+    spans[1].style.opacity='1';
+    spans[2].style.transform='';
+  }
+}
+function closeMobileMenu(){
+  const menu=document.getElementById('mobile-menu');
+  const hb=document.getElementById('hamburger');
+  menu.classList.remove('open');
+  if(hb){
+    const spans=hb.querySelectorAll('span');
+    spans[0].style.transform='';
+    spans[1].style.opacity='1';
+    spans[2].style.transform='';
+  }
+}
+// Close menu when clicking outside
+document.addEventListener('click',function(e){
+  const menu=document.getElementById('mobile-menu');
+  const hb=document.getElementById('hamburger');
+  if(menu&&hb&&!menu.contains(e.target)&&!hb.contains(e.target)){
+    closeMobileMenu();
+  }
+});
 updateUcUnits();updateColor();updateGradient();updatePattern();
 
 // ===== PDF TOOLS =====
@@ -647,7 +682,7 @@ async function pdfLoadInfo(tool,input){
     const pdf=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
     const n=pdf.getPageCount();
     const el=document.getElementById(tool+'-info');
-    if(el)el.innerHTML=`<div style="font-size:12px;color:var(--accent2);margin-top:6px;padding:6px 10px;background:rgba(68,240,200,0.08);border-radius:8px;">📄 ${f.name} — <strong>${n} pages</strong></div>`;
+    if(el)el.innerHTML=`<div style="font-size:12px;color:var(--accent2);margin-top:6px;padding:6px 10px;background:rgba(96,165,250,0.08);border-radius:8px;">📄 ${f.name} — <strong>${n} pages</strong></div>`;
   }catch(e){document.getElementById('out-'+tool).textContent='❌ '+e.message;}
 }
 function pdfDownload(bytes,name){
@@ -992,7 +1027,7 @@ function analyzeWordFreq(){
   const sorted=Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,top);
   if(!sorted.length){document.getElementById('wfreq-chart').innerHTML='<p style="color:var(--muted);font-size:13px;text-align:center;padding:16px;">No words found. Try reducing minimum length.</p>';return;}
   const max=sorted[0][1];
-  const colors=['#f0ff44','#44f0c8','#ff6b6b','#b464f0','#6495ed','#50d890','#f4a040'];
+  const colors=['#a78bfa','#60a5fa','#ff6b6b','#b464f0','#6495ed','#50d890','#f4a040'];
   let html='<div style="font-size:12px;">';
   sorted.forEach(([word,count],i)=>{
     const pct=Math.round(count/max*100);

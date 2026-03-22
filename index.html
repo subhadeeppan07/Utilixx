@@ -109,15 +109,15 @@ canvas{display:none;}
 <nav>
   <div class="logo">Utilix<span>x</span></div>
   <div class="nav-links">
-    <a href="#text-tools">Text</a>
-    <a href="#image-tools">Image</a>
-    <a href="#seo-tools">SEO</a>
-    <a href="#math-tools">Math</a>
-    <a href="#dev-tools">Dev</a>
-    <a href="#ai-tools">AI</a>
-    <a href="#pdf-tools">📄 PDF</a>
     <a href="#editor-tools">✏️ Editor</a>
     <a href="#tts-tools">🎙️ TTS</a>
+    <a href="#text-tools">✍️ Text</a>
+    <a href="#image-tools">🖼️ Image</a>
+    <a href="#seo-tools">🔍 SEO</a>
+    <a href="#math-tools">🔢 Math</a>
+    <a href="#dev-tools">🔐 Dev</a>
+    <a href="#ai-tools">🤖 AI</a>
+    <a href="#pdf-tools">📄 PDF</a>
   </div>
 </nav>
 
@@ -139,7 +139,9 @@ canvas{display:none;}
 
 <!-- CATEGORIES -->
 <div class="categories">
-  <button class="cat-btn active" onclick="filterCat('all',this)">All Tools</button>
+  <button class="cat-btn active" onclick="filterCat('all',this)">⚡ All Tools</button>
+  <button class="cat-btn" onclick="filterCat('editor',this)">✏️ Editor</button>
+  <button class="cat-btn" onclick="filterCat('tts',this)">🎙️ Text to Speech</button>
   <button class="cat-btn" onclick="filterCat('text',this)">✍️ Text & Writing</button>
   <button class="cat-btn" onclick="filterCat('image',this)">🖼️ Image & Design</button>
   <button class="cat-btn" onclick="filterCat('seo',this)">🔍 SEO & Marketing</button>
@@ -147,11 +149,58 @@ canvas{display:none;}
   <button class="cat-btn" onclick="filterCat('dev',this)">🔐 Developer Tools</button>
   <button class="cat-btn" onclick="filterCat('ai',this)">🤖 AI Tools</button>
   <button class="cat-btn" onclick="filterCat('pdf',this)">📄 PDF Tools</button>
-  <button class="cat-btn" onclick="filterCat('editor',this)">✏️ Editor</button>
-  <button class="cat-btn" onclick="filterCat('tts',this)">🎙️ Text to Speech</button>
 </div>
 
 <div class="tools-section">
+
+
+<!-- ===== EDITOR TOOLS ===== -->
+<div class="section-title" id="editor-tools"><span style="background:rgba(68,240,200,0.1)">✏️</span>Editor Tools</div>
+<div class="tools-grid">
+
+<!-- Markdown Editor Pro -->
+<div class="tool-card" data-cat="editor" style="border-color:rgba(68,240,200,0.25);">
+  <div class="tool-header"><div class="tool-icon teal">📝</div><span class="tool-badge badge-hot">🔥 Featured</span></div>
+  <div class="tool-title">Markdown Editor Pro</div>
+  <div class="tool-desc">Professional full-featured markdown editor with live preview, multi-tab support, Find & Replace, Table of Contents, themes, line numbers, and export to HTML/MD/TXT.</div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Live Preview</span>
+    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Multi-Tab</span>
+    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Find & Replace</span>
+    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Auto-Save</span>
+    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">3 Themes</span>
+    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Export HTML/MD/TXT</span>
+  </div>
+  <a href="editor.html" target="_blank" style="display:block;width:100%;padding:11px;background:rgba(68,240,200,0.08);border:1px solid rgba(68,240,200,0.3);border-radius:10px;color:var(--accent2);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--accent2)';this.style.color='#0b0c0f'" onmouseout="this.style.background='rgba(68,240,200,0.08)';this.style.color='var(--accent2)'">
+    ✏️ Open Markdown Editor →
+  </a>
+</div>
+
+</div><!-- end editor grid -->
+
+<!-- ===== TEXT TO SPEECH ===== -->
+<div class="section-title" id="tts-tools"><span style="background:rgba(0,229,200,0.1)">🎙️</span>Text to Speech Tools</div>
+<div class="tools-grid">
+
+<!-- TTS Pro - Featured -->
+<div class="tool-card" data-cat="tts" style="border-color:rgba(0,229,200,0.25);">
+  <div class="tool-header"><div class="tool-icon teal">🎙️</div><span class="tool-badge badge-hot">🔥 Featured</span></div>
+  <div class="tool-title">Text to Speech Pro</div>
+  <div class="tool-desc">Professional full-featured TTS studio — 200+ voices, multiple languages, speed & pitch controls, word highlighting, bookmarks and audio download.</div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">200+ Voices</span>
+    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Multi-Language</span>
+    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Word Highlighting</span>
+    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Speed & Pitch</span>
+    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Download Audio</span>
+    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Bookmarks</span>
+  </div>
+  <a href="tts.html" target="_blank" style="display:block;width:100%;padding:11px;background:rgba(0,229,200,0.08);border:1px solid rgba(0,229,200,0.3);border-radius:10px;color:#00e5c8;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#00e5c8';this.style.color='#07080d'" onmouseout="this.style.background='rgba(0,229,200,0.08)';this.style.color='#00e5c8'">
+    🎙️ Open TTS Studio →
+  </a>
+</div>
+
+</div><!-- end tts grid -->
 
 <!-- ===== TEXT & WRITING ===== -->
 <div class="section-title" id="text-tools"><span style="background:rgba(240,255,68,0.1)">✍️</span>Text & Writing Tools</div>
@@ -703,147 +752,6 @@ canvas{display:none;}
 <div class="section-title" id="math-tools"><span style="background:rgba(100,149,237,0.1)">🔢</span>Math & Converter Tools</div>
 <div class="tools-grid">
 
-<!-- Percentage Calc -->
-<div class="tool-card" data-cat="math">
-  <div class="tool-header"><div class="tool-icon blue">%</div><span class="tool-badge badge-free">Free</span></div>
-  <div class="tool-title">Percentage Calculator</div>
-  <div class="tool-desc">Calculate percentages, discounts, increases and more.</div>
-  <button class="use-btn" onclick="toggleTool('pc')">Use Tool →</button>
-  <div class="workspace" id="ws-pc">
-    <select class="ws-select" id="pc-type">
-      <option value="pct">What is X% of Y?</option>
-      <option value="of">X is what % of Y?</option>
-      <option value="change">% Change from X to Y</option>
-    </select>
-    <input class="ws-input" id="pc-a" placeholder="Value X" type="number"/>
-    <input class="ws-input" id="pc-b" placeholder="Value Y" type="number"/>
-    <button class="ws-btn" onclick="calcPercent()">Calculate</button>
-    <div class="ws-output" id="pc-output"></div>
-  </div>
-</div>
-
-<!-- Unit Converter -->
-<div class="tool-card" data-cat="math">
-  <div class="tool-header"><div class="tool-icon blue">⚖️</div><span class="tool-badge badge-hot">🔥 Popular</span></div>
-  <div class="tool-title">Unit Converter</div>
-  <div class="tool-desc">Convert length, weight, temperature and more between units.</div>
-  <button class="use-btn" onclick="toggleTool('uc')">Use Tool →</button>
-  <div class="workspace" id="ws-uc">
-    <select class="ws-select" id="uc-cat" onchange="updateUcUnits()">
-      <option value="length">Length</option><option value="weight">Weight</option>
-      <option value="temp">Temperature</option><option value="speed">Speed</option>
-    </select>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <input class="ws-input" id="uc-val" style="margin:0;flex:1;" type="number" placeholder="Value" oninput="convertUnit()"/>
-      <select class="ws-select" id="uc-from" style="margin:0;flex:1;" onchange="convertUnit()"></select>
-      <span style="color:var(--muted);">→</span>
-      <select class="ws-select" id="uc-to" style="margin:0;flex:1;" onchange="convertUnit()"></select>
-    </div>
-    <div class="ws-output" id="uc-output" style="margin-top:10px;"></div>
-  </div>
-</div>
-
-<!-- Number Base -->
-<div class="tool-card" data-cat="math">
-  <div class="tool-header"><div class="tool-icon blue">💻</div><span class="tool-badge badge-free">Free</span></div>
-  <div class="tool-title">Number Base Converter</div>
-  <div class="tool-desc">Convert between Binary, Decimal, Hex and Octal.</div>
-  <button class="use-btn" onclick="toggleTool('bh')">Use Tool →</button>
-  <div class="workspace" id="ws-bh">
-    <select class="ws-select" id="bh-from"><option value="10">Decimal</option><option value="2">Binary</option><option value="16">Hex</option><option value="8">Octal</option></select>
-    <input class="ws-input" id="bh-input" placeholder="Enter number..." oninput="convertBase()"/>
-    <div class="ws-stats">
-      <div class="ws-stat"><strong id="bh-dec">—</strong>Decimal</div>
-      <div class="ws-stat"><strong id="bh-bin">—</strong>Binary</div>
-      <div class="ws-stat"><strong id="bh-hex">—</strong>Hex</div>
-      <div class="ws-stat"><strong id="bh-oct">—</strong>Octal</div>
-    </div>
-  </div>
-</div>
-
-<!-- Scientific Calculator -->
-<div class="tool-card" data-cat="math">
-  <div class="tool-header"><div class="tool-icon blue">🧮</div><span class="tool-badge badge-new">New</span></div>
-  <div class="tool-title">Scientific Calculator</div>
-  <div class="tool-desc">Full-featured scientific calculator with trigonometry and more.</div>
-  <button class="use-btn" onclick="toggleTool('sci')">Use Tool →</button>
-  <div class="workspace" id="ws-sci">
-    <input class="ws-input" id="sci-display" placeholder="0" readonly style="font-size:20px;font-family:'Syne',sans-serif;font-weight:700;text-align:right;"/>
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px;">
-      <button class="ws-btn danger" onclick="sciClear()" style="margin:0;">C</button>
-      <button class="ws-btn secondary" onclick="sciInput('(')" style="margin:0;">(</button>
-      <button class="ws-btn secondary" onclick="sciInput(')')" style="margin:0;">)</button>
-      <button class="ws-btn secondary" onclick="sciInput('%')" style="margin:0;">%</button>
-      <button class="ws-btn secondary" onclick="sciInput('/')" style="margin:0;">÷</button>
-      <button class="ws-btn secondary" onclick="sciInput('7')" style="margin:0;">7</button>
-      <button class="ws-btn secondary" onclick="sciInput('8')" style="margin:0;">8</button>
-      <button class="ws-btn secondary" onclick="sciInput('9')" style="margin:0;">9</button>
-      <button class="ws-btn secondary" onclick="sciInput('*')" style="margin:0;">×</button>
-      <button class="ws-btn secondary" onclick="sciFunc('sqrt')" style="margin:0;">√</button>
-      <button class="ws-btn secondary" onclick="sciInput('4')" style="margin:0;">4</button>
-      <button class="ws-btn secondary" onclick="sciInput('5')" style="margin:0;">5</button>
-      <button class="ws-btn secondary" onclick="sciInput('6')" style="margin:0;">6</button>
-      <button class="ws-btn secondary" onclick="sciInput('-')" style="margin:0;">−</button>
-      <button class="ws-btn secondary" onclick="sciFunc('sq')" style="margin:0;">x²</button>
-      <button class="ws-btn secondary" onclick="sciInput('1')" style="margin:0;">1</button>
-      <button class="ws-btn secondary" onclick="sciInput('2')" style="margin:0;">2</button>
-      <button class="ws-btn secondary" onclick="sciInput('3')" style="margin:0;">3</button>
-      <button class="ws-btn secondary" onclick="sciInput('+')" style="margin:0;">+</button>
-      <button class="ws-btn secondary" onclick="sciFunc('sin')" style="margin:0;">sin</button>
-      <button class="ws-btn secondary" onclick="sciInput('0')" style="margin:0;grid-column:span 2;">0</button>
-      <button class="ws-btn secondary" onclick="sciInput('.')" style="margin:0;">.</button>
-      <button class="ws-btn" onclick="sciEquals()" style="margin:0;">=</button>
-      <button class="ws-btn secondary" onclick="sciFunc('cos')" style="margin:0;">cos</button>
-    </div>
-    <div class="ws-output" id="sci-output" style="margin-top:8px;text-align:right;font-size:20px;font-family:'Syne',sans-serif;"></div>
-  </div>
-</div>
-
-<!-- Age Calculator -->
-<div class="tool-card" data-cat="math">
-  <div class="tool-header"><div class="tool-icon blue">🎂</div><span class="tool-badge badge-new">New</span></div>
-  <div class="tool-title">Age Calculator</div>
-  <div class="tool-desc">Calculate your exact age in years, months, days, hours and more.</div>
-  <button class="use-btn" onclick="toggleTool('age')">Use Tool →</button>
-  <div class="workspace" id="ws-age">
-    <label class="ws-label">Date of Birth</label>
-    <input class="ws-input" id="age-dob" type="date"/>
-    <button class="ws-btn" onclick="calcAge()">Calculate Age</button>
-    <div class="ws-output" id="age-output"></div>
-  </div>
-</div>
-
-<!-- Date Difference -->
-<div class="tool-card" data-cat="math">
-  <div class="tool-header"><div class="tool-icon blue">📅</div><span class="tool-badge badge-new">New</span></div>
-  <div class="tool-title">Date Difference Calculator</div>
-  <div class="tool-desc">Calculate the difference between two dates in days, weeks, months.</div>
-  <button class="use-btn" onclick="toggleTool('datediff')">Use Tool →</button>
-  <div class="workspace" id="ws-datediff">
-    <label class="ws-label">Start Date</label>
-    <input class="ws-input" id="datediff-a" type="date"/>
-    <label class="ws-label">End Date</label>
-    <input class="ws-input" id="datediff-b" type="date"/>
-    <button class="ws-btn" onclick="calcDateDiff()">Calculate</button>
-    <div class="ws-output" id="datediff-output"></div>
-  </div>
-</div>
-
-<!-- Loan / EMI Calculator -->
-<div class="tool-card" data-cat="math">
-  <div class="tool-header"><div class="tool-icon blue">🏦</div><span class="tool-badge badge-new">New</span></div>
-  <div class="tool-title">Loan / EMI Calculator</div>
-  <div class="tool-desc">Calculate your monthly EMI, total interest and total payment easily.</div>
-  <button class="use-btn" onclick="toggleTool('emi')">Use Tool →</button>
-  <div class="workspace" id="ws-emi">
-    <input class="ws-input" id="emi-principal" type="number" placeholder="Loan Amount (e.g. 100000)"/>
-    <input class="ws-input" id="emi-rate" type="number" placeholder="Annual Interest Rate % (e.g. 8.5)"/>
-    <input class="ws-input" id="emi-tenure" type="number" placeholder="Loan Tenure in Months (e.g. 36)"/>
-    <button class="ws-btn" onclick="calcEMI()">Calculate EMI</button>
-    <div class="ws-output" id="emi-output"></div>
-  </div>
-</div>
-
 <!-- Currency Converter -->
 <div class="tool-card" data-cat="math">
   <div class="tool-header"><div class="tool-icon blue">💱</div><span class="tool-badge badge-new">New</span></div>
@@ -961,6 +869,36 @@ canvas{display:none;}
     </div>
     <div id="colortemp-preview" style="width:100%;height:70px;border-radius:10px;border:1px solid var(--border);transition:background 0.4s;margin-bottom:10px;"></div>
     <div class="ws-output" id="colortemp-output"></div>
+  </div>
+</div>
+
+<!-- Compound Interest Calculator -->
+<div class="tool-card" data-cat="math">
+  <div class="tool-header"><div class="tool-icon blue">📈</div><span class="tool-badge badge-new">New</span></div>
+  <div class="tool-title">Compound Interest Calculator</div>
+  <div class="tool-desc">Calculate compound interest with monthly/yearly compounding. See total interest earned, final amount and year-by-year growth.</div>
+  <button class="use-btn" onclick="T('compound')">Use Tool →</button>
+  <div class="workspace" id="ws-compound">
+    <div class="ws-row">
+      <div style="flex:2;"><label class="ws-label">Principal Amount</label><input class="ws-input" id="ci-principal" type="number" placeholder="e.g. 10000" style="margin:0;" oninput="calcCompound()"/></div>
+      <div style="flex:1;"><label class="ws-label">Currency</label><select class="ws-select" id="ci-currency" style="margin:0;" onchange="calcCompound()"><option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option></select></div>
+    </div>
+    <div class="ws-row">
+      <div style="flex:1;"><label class="ws-label">Annual Interest Rate (%)</label><input class="ws-input" id="ci-rate" type="number" placeholder="e.g. 8.5" step="0.1" style="margin:0;" oninput="calcCompound()"/></div>
+      <div style="flex:1;"><label class="ws-label">Time Period (Years)</label><input class="ws-input" id="ci-years" type="number" placeholder="e.g. 5" style="margin:0;" oninput="calcCompound()"/></div>
+    </div>
+    <label class="ws-label">Compounding Frequency</label>
+    <select class="ws-select" id="ci-freq" onchange="calcCompound()">
+      <option value="1">Annually (once a year)</option>
+      <option value="2">Semi-Annually (twice a year)</option>
+      <option value="4">Quarterly (4× a year)</option>
+      <option value="12" selected>Monthly (12× a year)</option>
+      <option value="365">Daily (365× a year)</option>
+    </select>
+    <label class="ws-label">Additional Monthly Contribution (optional)</label>
+    <input class="ws-input" id="ci-monthly" type="number" placeholder="e.g. 500 (leave blank if none)" oninput="calcCompound()"/>
+    <div class="ws-output" id="ci-output"></div>
+    <div id="ci-schedule" style="margin-top:10px;max-height:200px;overflow-y:auto;font-size:12px;font-family:monospace;"></div>
   </div>
 </div>
 
@@ -1512,136 +1450,6 @@ canvas{display:none;}
 </div>
 
 </div><!-- end pdf grid -->
-
-<!-- ===== EDITOR TOOLS ===== -->
-<div class="section-title" id="editor-tools"><span style="background:rgba(68,240,200,0.1)">✏️</span>Editor Tools</div>
-<div class="tools-grid">
-
-<!-- Markdown Editor Pro -->
-<div class="tool-card" data-cat="editor" style="border-color:rgba(68,240,200,0.25);">
-  <div class="tool-header"><div class="tool-icon teal">📝</div><span class="tool-badge badge-hot">🔥 Featured</span></div>
-  <div class="tool-title">Markdown Editor Pro</div>
-  <div class="tool-desc">Professional full-featured markdown editor with live preview, multi-tab support, Find & Replace, Table of Contents, themes, line numbers, and export to HTML/MD/TXT.</div>
-  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
-    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Live Preview</span>
-    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Multi-Tab</span>
-    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Find & Replace</span>
-    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Auto-Save</span>
-    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">3 Themes</span>
-    <span style="background:rgba(68,240,200,0.1);border:1px solid rgba(68,240,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Export HTML/MD/TXT</span>
-  </div>
-  <a href="editor.html" target="_blank" style="display:block;width:100%;padding:11px;background:rgba(68,240,200,0.08);border:1px solid rgba(68,240,200,0.3);border-radius:10px;color:var(--accent2);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--accent2)';this.style.color='#0b0c0f'" onmouseout="this.style.background='rgba(68,240,200,0.08)';this.style.color='var(--accent2)'">
-    ✏️ Open Markdown Editor →
-  </a>
-</div>
-
-<!-- Text Notepad -->
-<div class="tool-card" data-cat="editor">
-  <div class="tool-header"><div class="tool-icon teal">🗒️</div><span class="tool-badge badge-free">Free</span></div>
-  <div class="tool-title">Quick Notepad</div>
-  <div class="tool-desc">A simple distraction-free notepad that auto-saves to your browser. Never lose your notes.</div>
-  <button class="use-btn" onclick="T('notepad')">Use Tool →</button>
-  <div class="workspace" id="ws-notepad">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <span style="font-size:12px;color:var(--muted);" id="notepad-status">Auto-saved</span>
-      <div style="display:flex;gap:6px;">
-        <button class="ws-btn sec" onclick="copyOut('notepad-input')" style="margin:0;padding:5px 10px;font-size:12px;">📋 Copy</button>
-        <button class="ws-btn danger" onclick="clearNotepad()" style="margin:0;padding:5px 10px;font-size:12px;">🗑️ Clear</button>
-      </div>
-    </div>
-    <textarea class="ws-textarea" id="notepad-input" placeholder="Start typing your notes here... everything is auto-saved!" oninput="saveNotepad()" style="min-height:220px;font-size:14px;"></textarea>
-    <div class="ws-stats" id="notepad-stats">
-      <div class="ws-stat"><strong id="notepad-words">0</strong>Words</div>
-      <div class="ws-stat"><strong id="notepad-chars">0</strong>Chars</div>
-      <div class="ws-stat"><strong id="notepad-lines">0</strong>Lines</div>
-    </div>
-  </div>
-</div>
-
-<!-- HTML Preview -->
-<div class="tool-card" data-cat="editor">
-  <div class="tool-header"><div class="tool-icon teal">🌐</div><span class="tool-badge badge-new">New</span></div>
-  <div class="tool-title">HTML Live Preview</div>
-  <div class="tool-desc">Write HTML code and see the live rendered output instantly in your browser.</div>
-  <button class="use-btn" onclick="T('htmlprev')">Use Tool →</button>
-  <div class="workspace" id="ws-htmlprev">
-    <textarea class="ws-textarea" id="htmlprev-input" placeholder="&lt;h1&gt;Hello World&lt;/h1&gt;&#10;&lt;p&gt;Type HTML here...&lt;/p&gt;" oninput="updateHtmlPreview()" style="min-height:120px;font-family:monospace;font-size:12px;"></textarea>
-    <button class="ws-btn" onclick="updateHtmlPreview()" style="margin-top:8px;">▶ Run Preview</button>
-    <div style="margin-top:10px;border:1px solid var(--border);border-radius:10px;overflow:hidden;">
-      <div style="background:rgba(0,0,0,0.3);padding:6px 12px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);">Preview</div>
-      <iframe id="htmlprev-frame" style="width:100%;height:200px;border:none;background:white;" sandbox="allow-scripts"></iframe>
-    </div>
-  </div>
-</div>
-
-</div><!-- end editor grid -->
-
-<!-- ===== TEXT TO SPEECH ===== -->
-<div class="section-title" id="tts-tools"><span style="background:rgba(0,229,200,0.1)">🎙️</span>Text to Speech Tools</div>
-<div class="tools-grid">
-
-<!-- TTS Pro - Featured -->
-<div class="tool-card" data-cat="tts" style="border-color:rgba(0,229,200,0.25);">
-  <div class="tool-header"><div class="tool-icon teal">🎙️</div><span class="tool-badge badge-hot">🔥 Featured</span></div>
-  <div class="tool-title">Text to Speech Pro</div>
-  <div class="tool-desc">Professional full-featured TTS studio — 200+ voices, multiple languages, speed & pitch controls, word highlighting, bookmarks and audio download.</div>
-  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
-    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">200+ Voices</span>
-    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Multi-Language</span>
-    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Word Highlighting</span>
-    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Speed & Pitch</span>
-    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Download Audio</span>
-    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Bookmarks</span>
-  </div>
-  <a href="tts.html" target="_blank" style="display:block;width:100%;padding:11px;background:rgba(0,229,200,0.08);border:1px solid rgba(0,229,200,0.3);border-radius:10px;color:#00e5c8;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#00e5c8';this.style.color='#07080d'" onmouseout="this.style.background='rgba(0,229,200,0.08)';this.style.color='#00e5c8'">
-    🎙️ Open TTS Studio →
-  </a>
-</div>
-
-<!-- Quick TTS - Inline -->
-<div class="tool-card" data-cat="tts">
-  <div class="tool-header"><div class="tool-icon teal">🔊</div><span class="tool-badge badge-free">Free</span></div>
-  <div class="tool-title">Quick Text to Speech</div>
-  <div class="tool-desc">Instantly convert text to speech right here. Choose voice, adjust speed & pitch.</div>
-  <button class="use-btn" onclick="T('quicktts')">Use Tool →</button>
-  <div class="workspace" id="ws-quicktts">
-    <textarea class="ws-textarea" id="qtts-text" placeholder="Type or paste text to speak..." style="min-height:100px;"></textarea>
-    <div class="ws-row" style="margin-top:8px;">
-      <div style="flex:2;"><label class="ws-label">Voice</label><select class="ws-select" id="qtts-voice" style="margin:0;"></select></div>
-    </div>
-    <div class="ws-row">
-      <div style="flex:1;"><label class="ws-label">Speed: <span id="qtts-speed-val">1.0</span>x</label><input type="range" id="qtts-speed" min="0.5" max="2" step="0.1" value="1" style="width:100%;" oninput="document.getElementById('qtts-speed-val').textContent=parseFloat(this.value).toFixed(1)"/></div>
-      <div style="flex:1;"><label class="ws-label">Pitch: <span id="qtts-pitch-val">1.0</span></label><input type="range" id="qtts-pitch" min="0.5" max="2" step="0.1" value="1" style="width:100%;" oninput="document.getElementById('qtts-pitch-val').textContent=parseFloat(this.value).toFixed(1)"/></div>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
-      <button class="ws-btn" onclick="quickSpeak()">▶ Speak</button>
-      <button class="ws-btn sec" onclick="quickPause()">⏸ Pause</button>
-      <button class="ws-btn sec" onclick="quickStop()">⏹ Stop</button>
-    </div>
-    <div class="ws-output" id="qtts-output" style="font-size:12px;min-height:0;margin-top:8px;"></div>
-  </div>
-</div>
-
-<!-- TTS Char Counter -->
-<div class="tool-card" data-cat="tts">
-  <div class="tool-header"><div class="tool-icon teal">⏱️</div><span class="tool-badge badge-free">Free</span></div>
-  <div class="tool-title">Speech Time Estimator</div>
-  <div class="tool-desc">Estimate how long it will take to read or speak your text at different speeds.</div>
-  <button class="use-btn" onclick="T('speechtime')">Use Tool →</button>
-  <div class="workspace" id="ws-speechtime">
-    <textarea class="ws-textarea" id="stime-input" placeholder="Paste your text or speech script here..." oninput="calcSpeechTime()" style="min-height:100px;"></textarea>
-    <label class="ws-label">Speaking Speed</label>
-    <select class="ws-select" id="stime-speed" onchange="calcSpeechTime()">
-      <option value="100">Slow (100 wpm)</option>
-      <option value="130" selected>Average (130 wpm)</option>
-      <option value="160">Fast (160 wpm)</option>
-      <option value="200">Very Fast (200 wpm)</option>
-    </select>
-    <div class="ws-output" id="stime-output"></div>
-  </div>
-</div>
-
-</div><!-- end tts grid -->
 
 </div><!-- end tools-section -->
 

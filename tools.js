@@ -1185,3 +1185,121 @@ function updateColorTemp(){
 }
 // Init color temp on load
 setTimeout(()=>{if(document.getElementById('colortemp-slider'))updateColorTemp();},100);
+
+// ===== QUICK TTS =====
+// Load voices whenever they become available
+function loadQTTSVoices(){
+  const voices=window.speechSynthesis.getVoices();
+  const sel=document.getElementById('qtts-voice');
+  if(!sel||!voices.length)return;
+  const prev=sel.value;
+  sel.innerHTML='';
+  // Group by language
+  const grouped={};
+  voices.forEach((v,i)=>{
+    const lang=v.lang.split('-')[0].toUpperCase();
+    if(!grouped[lang])grouped[lang]=[];
+    grouped[lang].push({v,i});
+  });
+  // Add English first, then others
+  const langs=Object.keys(grouped).sort((a,b)=>a==='EN'?-1:b==='EN'?1:a.localeCompare(b));
+  langs.forEach(lang=>{
+    const grp=document.createElement('optgroup');
+    grp.label=lang;
+    grouped[lang].forEach(({v,i})=>{
+      const opt=document.createElement('option');
+      opt.value=i;
+      opt.textContent=v.name.replace('Microsoft ','').replace('Google ','').replace('Apple ','');
+      if(v.default)opt.selected=true;
+      grp.appendChild(opt);
+    });
+    sel.appendChild(grp);
+  });
+  if(prev)sel.value=prev;
+  const out=document.getElementById('qtts-output');
+  if(out&&!out.textContent)out.textContent='✅ '+voices.length+' voices loaded. Ready to speak!';
+}
+// Try loading immediately and also on voiceschanged
+window.speechSynthesis.onvoiceschanged=loadQTTSVoices;
+setTimeout(loadQTTSVoices,300);
+setTimeout(loadQTTSVoices,1000);
+// Also reload when user opens the tool
+const _origT=window.T||function(){};
+window.T=function(id){
+  _origT(id);
+  if(id==='quicktts')setTimeout(loadQTTSVoices,100);
+};
+
+function quickSpeak(){
+  const text=document.getElementById('qtts-text').value.trim();
+  if(!text){document.getElementById('qtts-output').textContent='⚠️ Please enter some text first.';return;}
+  if(!window.speechSynthesis){document.getElementById('qtts-output').textContent='❌ Your browser does not support Speech Synthesis.';return;}
+  window.speechSynthesis.cancel();
+  setTimeout(()=>{
+    const u=new SpeechSynthesisUtterance(text);
+    const voices=window.speechSynthesis.getVoices();
+    const idx=parseInt(document.getElementById('qtts-voice').value);
+    if(voices[idx])u.voice=voices[idx];
+    u.rate=parseFloat(document.getElementById('qtts-speed').value)||1;
+    u.pitch=parseFloat(document.getElementById('qtts-pitch').value)||1;
+    u.volume=1;
+    const words=text.split(/\s+/).length;
+    const estSec=Math.round(words/(u.rate*2.5));
+    document.getElementById('qtts-output').textContent='🔊 Speaking ~'+estSec+'s...';
+    u.onstart=()=>document.getElementById('qtts-output').textContent='🔊 Speaking...';
+    u.onend=()=>document.getElementById('qtts-output').textContent='✅ Finished speaking!';
+    u.onerror=(e)=>{if(e.error!=='interrupted')document.getElementById('qtts-output').textContent='❌ Error: '+e.error;};
+    window.speechSynthesis.speak(u);
+  },50);
+}
+
+function quickPause(){
+  if(!window.speechSynthesis){return;}
+  if(window.speechSynthesis.speaking){
+    if(window.speechSynthesis.paused){
+      window.speechSynthesis.resume();
+      document.getElementById('qtts-output').textContent='🔊 Resumed...';
+    } else {
+      window.speechSynthesis.pause();
+      document.getElementById('qtts-output').textContent='⏸ Paused — click Resume to continue';
+    }
+  } else {
+    document.getElementById('qtts-output').textContent='⚠️ Nothing is playing.';
+  }
+}
+
+function quickStop(){
+  window.speechSynthesis.cancel();
+  document.getElementById('qtts-output').textContent='⏹ Stopped.';
+}
+
+// ===== SPEECH TIME ESTIMATOR =====
+function calcSpeechTime(){
+  const text=document.getElementById('stime-input').value.trim();
+  const wpm=parseInt(document.getElementById('stime-speed').value)||130;
+  if(!text){document.getElementById('stime-output').textContent='';return;}
+  const words=text.split(/\s+/).filter(w=>w).length;
+  const chars=text.length;
+  const sentences=(text.match(/[.!?]+/g)||[]).length||1;
+
+  function fmt(sec){
+    const m=Math.floor(sec/60),s=sec%60;
+    return m>0?(s>0?`${m}m ${s}s`:`${m}m`):`${s}s`;
+  }
+
+  const totalSec=Math.ceil((words/wpm)*60);
+  document.getElementById('stime-output').innerHTML=
+    `<div style="font-size:28px;font-family:'Syne',sans-serif;font-weight:800;color:var(--accent);margin-bottom:4px;">${fmt(totalSec)}</div>`+
+    `<div style="font-size:13px;color:var(--muted);margin-bottom:12px;">at ${wpm} words per minute</div>`+
+    `<div style="font-size:13px;line-height:2;color:var(--text);">`+
+    `📝 Words: <strong>${words.toLocaleString()}</strong> &nbsp;|&nbsp; `+
+    `🔤 Characters: <strong>${chars.toLocaleString()}</strong> &nbsp;|&nbsp; `+
+    `💬 Sentences: <strong>${sentences}</strong></div>`+
+    `<div style="margin-top:10px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;">`+
+    `🐌 Slow (100 wpm): ${fmt(Math.ceil(words/100*60))}<br/>`+
+    `🚶 Average (130 wpm): ${fmt(Math.ceil(words/130*60))}<br/>`+
+    `🏃 Fast (160 wpm): ${fmt(Math.ceil(words/160*60))}<br/>`+
+    `🎤 Presentation (120 wpm): ${fmt(Math.ceil(words/120*60))}<br/>`+
+    `📢 Podcast (150 wpm): ${fmt(Math.ceil(words/150*60))}`+
+    `</div>`;
+}

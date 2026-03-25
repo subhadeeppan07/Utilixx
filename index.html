@@ -3,288 +3,226 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Utilixx — Free Online Tools for Everyone</title>
-<meta name="description" content="Access professional-grade web tools including a multi-tab Markdown Editor, Text-to-Speech studio with 200+ voices, and PixelForge image editor. 100% free No signup needed."/>
-  <meta name="google-site-verification" content="o0Z2o8CoUts_krnvQEUwUtknjMM3pKkS7BhUgcM4BZk" />
+<title>Utilixx — Professional Online Tools</title>
+<meta name="description" content="Free professional online tools — Markdown Editor, Text to Speech, Image Editor, PDF Editor. No signup needed."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <style>
-:root{--bg:#07080f;--card:#0e1020;--border:#1a1d35;--accent:#a78bfa;--accent2:#60a5fa;--accent3:#ff6b6b;--accent4:#c084fc;--text:#e8eaf0;--muted:#6b7090;--radius:16px;}
+:root{
+  --bg:#07080f;
+  --bg2:#0c0d1a;
+  --card:#0e1020;
+  --border:#1a1d35;
+  --border2:#252848;
+  --accent:#a78bfa;
+  --accent2:#60a5fa;
+  --text:#e8eaf0;
+  --muted:#6b7090;
+  --muted2:#3a3d5c;
+  --radius:20px;
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh;}
-nav{position:sticky;top:0;z-index:100;background:rgba(7,8,15,0.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;}
-.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--accent);letter-spacing:-0.5px;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden;}
+
+/* ── NOISE TEXTURE ── */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.4;}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:100;background:rgba(7,8,15,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;height:62px;gap:0;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:21px;color:var(--accent);letter-spacing:-0.5px;flex-shrink:0;}
 .logo span{color:var(--text);}
-.nav-quick{display:flex;align-items:center;gap:6px;margin-left:16px;}
-.nav-quick a{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--muted);text-decoration:none;font-size:12px;font-weight:500;transition:all 0.2s;white-space:nowrap;}
-.nav-quick a:hover{background:var(--accent);border-color:var(--accent);color:#0b0c0f;}
-.nav-quick a.teal{border-color:rgba(68,240,200,0.25);color:var(--accent2);}
-.nav-quick a.teal:hover{background:var(--accent2);border-color:var(--accent2);color:#0b0c0f;}
-.nav-quick a.cyan{border-color:rgba(0,229,255,0.25);color:#00e5ff;}
-.nav-quick a.cyan:hover{background:#00e5ff;border-color:#00e5ff;color:#0b0c0f;}
-.nav-quick a.blue{border-color:rgba(77,139,255,0.3);color:#4d8bff;}
-.nav-quick a.blue:hover{background:#4d8bff;border-color:#4d8bff;color:#fff;}
-@media(max-width:768px){.nav-quick{display:none;}}
-.hero{text-align:center;padding:72px 24px 48px;position:relative;overflow:hidden;}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(167,139,250,0.12),transparent);pointer-events:none;}
-.hero-tag{display:inline-block;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.25);color:var(--accent);font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:100px;margin-bottom:20px;}
-.hero h1{font-family:'Syne',sans-serif;font-size:clamp(36px,6vw,72px);font-weight:800;line-height:1.05;letter-spacing:-2px;margin-bottom:18px;}
-.hero h1 em{font-style:normal;color:var(--accent);}
-.hero p{color:var(--muted);font-size:17px;max-width:480px;margin:0 auto 32px;}
-.search-bar{max-width:480px;margin:0 auto;position:relative;}
-.search-bar input{width:100%;padding:14px 50px 14px 20px;background:var(--card);border:1px solid var(--border);border-radius:100px;color:var(--text);font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
-.search-bar input:focus{border-color:var(--accent);}
-.search-bar input::placeholder{color:var(--muted);}
-.search-bar svg{position:absolute;right:18px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
-.ad-banner{max-width:728px;margin:0 auto 24px;background:var(--card);border:1px dashed var(--border);border-radius:var(--radius);height:90px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;}
-.categories{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:0 24px 36px;}
-.cat-btn{padding:8px 18px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;}
-.cat-btn:hover,.cat-btn.active{background:var(--accent);border-color:var(--accent);color:#07080f;}
-.tools-section{max-width:1200px;margin:0 auto;padding:0 24px 80px;}
-.section-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
-.section-title span{width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;}
-.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px;margin-bottom:48px;}
-.tool-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;transition:border-color 0.2s,transform 0.2s;cursor:pointer;}
-.tool-card:hover{border-color:rgba(167,139,250,0.35);transform:translateY(-2px);}
-.tool-card.open{border-color:var(--accent);}
-.tool-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
-.tool-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;}
-.tool-icon.yellow{background:rgba(167,139,250,0.12);}
-.tool-icon.teal{background:rgba(96,165,250,0.12);}
-.tool-icon.red{background:rgba(255,107,107,0.12);}
-.tool-icon.blue{background:rgba(100,149,237,0.12);}
-.tool-icon.purple{background:rgba(167,139,250,0.12);}
-.tool-icon.green{background:rgba(100,240,100,0.12);}
-.tool-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:100px;text-transform:uppercase;letter-spacing:0.5px;}
-.badge-free{background:rgba(96,165,250,0.15);color:var(--accent2);}
-.badge-hot{background:rgba(255,107,107,0.15);color:var(--accent3);}
-.badge-ai{background:rgba(167,139,250,0.15);color:var(--accent4);}
-.badge-new{background:rgba(167,139,250,0.15);color:var(--accent);}
-.tool-title{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:5px;}
-.tool-desc{color:var(--muted);font-size:13px;margin-bottom:16px;}
-.use-btn{width:100%;padding:10px;background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:10px;color:var(--accent);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;}
-.use-btn:hover{background:var(--accent);color:#07080f;}
-.workspace{display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);animation:fadeIn 0.25s ease;}
-.workspace.visible{display:block;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-.ws-textarea{width:100%;min-height:120px;padding:12px 14px;background:rgba(0,0,0,0.35);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;resize:vertical;outline:none;transition:border-color 0.2s;}
-.ws-textarea:focus{border-color:var(--accent);}
-.ws-input{width:100%;padding:10px 14px;background:rgba(0,0,0,0.35);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;margin-bottom:10px;}
-.ws-input:focus{border-color:var(--accent);}
-.ws-select{width:100%;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:10px;cursor:pointer;}
-.ws-btn{padding:9px 18px;border-radius:9px;background:var(--accent);color:#07080f;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:opacity 0.2s;margin-right:8px;margin-top:8px;}
-.ws-btn:hover{opacity:0.85;}
-.ws-btn.secondary{background:transparent;border:1px solid var(--border);color:var(--text);}
-.ws-btn.danger{background:var(--accent3);color:#fff;}
-.ws-stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;}
-.ws-stat{background:rgba(0,0,0,0.35);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;}
-.ws-stat strong{font-family:'Syne',sans-serif;font-size:18px;color:var(--accent);display:block;}
-.ws-output{margin-top:12px;padding:12px 14px;background:rgba(0,0,0,0.35);border:1px solid var(--border);border-radius:10px;font-size:14px;line-height:1.7;white-space:pre-wrap;word-break:break-word;min-height:40px;color:var(--text);}
-.ws-label{font-size:12px;color:var(--muted);margin-bottom:5px;display:block;}
-.diff-added{background:rgba(68,240,100,0.15);color:#64f064;padding:2px 0;}
-.diff-removed{background:rgba(255,107,107,0.15);color:var(--accent3);text-decoration:line-through;padding:2px 0;}
-.diff-line{padding:4px 8px;border-radius:4px;margin:2px 0;font-family:monospace;font-size:13px;}
-.gradient-preview{width:100%;height:80px;border-radius:10px;margin-top:10px;border:1px solid var(--border);}
-.pattern-preview{width:100%;height:120px;border-radius:10px;margin-top:10px;border:1px solid var(--border);}
-.color-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
-.color-row input[type=color]{width:44px;height:36px;border:none;border-radius:8px;cursor:pointer;background:none;}
-.ai-key-section{background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:12px;margin-bottom:14px;}
-.ai-key-section p{font-size:12px;color:var(--muted);margin-bottom:8px;}
-.ai-loading{color:var(--accent);font-size:13px;margin-top:8px;}
-.pass-strength{height:6px;border-radius:3px;margin-top:8px;transition:all 0.3s;}
-.regex-match{background:rgba(167,139,250,0.2);border-radius:3px;padding:1px 2px;}
-footer{border-top:1px solid var(--border);padding:40px 24px;text-align:center;color:var(--muted);font-size:13px;}
-footer .footer-logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--accent);margin-bottom:10px;}
+.logo-dot{display:inline-block;width:7px;height:7px;background:var(--accent);border-radius:50%;margin-left:2px;vertical-align:middle;box-shadow:0 0 8px var(--accent);}
+
+/* QUICK NAV PILLS */
+.nav-quick{display:flex;align-items:center;gap:5px;margin-left:20px;}
+.nav-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:100px;border:1px solid var(--border2);background:rgba(255,255,255,0.03);color:var(--muted);text-decoration:none;font-size:12px;font-weight:500;transition:all 0.2s;white-space:nowrap;cursor:pointer;}
+.nav-pill:hover{color:var(--text);border-color:var(--border2);background:rgba(255,255,255,0.07);}
+.nav-pill.active,.nav-pill:focus{color:var(--accent);border-color:rgba(167,139,250,0.4);background:rgba(167,139,250,0.08);}
+
+/* HAMBURGER */
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:38px;height:38px;cursor:pointer;padding:7px;border-radius:10px;background:var(--card);border:1px solid var(--border);margin-left:auto;flex-shrink:0;}
+.hamburger span{display:block;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;}
+.mobile-menu{display:none;position:fixed;top:62px;left:0;right:0;background:rgba(7,8,15,0.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 16px;z-index:99;flex-direction:column;gap:3px;}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{color:var(--muted);text-decoration:none;font-size:15px;font-weight:500;padding:11px 14px;border-radius:12px;transition:all 0.2s;display:flex;align-items:center;gap:10px;}
+.mobile-menu a:hover{background:var(--card);color:var(--text);}
+
+/* ── HERO ── */
+.hero{text-align:center;padding:80px 24px 56px;position:relative;overflow:hidden;}
+.hero-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,0.1) 0%,transparent 70%);top:-200px;left:50%;transform:translateX(-50%);pointer-events:none;}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:6px 16px;border-radius:100px;margin-bottom:24px;}
+.hero-tag-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(38px,6vw,74px);font-weight:800;line-height:1.04;letter-spacing:-2.5px;margin-bottom:18px;}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{color:var(--muted);font-size:17px;max-width:460px;margin:0 auto 36px;}
+
+/* ── SEARCH ── */
+.search-wrap{max-width:520px;margin:0 auto 16px;position:relative;}
+.search-wrap input{width:100%;padding:15px 52px 15px 22px;background:var(--card);border:1px solid var(--border2);border-radius:100px;color:var(--text);font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:all 0.2s;box-shadow:0 4px 24px rgba(0,0,0,0.3);}
+.search-wrap input:focus{border-color:rgba(167,139,250,0.5);box-shadow:0 0 0 3px rgba(167,139,250,0.08);}
+.search-wrap input::placeholder{color:var(--muted);}
+.search-wrap svg{position:absolute;right:20px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
+.search-hint{text-align:center;font-size:12px;color:var(--muted2);margin-bottom:0;}
+
+/* ── AD ── */
+.ad-wrap{max-width:1100px;margin:0 auto 0;padding:0 24px;}
+.ad-banner{background:var(--card);border:1px dashed var(--border);border-radius:14px;height:80px;display:flex;align-items:center;justify-content:center;color:var(--muted2);font-size:12px;}
+
+/* ── MAIN TOOLS SECTION ── */
+.tools-section{max-width:1100px;margin:0 auto;padding:48px 24px 80px;position:relative;z-index:1;}
+
+/* SECTION LABEL */
+.section-label{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
+.section-label-line{flex:1;height:1px;background:linear-gradient(to right,var(--border2),transparent);}
+.section-label-text{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+
+/* ── APP CARDS GRID ── */
+.apps-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:20px;}
+
+/* ── SINGLE APP CARD ── */
+.app-card{position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--border2);background:var(--card);transition:transform 0.3s,box-shadow 0.3s;cursor:pointer;group:hover;}
+.app-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+
+/* CARD GLOW BACKGROUND */
+.app-card-glow{position:absolute;inset:0;opacity:0;transition:opacity 0.3s;pointer-events:none;}
+.app-card:hover .app-card-glow{opacity:1;}
+
+/* CARD TOP VISUAL AREA */
+.app-card-visual{height:180px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.app-card-visual-bg{position:absolute;inset:0;}
+.app-card-icon{font-size:52px;position:relative;z-index:1;filter:drop-shadow(0 8px 24px rgba(0,0,0,0.4));transition:transform 0.3s;}
+.app-card:hover .app-card-icon{transform:scale(1.08);}
+
+/* FEATURE DOTS */
+.app-card-features{position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;gap:5px;z-index:2;}
+.feat-dot{padding:3px 9px;border-radius:100px;font-size:10px;font-weight:600;backdrop-filter:blur(8px);letter-spacing:0.3px;}
+
+/* CARD BODY */
+.app-card-body{padding:22px 24px 24px;}
+.app-card-name{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;margin-bottom:6px;letter-spacing:-0.3px;}
+.app-card-desc{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:18px;}
+
+/* LAUNCH BUTTON */
+.app-card-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:12px 18px;border-radius:12px;border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+.app-card-btn-arrow{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(0,0,0,0.2);transition:transform 0.2s;}
+.app-card:hover .app-card-btn-arrow{transform:translateX(3px);}
+
+/* STATUS BADGE */
+.app-status{position:absolute;top:14px;right:14px;display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:0.5px;backdrop-filter:blur(10px);}
+.status-live-dot{width:5px;height:5px;border-radius:50%;animation:blink 1.5s infinite;}
+
+/* ── EDITOR CARD ── */
+.app-card.editor .app-card-visual-bg{background:linear-gradient(135deg,#0f1428 0%,#1a2040 50%,#0a1535 100%);}
+.app-card.editor::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 70% 30%,rgba(96,165,250,0.15),transparent 60%);pointer-events:none;}
+.app-card.editor .app-status{background:rgba(96,165,250,0.15);color:#60a5fa;border:1px solid rgba(96,165,250,0.2);}
+.app-card.editor .status-live-dot{background:#60a5fa;box-shadow:0 0 5px #60a5fa;}
+.app-card.editor .feat-dot{background:rgba(96,165,250,0.15);color:#93c5fd;border:1px solid rgba(96,165,250,0.2);}
+.app-card.editor .app-card-btn{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;}
+.app-card.editor .app-card-btn:hover{background:linear-gradient(135deg,#1e40af,#2563eb);}
+/* MOCK EDITOR LINES */
+.editor-mock{position:absolute;bottom:0;left:0;right:0;height:120px;opacity:0.35;padding:10px 14px;}
+.editor-line{height:6px;border-radius:3px;margin-bottom:7px;background:linear-gradient(to right,#60a5fa,transparent);}
+
+/* ── TTS CARD ── */
+.app-card.tts .app-card-visual-bg{background:linear-gradient(135deg,#0a1a18 0%,#0f2420 50%,#081510 100%);}
+.app-card.tts::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 60%,rgba(0,229,200,0.12),transparent 60%);pointer-events:none;}
+.app-card.tts .app-status{background:rgba(0,229,200,0.12);color:#00e5c8;border:1px solid rgba(0,229,200,0.2);}
+.app-card.tts .status-live-dot{background:#00e5c8;box-shadow:0 0 5px #00e5c8;}
+.app-card.tts .feat-dot{background:rgba(0,229,200,0.12);color:#5eead4;border:1px solid rgba(0,229,200,0.2);}
+.app-card.tts .app-card-btn{background:linear-gradient(135deg,#0f766e,#14b8a6);color:#fff;}
+.app-card.tts .app-card-btn:hover{background:linear-gradient(135deg,#115e59,#0d9488);}
+/* SOUND WAVE */
+.wave-bars{display:flex;align-items:center;gap:4px;height:60px;position:absolute;bottom:20px;}
+.wave-bar{width:4px;border-radius:2px;background:rgba(0,229,200,0.5);animation:wavebar 1.2s ease-in-out infinite;}
+.wave-bar:nth-child(1){height:20px;animation-delay:0s}
+.wave-bar:nth-child(2){height:40px;animation-delay:0.1s}
+.wave-bar:nth-child(3){height:55px;animation-delay:0.2s}
+.wave-bar:nth-child(4){height:35px;animation-delay:0.15s}
+.wave-bar:nth-child(5){height:50px;animation-delay:0.25s}
+.wave-bar:nth-child(6){height:30px;animation-delay:0.05s}
+.wave-bar:nth-child(7){height:45px;animation-delay:0.3s}
+.wave-bar:nth-child(8){height:25px;animation-delay:0.1s}
+.wave-bar:nth-child(9){height:42px;animation-delay:0.2s}
+.wave-bar:nth-child(10){height:18px;animation-delay:0s}
+@keyframes wavebar{0%,100%{transform:scaleY(0.4);opacity:0.4}50%{transform:scaleY(1);opacity:1}}
+
+/* ── PIXELFORGE CARD ── */
+.app-card.pixel .app-card-visual-bg{background:linear-gradient(135deg,#0a0f1a 0%,#0f1525 50%,#080e1a 100%);}
+.app-card.pixel::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 60% 40%,rgba(0,229,255,0.1),transparent 55%);pointer-events:none;}
+.app-card.pixel .app-status{background:rgba(0,229,255,0.1);color:#00e5ff;border:1px solid rgba(0,229,255,0.2);}
+.app-card.pixel .status-live-dot{background:#00e5ff;box-shadow:0 0 5px #00e5ff;}
+.app-card.pixel .feat-dot{background:rgba(0,229,255,0.1);color:#67e8f9;border:1px solid rgba(0,229,255,0.15);}
+.app-card.pixel .app-card-btn{background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;}
+.app-card.pixel .app-card-btn:hover{background:linear-gradient(135deg,#075985,#0284c7);}
+/* PIXEL GRID */
+.pixel-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(5,1fr);gap:3px;padding:12px;opacity:0.2;}
+.pixel-cell{border-radius:3px;background:rgba(0,229,255,0.5);}
+
+/* ── NOVA PDF CARD ── */
+.app-card.novapdf .app-card-visual-bg{background:linear-gradient(135deg,#1a0a0a 0%,#250f0f 50%,#150808 100%);}
+.app-card.novapdf::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 40% 60%,rgba(239,68,68,0.12),transparent 55%);pointer-events:none;}
+.app-card.novapdf .app-status{background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.2);}
+.app-card.novapdf .status-live-dot{background:#f87171;box-shadow:0 0 5px #f87171;}
+.app-card.novapdf .feat-dot{background:rgba(239,68,68,0.1);color:#fca5a5;border:1px solid rgba(239,68,68,0.15);}
+.app-card.novapdf .app-card-btn{background:linear-gradient(135deg,#991b1b,#ef4444);color:#fff;}
+.app-card.novapdf .app-card-btn:hover{background:linear-gradient(135deg,#7f1d1d,#dc2626);}
+/* PDF PAGES */
+.pdf-pages{position:absolute;display:flex;gap:-6px;bottom:16px;}
+.pdf-page{width:44px;height:58px;border-radius:4px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.25);position:relative;}
+.pdf-page:nth-child(2){transform:rotate(-6deg) translateX(-12px);z-index:0;}
+.pdf-page:nth-child(3){transform:rotate(-12deg) translateX(-22px);z-index:-1;}
+.pdf-line{height:3px;border-radius:2px;background:rgba(248,113,113,0.4);margin:6px 6px 0;}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);padding:44px 24px;text-align:center;color:var(--muted);font-size:13px;position:relative;z-index:1;}
+footer .footer-logo{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;}
 footer p{max-width:420px;margin:0 auto 16px;}
-footer a{color:var(--muted);text-decoration:none;margin:0 10px;}
+footer a{color:var(--muted);text-decoration:none;margin:0 12px;transition:color 0.2s;}
 footer a:hover{color:var(--text);}
-canvas{display:none;}
-.ws-dropzone{border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:rgba(0,0,0,0.2);}
-.ws-dropzone:hover,.ws-dropzone.dragover{border-color:var(--accent3);background:rgba(255,107,107,0.05);}
-.pdf-file-item{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;margin-top:6px;font-size:12px;}
-.pdf-file-item span{color:var(--muted);}
-.pdf-file-item button{background:none;border:none;color:var(--accent3);cursor:pointer;font-size:14px;}
-@media(max-width:640px){.tools-grid{grid-template-columns:1fr;}.hero h1{letter-spacing:-1px;}.nav-links{display:none;}}
+.footer-bottom{margin-top:20px;padding-top:20px;border-top:1px solid var(--border);font-size:12px;color:var(--muted2);}
 
-/* ===== FULL MOBILE RESPONSIVE ===== */
-@media (max-width: 768px) {
-
-  /* NAV */
-  nav { padding: 0 14px; height: 52px; }
-  .logo { font-size: 17px; }
-  .nav-links { display: none; }
-
-  /* HERO */
-  .hero { padding: 40px 16px 32px; }
-  .hero-tag { font-size: 10px; padding: 4px 10px; }
-  .hero h1 { font-size: clamp(28px, 8vw, 44px); letter-spacing: -1px; margin-bottom: 12px; }
-  .hero p { font-size: 14px; margin-bottom: 20px; }
-  .search-bar { max-width: 100%; }
-  .search-bar input { font-size: 14px; padding: 12px 44px 12px 16px; }
-
-  /* AD BANNER */
-  .ad-banner { height: 60px; font-size: 11px; margin-bottom: 16px; }
-
-  /* CATEGORIES */
-  .categories { padding: 0 12px 24px; gap: 8px; justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 12px; }
-  .categories::-webkit-scrollbar { display: none; }
-  .cat-btn { padding: 7px 14px; font-size: 12px; flex-shrink: 0; white-space: nowrap; }
-
-  /* TOOLS SECTION */
-  .tools-section { padding: 0 12px 60px; }
-  .section-title { font-size: 18px; margin-bottom: 14px; }
-
-  /* TOOL CARDS */
-  .tools-grid { grid-template-columns: 1fr; gap: 14px; margin-bottom: 32px; }
-  .tool-card { padding: 18px; }
-  .tool-title { font-size: 15px; }
-  .tool-desc { font-size: 12px; }
-  .tool-icon { width: 38px; height: 38px; font-size: 17px; }
-
-  /* WORKSPACE INPUTS */
-  .ws-textarea { font-size: 14px; min-height: 100px; }
-  .ws-input { font-size: 14px; padding: 10px 12px; }
-  .ws-select { font-size: 14px; padding: 10px 12px; }
-  .ws-btn { padding: 9px 14px; font-size: 12px; }
-  .ws-stats { gap: 8px; }
-  .ws-stat { padding: 7px 10px; min-width: 60px; }
-  .ws-stat strong { font-size: 16px; }
-
-  /* ROW → COLUMN on mobile */
-  .ws-row { flex-direction: column; gap: 0; }
-  .ws-row .ws-input, .ws-row .ws-select { flex: none; width: 100%; }
-
-  /* TABS */
-  .ws-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-  .ws-tabs::-webkit-scrollbar { display: none; }
-  .ws-tab { flex-shrink: 0; font-size: 11px; padding: 6px 10px; }
-
-  /* GRID BUTTONS (case converter, etc.) */
-  .tool-card [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr 1fr !important; gap: 5px !important; }
-  .tool-card [style*="grid-template-columns:repeat(5"] { grid-template-columns: repeat(5,1fr) !important; gap: 4px !important; }
-  .tool-card [style*="grid-template-columns:repeat(6"] { grid-template-columns: repeat(5,1fr) !important; gap: 3px !important; }
-
-  /* FOOTER */
-  footer { padding: 28px 16px; }
-  footer .footer-logo { font-size: 18px; }
-  footer a { margin: 0 6px; font-size: 12px; }
-
-  /* DROPZONE */
-  .ws-dropzone { padding: 16px 12px; }
-
-  /* PDF FILE ITEMS */
-  .pdf-file-item { font-size: 11px; }
-
-  /* RESULT CARDS */
-  .result-card { padding: 10px; }
-  .result-card h4 { font-size: 12px; }
-
-  /* AI KEY SECTION */
-  #ai-tools + div { padding: 12px; }
-  #ai-tools + div .ws-input { font-size: 13px; }
-
-  /* SWATCH ROW */
-  .swatch-row { gap: 5px; }
-  .swatch { width: 28px; height: 28px; }
-
-  /* PROGRESS BAR */
-  .prog-wrap { height: 6px; }
-
-  /* COLOR PREVIEW */
-  .color-preview-big { height: 48px; }
-
-  /* HERO TAG COUNTS */
-  .hero-tag { letter-spacing: 0.5px; }
+/* ── MOBILE ── */
+@media(max-width:768px){
+  nav{padding:0 16px;height:56px;}
+  .logo{font-size:18px;}
+  .nav-quick{display:none;}
+  .hamburger{display:flex;}
+  .mobile-menu.open{display:flex;}
+  .hero{padding:48px 16px 40px;}
+  .hero h1{font-size:clamp(30px,8vw,46px);letter-spacing:-1.5px;}
+  .hero p{font-size:15px;}
+  .tools-section{padding:32px 14px 60px;}
+  .apps-grid{grid-template-columns:1fr;gap:16px;}
+  .app-card-visual{height:150px;}
+  .app-card-icon{font-size:44px;}
+  .app-card-body{padding:18px 18px 20px;}
+  .app-card-name{font-size:18px;}
+  .app-card-desc{font-size:12px;margin-bottom:14px;}
+  .editor-mock{display:none;}
+  .pixel-grid{display:none;}
+  .pdf-pages{display:none;}
 }
-
-/* SMALL PHONES */
-@media (max-width: 380px) {
-  .hero h1 { font-size: 26px; }
-  .tool-card { padding: 14px; }
-  .ws-btn { font-size: 11px; padding: 8px 10px; margin-right: 4px; }
-  .ws-stat strong { font-size: 14px; }
-  .cat-btn { font-size: 11px; padding: 6px 10px; }
-}
-
-
-/* HAMBURGER MENU - hidden on desktop */
-.hamburger { display: none; }
-.mobile-menu { display: none; }
-.mobile-menu.open { display: none; }
-
-@media (max-width: 768px) {
-  .hamburger {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-    width: 36px;
-    height: 36px;
-    cursor: pointer;
-    padding: 6px;
-    border-radius: 8px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    margin-left: auto;
-    flex-shrink: 0;
-  }
-  .hamburger span {
-    display: block;
-    height: 2px;
-    background: var(--text);
-    border-radius: 2px;
-    transition: all 0.3s;
-  }
-  .mobile-menu {
-    display: none;
-    position: fixed;
-    top: 52px;
-    left: 0;
-    right: 0;
-    background: rgba(11,12,15,0.98);
-    backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--border);
-    padding: 16px;
-    z-index: 99;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .mobile-menu.open { display: flex; }
-  .mobile-menu a {
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 15px;
-    font-weight: 500;
-    padding: 10px 14px;
-    border-radius: 10px;
-    transition: all 0.2s;
-  }
-  .mobile-menu a:hover, .mobile-menu a:active {
-    background: var(--card);
-    color: var(--text);
-  }
+@media(max-width:380px){
+  .hero h1{font-size:28px;}
+  .app-card-visual{height:130px;}
+  .app-card-icon{font-size:38px;}
 }
 </style>
 </head>
 <body>
-<canvas id="imgCanvas"></canvas>
+<canvas id="imgCanvas" style="display:none;"></canvas>
 
 <!-- NAV -->
 <nav>
-  <div class="logo">Utilix<span>x</span></div>
-
-  <!-- QUICK LAUNCH BUTTONS -->
+  <div class="logo">Utilix<span>x</span><span class="logo-dot"></span></div>
   <div class="nav-quick">
-    <a href="editor.html" target="_blank" class="teal">✏️ Editor</a>
-    <a href="tts.html" target="_blank">🎙️ TTS</a>
-    <a href="pixelforge.html" target="_blank" class="cyan">🎨 PixelForge</a>
-    <a href="#ai-tools" class="blue">🤖 AI Tools</a>
+    <a class="nav-pill" href="editor.html" target="_blank">✏️ Editor</a>
+    <a class="nav-pill" href="tts.html" target="_blank">🎙️ TTS</a>
+    <a class="nav-pill" href="pixelforge.html" target="_blank">🎨 PixelForge</a>
+    <a class="nav-pill" href="nova-pdf.html" target="_blank">📄 NovaPDF</a>
   </div>
-
-  <!-- MOBILE HAMBURGER -->
   <div class="hamburger" onclick="toggleMobileMenu()" id="hamburger">
     <span></span><span></span><span></span>
   </div>
@@ -292,235 +230,219 @@ canvas{display:none;}
 
 <!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobile-menu">
-  <a href="#editor-tools" onclick="closeMobileMenu()">✏️ Editor</a>
-  <a href="#tts-tools" onclick="closeMobileMenu()">🎙️ Text to Speech</a>
-  <a href="#pixelforge-tools" onclick="closeMobileMenu()">🎨 PixelForge</a>
-  <a href="#ai-tools" onclick="closeMobileMenu()">🤖 AI Tools</a>
+  <a href="editor.html" target="_blank" onclick="closeMobileMenu()">✏️ Markdown Editor Pro</a>
+  <a href="tts.html" target="_blank" onclick="closeMobileMenu()">🎙️ Text to Speech Studio</a>
+  <a href="pixelforge.html" target="_blank" onclick="closeMobileMenu()">🎨 PixelForge Image Editor</a>
+  <a href="nova-pdf.html" target="_blank" onclick="closeMobileMenu()">📄 Nova PDF Editor</a>
 </div>
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-tag">✦ Free Online Tools · 100% Free · No Signup · No Limits</div>
-  <h1>Your All-in-One<br/><em>Free Tool Kit</em></h1>
-  <p>Fast, powerful online tools for writing, SEO, math, design, dev & AI. Works in your browser instantly.</p>
-  <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="Search 60+ tools..." oninput="filterTools()"/>
+  <div class="hero-glow"></div>
+  <div class="hero-tag"><span class="hero-tag-dot"></span> Free · No Signup · No Limits · Works in Browser</div>
+  <h1>Professional Tools,<br/><em>Zero Cost</em></h1>
+  <p>A curated suite of powerful tools for writing, audio, design and PDFs — all running directly in your browser.</p>
+  <div class="search-wrap">
+    <input type="text" id="searchInput" placeholder="Search tools..." oninput="filterTools()"/>
     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
   </div>
 </div>
 
-<!-- AD BANNER -->
-<div style="padding:0 24px;max-width:1200px;margin:0 auto 16px;">
-  <div class="ad-banner">📢 Ad Space — Insert Google AdSense Code Here (728×90)</div>
+<!-- AD -->
+<div class="ad-wrap">
+  <div class="ad-banner">📢 Ad Space — Google AdSense (728×90)</div>
 </div>
 
-
+<!-- TOOLS -->
 <div class="tools-section">
 
-
-<!-- ===== EDITOR TOOLS ===== -->
-<div class="section-title" id="editor-tools"><span style="background:rgba(96,165,250,0.1)">✏️</span>Editor Tools</div>
-<div class="tools-grid">
-
-<!-- Markdown Editor Pro -->
-<div class="tool-card" data-cat="editor" style="border-color:rgba(96,165,250,0.25);">
-  <div class="tool-header"><div class="tool-icon teal">📝</div><span class="tool-badge badge-hot">🔥 Featured</span></div>
-  <div class="tool-title">Markdown Editor Pro</div>
-  <div class="tool-desc">Professional full-featured markdown editor with live preview, multi-tab support, Find & Replace, Table of Contents, themes, line numbers, and export to HTML/MD/TXT.</div>
-  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
-    <span style="background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Live Preview</span>
-    <span style="background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Multi-Tab</span>
-    <span style="background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Find & Replace</span>
-    <span style="background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Auto-Save</span>
-    <span style="background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">3 Themes</span>
-    <span style="background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Export HTML/MD/TXT</span>
+  <div class="section-label">
+    <div class="section-label-line"></div>
+    <div class="section-label-text">✦ All Tools</div>
+    <div class="section-label-line" style="background:linear-gradient(to left,var(--border2),transparent);"></div>
   </div>
-  <a href="editor.html" target="_blank" style="display:block;width:100%;padding:11px;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.3);border-radius:10px;color:var(--accent2);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--accent2)';this.style.color='#0b0c0f'" onmouseout="this.style.background='rgba(96,165,250,0.08)';this.style.color='var(--accent2)'">
-    ✏️ Open Markdown Editor →
-  </a>
-</div>
 
-</div><!-- end editor grid -->
+  <div class="apps-grid">
 
-<!-- ===== TEXT TO SPEECH ===== -->
-<div class="section-title" id="tts-tools"><span style="background:rgba(0,229,200,0.1)">🎙️</span>Text to Speech Tools</div>
-<div class="tools-grid">
+    <!-- ── MARKDOWN EDITOR ── -->
+    <div class="app-card editor" data-cat="editor" onclick="window.open('editor.html','_blank')">
+      <div class="app-status"><span class="status-live-dot"></span> Free</div>
+      <div class="app-card-visual">
+        <div class="app-card-visual-bg"></div>
+        <!-- mock editor lines -->
+        <div class="editor-mock">
+          <div class="editor-line" style="width:60%;opacity:0.9;"></div>
+          <div class="editor-line" style="width:85%;opacity:0.6;"></div>
+          <div class="editor-line" style="width:45%;opacity:0.8;"></div>
+          <div class="editor-line" style="width:70%;opacity:0.5;"></div>
+          <div class="editor-line" style="width:55%;opacity:0.7;"></div>
+          <div class="editor-line" style="width:38%;opacity:0.4;"></div>
+        </div>
+        <div class="app-card-icon">✏️</div>
+        <div class="app-card-features">
+          <span class="feat-dot">Live Preview</span>
+          <span class="feat-dot">Multi-Tab</span>
+          <span class="feat-dot">Auto-Save</span>
+        </div>
+      </div>
+      <div class="app-card-body">
+        <div class="app-card-name">Markdown Editor Pro</div>
+        <div class="app-card-desc">Full-featured Markdown editor with live preview, Find & Replace, Table of Contents, 3 themes, line numbers and export to HTML, MD or TXT.</div>
+        <a href="editor.html" target="_blank" class="app-card-btn" onclick="event.stopPropagation()">
+          <span>Open Editor</span>
+          <div class="app-card-btn-arrow">→</div>
+        </a>
+      </div>
+    </div>
 
-<!-- TTS Pro - Featured -->
-<div class="tool-card" data-cat="tts" style="border-color:rgba(0,229,200,0.25);">
-  <div class="tool-header"><div class="tool-icon teal">🎙️</div><span class="tool-badge badge-hot">🔥 Featured</span></div>
-  <div class="tool-title">Text to Speech Pro</div>
-  <div class="tool-desc">Professional full-featured TTS studio — 200+ voices, multiple languages, speed & pitch controls, word highlighting, bookmarks and audio download.</div>
-  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
-    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">200+ Voices</span>
-    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Multi-Language</span>
-    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Word Highlighting</span>
-    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Speed & Pitch</span>
-    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Download Audio</span>
-    <span style="background:rgba(0,229,200,0.1);border:1px solid rgba(0,229,200,0.2);color:var(--accent2);font-size:11px;padding:2px 8px;border-radius:100px;">Bookmarks</span>
-  </div>
-  <a href="tts.html" target="_blank" style="display:block;width:100%;padding:11px;background:rgba(0,229,200,0.08);border:1px solid rgba(0,229,200,0.3);border-radius:10px;color:#00e5c8;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#00e5c8';this.style.color='#07080d'" onmouseout="this.style.background='rgba(0,229,200,0.08)';this.style.color='#00e5c8'">
-    🎙️ Open TTS Studio →
-  </a>
-</div>
+    <!-- ── TTS ── -->
+    <div class="app-card tts" data-cat="tts" onclick="window.open('tts.html','_blank')">
+      <div class="app-status"><span class="status-live-dot"></span> Free</div>
+      <div class="app-card-visual">
+        <div class="app-card-visual-bg"></div>
+        <!-- sound wave animation -->
+        <div class="wave-bars">
+          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+        <div class="app-card-icon">🎙️</div>
+        <div class="app-card-features">
+          <span class="feat-dot">200+ Voices</span>
+          <span class="feat-dot">Multi-Language</span>
+          <span class="feat-dot">Download Audio</span>
+        </div>
+      </div>
+      <div class="app-card-body">
+        <div class="app-card-name">Text to Speech Pro</div>
+        <div class="app-card-desc">Professional TTS studio with 200+ voices, speed & pitch controls, word highlighting, bookmarks and audio download in multiple formats.</div>
+        <a href="tts.html" target="_blank" class="app-card-btn" onclick="event.stopPropagation()">
+          <span>Open TTS Studio</span>
+          <div class="app-card-btn-arrow">→</div>
+        </a>
+      </div>
+    </div>
 
-</div><!-- end tts grid -->
+    <!-- ── PIXELFORGE ── -->
+    <div class="app-card pixel" data-cat="pixelforge" onclick="window.open('pixelforge.html','_blank')">
+      <div class="app-status"><span class="status-live-dot"></span> Free</div>
+      <div class="app-card-visual">
+        <div class="app-card-visual-bg"></div>
+        <!-- pixel grid decoration -->
+        <div class="pixel-grid">
+          <div class="pixel-cell" style="background:rgba(0,229,255,0.6)"></div><div class="pixel-cell"></div><div class="pixel-cell" style="background:rgba(167,139,250,0.5)"></div><div class="pixel-cell"></div><div class="pixel-cell" style="background:rgba(0,229,255,0.4)"></div><div class="pixel-cell" style="background:rgba(96,165,250,0.6)"></div><div class="pixel-cell"></div><div class="pixel-cell" style="background:rgba(0,229,255,0.3)"></div>
+          <div class="pixel-cell"></div><div class="pixel-cell" style="background:rgba(96,165,250,0.5)"></div><div class="pixel-cell"></div><div class="pixel-cell" style="background:rgba(0,229,255,0.7)"></div><div class="pixel-cell"></div><div class="pixel-cell"></div><div class="pixel-cell" style="background:rgba(167,139,250,0.4)"></div><div class="pixel-cell"></div>
+          <div class="pixel-cell" style="background:rgba(0,229,255,0.3)"></div><div class="pixel-cell"></div><div class="pixel-cell" style="background:rgba(96,165,250,0.6)"></div><div class="pixel-cell"></div><div class="pixel-cell" style="background:rgba(0,229,255,0.5)"></div><div class="pixel-cell" style="background:rgba(167,139,250,0.5)"></div><div class="pixel-cell"></div><div class="pixel-cell" style="background:rgba(0,229,255,0.4)"></div>
+        </div>
+        <div class="app-card-icon">🎨</div>
+        <div class="app-card-features">
+          <span class="feat-dot">Crop & Resize</span>
+          <span class="feat-dot">Filters</span>
+          <span class="feat-dot">Draw & Annotate</span>
+        </div>
+      </div>
+      <div class="app-card-body">
+        <div class="app-card-name">PixelForge Studio</div>
+        <div class="app-card-desc">Browser-based image editor with filters, drawing, text overlay, crop, resize and export. No upload needed — everything runs locally.</div>
+        <a href="pixelforge.html" target="_blank" class="app-card-btn" onclick="event.stopPropagation()">
+          <span>Open PixelForge</span>
+          <div class="app-card-btn-arrow">→</div>
+        </a>
+      </div>
+    </div>
 
-<!-- ===== PIXELFORGE ===== -->
-<div class="section-title" id="pixelforge-tools"><span style="background:rgba(0,229,255,0.1)">🎨</span>PixelForge — Image & Design Studio</div>
-<div class="tools-grid">
+    <!-- ── NOVA PDF ── -->
+    <div class="app-card novapdf" data-cat="novapdf" onclick="window.open('nova-pdf.html','_blank')">
+      <div class="app-status"><span class="status-live-dot"></span> Free</div>
+      <div class="app-card-visual">
+        <div class="app-card-visual-bg"></div>
+        <!-- pdf pages decoration -->
+        <div class="pdf-pages">
+          <div class="pdf-page" style="z-index:2;transform:rotate(4deg) translateX(8px);">
+            <div class="pdf-line"></div><div class="pdf-line" style="width:60%;"></div><div class="pdf-line"></div>
+          </div>
+          <div class="pdf-page" style="z-index:1;">
+            <div class="pdf-line"></div><div class="pdf-line" style="width:75%;"></div><div class="pdf-line"></div>
+          </div>
+          <div class="pdf-page" style="z-index:0;transform:rotate(-4deg) translateX(-8px);">
+            <div class="pdf-line"></div><div class="pdf-line" style="width:50%;"></div><div class="pdf-line"></div>
+          </div>
+        </div>
+        <div class="app-card-icon">📄</div>
+        <div class="app-card-features">
+          <span class="feat-dot">Annotate</span>
+          <span class="feat-dot">Highlight</span>
+          <span class="feat-dot">Draw & Sign</span>
+        </div>
+      </div>
+      <div class="app-card-body">
+        <div class="app-card-name">NovaPDF Editor</div>
+        <div class="app-card-desc">Professional PDF editor for viewing, annotating, highlighting, drawing and signing PDFs. 100% private — files never leave your device.</div>
+        <a href="nova-pdf.html" target="_blank" class="app-card-btn" onclick="event.stopPropagation()">
+          <span>Open NovaPDF</span>
+          <div class="app-card-btn-arrow">→</div>
+        </a>
+      </div>
+    </div>
 
-<!-- PixelForge Featured Card -->
-<div class="tool-card" data-cat="pixelforge" style="border-color:rgba(0,229,255,0.25);">
-  <div class="tool-header"><div class="tool-icon teal">🎨</div><span class="tool-badge badge-hot">🔥 Featured</span></div>
-  <div class="tool-title">PixelForge Image Editor</div>
-  <div class="tool-desc">Professional browser-based image editor — crop, resize, filters, draw, text overlay, adjustments, layers and more. No upload needed.</div>
-  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
-    <span style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.12);color:#00e5ff;font-size:11px;padding:2px 8px;border-radius:100px;">Crop & Resize</span>
-    <span style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.12);color:#00e5ff;font-size:11px;padding:2px 8px;border-radius:100px;">Filters & Effects</span>
-    <span style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.12);color:#00e5ff;font-size:11px;padding:2px 8px;border-radius:100px;">Draw & Annotate</span>
-    <span style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.12);color:#00e5ff;font-size:11px;padding:2px 8px;border-radius:100px;">Text Overlay</span>
-    <span style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.12);color:#00e5ff;font-size:11px;padding:2px 8px;border-radius:100px;">Adjustments</span>
-    <span style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.12);color:#00e5ff;font-size:11px;padding:2px 8px;border-radius:100px;">Export PNG/JPG/WebP</span>
-  </div>
-  <a href="pixelforge.html" target="_blank" style="display:block;width:100%;padding:11px;background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.3);border-radius:10px;color:#00e5ff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#00e5ff';this.style.color='#0a0b0e'" onmouseout="this.style.background='rgba(0,229,255,0.08)';this.style.color='#00e5ff'">
-    🎨 Open PixelForge Studio →
-  </a>
-</div>
-
-</div><!-- end pixelforge grid -->
-
-<!-- AD BANNER MID -->
-
-<!-- AD BANNER -->
-
-<!-- ===== AI TOOLS ===== -->
-<div class="section-title" id="ai-tools"><span style="background:rgba(180,100,240,0.1)">🤖</span>AI-Powered Tools</div>
-<div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:var(--radius);padding:16px;margin-bottom:24px;">
-  <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">🔑 <strong style="color:var(--text);">Enter your Anthropic API Key once</strong> to use all AI tools. Get a free key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent4);">console.anthropic.com</a></p>
-  <div style="display:flex;gap:8px;">
-    <input class="ws-input" id="global-api-key" type="password" placeholder="sk-ant-..." style="margin:0;flex:1;"/>
-    <button class="ws-btn" onclick="saveApiKey()" style="margin:0;">Save Key</button>
-  </div>
-  <div id="api-key-status" style="font-size:12px;margin-top:6px;color:var(--muted);"></div>
-</div>
-<div class="tools-grid">
-
-<!-- AI Text Rewriter -->
-<div class="tool-card" data-cat="ai">
-  <div class="tool-header"><div class="tool-icon purple">✨</div><span class="tool-badge badge-ai">🤖 AI</span></div>
-  <div class="tool-title">AI Text Rewriter</div>
-  <div class="tool-desc">Rewrite and paraphrase any text in different tones using AI.</div>
-  <button class="use-btn" onclick="toggleTool('rewrite')">Use Tool →</button>
-  <div class="workspace" id="ws-rewrite">
-    <textarea class="ws-textarea" id="rewrite-input" placeholder="Paste the text you want to rewrite..."></textarea>
-    <select class="ws-select" id="rewrite-tone" style="margin-top:10px;">
-      <option value="professional">Professional</option>
-      <option value="casual">Casual & Friendly</option>
-      <option value="formal">Formal</option>
-      <option value="simple">Simple & Clear</option>
-      <option value="creative">Creative</option>
-    </select>
-    <button class="ws-btn" onclick="aiRewrite()">✨ Rewrite with AI</button>
-    <button class="ws-btn secondary" onclick="copyOutput('rewrite-output')">Copy</button>
-    <div class="ws-output" id="rewrite-output"></div>
-  </div>
-</div>
-
-<!-- AI Title Generator -->
-<div class="tool-card" data-cat="ai">
-  <div class="tool-header"><div class="tool-icon purple">💡</div><span class="tool-badge badge-ai">🤖 AI</span></div>
-  <div class="tool-title">AI Title & Headline Generator</div>
-  <div class="tool-desc">Generate catchy, SEO-optimized titles and headlines using AI.</div>
-  <button class="use-btn" onclick="toggleTool('title')">Use Tool →</button>
-  <div class="workspace" id="ws-title">
-    <textarea class="ws-textarea" id="title-input" placeholder="Describe your article, product or page topic..." style="min-height:80px;"></textarea>
-    <select class="ws-select" id="title-type" style="margin-top:10px;">
-      <option value="blog">Blog Post Titles</option>
-      <option value="youtube">YouTube Video Titles</option>
-      <option value="product">Product Headlines</option>
-      <option value="email">Email Subject Lines</option>
-      <option value="ad">Ad Headlines</option>
-    </select>
-    <button class="ws-btn" onclick="aiGenerateTitles()">✨ Generate Titles</button>
-    <div class="ws-output" id="title-output"></div>
-  </div>
-</div>
-
-<!-- AI Bio Generator -->
-<div class="tool-card" data-cat="ai">
-  <div class="tool-header"><div class="tool-icon purple">👤</div><span class="tool-badge badge-ai">🤖 AI</span></div>
-  <div class="tool-title">AI Bio Generator</div>
-  <div class="tool-desc">Generate professional bios for LinkedIn, Twitter, website and more.</div>
-  <button class="use-btn" onclick="toggleTool('bio')">Use Tool →</button>
-  <div class="workspace" id="ws-bio">
-    <input class="ws-input" id="bio-name" placeholder="Your Name"/>
-    <input class="ws-input" id="bio-role" placeholder="Job Title / Role (e.g. Software Engineer)"/>
-    <input class="ws-input" id="bio-skills" placeholder="Key skills or achievements (comma separated)"/>
-    <select class="ws-select" id="bio-platform">
-      <option value="linkedin">LinkedIn (professional)</option>
-      <option value="twitter">Twitter/X (short)</option>
-      <option value="website">Website About Page</option>
-      <option value="instagram">Instagram</option>
-    </select>
-    <button class="ws-btn" onclick="aiGenerateBio()">✨ Generate Bio</button>
-    <button class="ws-btn secondary" onclick="copyOutput('bio-output')">Copy</button>
-    <div class="ws-output" id="bio-output"></div>
-  </div>
-</div>
-
-<!-- AI Meta Description Writer -->
-<div class="tool-card" data-cat="ai">
-  <div class="tool-header"><div class="tool-icon purple">📝</div><span class="tool-badge badge-ai">🤖 AI</span></div>
-  <div class="tool-title">AI Meta Description Writer</div>
-  <div class="tool-desc">Generate click-worthy SEO meta descriptions for your pages using AI.</div>
-  <button class="use-btn" onclick="toggleTool('metaai')">Use Tool →</button>
-  <div class="workspace" id="ws-metaai">
-    <input class="ws-input" id="metaai-page" placeholder="Page title or topic"/>
-    <textarea class="ws-textarea" id="metaai-content" placeholder="Brief description of your page content..." style="min-height:80px;"></textarea>
-    <input class="ws-input" id="metaai-keyword" placeholder="Target keyword (optional)"/>
-    <button class="ws-btn" onclick="aiMetaDesc()">✨ Write Meta Description</button>
-    <button class="ws-btn secondary" onclick="copyOutput('metaai-output')">Copy</button>
-    <div class="ws-output" id="metaai-output"></div>
-  </div>
-</div>
-
-<!-- AI Text Summarizer -->
-<div class="tool-card" data-cat="ai">
-  <div class="tool-header"><div class="tool-icon purple">📋</div><span class="tool-badge badge-ai">🤖 AI</span></div>
-  <div class="tool-title">AI Text Summarizer</div>
-  <div class="tool-desc">Summarize long articles, documents or text into concise summaries using AI.</div>
-  <button class="use-btn" onclick="toggleTool('summ')">Use Tool →</button>
-  <div class="workspace" id="ws-summ">
-    <textarea class="ws-textarea" id="summ-input" placeholder="Paste the long text you want to summarize..." style="min-height:120px;"></textarea>
-    <select class="ws-select" id="summ-length" style="margin-top:10px;">
-      <option value="short">Short (2-3 sentences)</option>
-      <option value="medium" selected>Medium (1 paragraph)</option>
-      <option value="bullets">Bullet Points</option>
-    </select>
-    <button class="ws-btn" onclick="aiSummarize()">✨ Summarize</button>
-    <button class="ws-btn secondary" onclick="copyOutput('summ-output')">Copy</button>
-    <div class="ws-output" id="summ-output"></div>
-  </div>
-</div>
-
-</div><!-- end ai grid -->
-
-<!-- BOTTOM AD -->
+  </div><!-- end apps-grid -->
 
 </div><!-- end tools-section -->
 
 <footer>
   <div class="footer-logo">Utilixx</div>
-  <p>Free online tools for everyone. No signup, no limits, no cost — ever.</p>
+  <p>Free professional tools for everyone. No signup, no limits, no cost — ever.</p>
   <div>
     <a href="privacy.html">Privacy Policy</a>
     <a href="about.html">About</a>
     <a href="contact.html">Contact</a>
   </div>
-  <p style="margin-top:16px;">© 2026 Utilixx. All rights reserved.</p>
+  <div class="footer-bottom">© 2026 Utilixx. All rights reserved.</div>
 </footer>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<script src="tools.js"></script>
-</body></html>
+<script>
+// Search
+function filterTools(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.app-card').forEach(card=>{
+    const text=card.textContent.toLowerCase();
+    card.style.display=(!q||text.includes(q))?'':'none';
+  });
+}
+
+// Mobile menu
+function toggleMobileMenu(){
+  const menu=document.getElementById('mobile-menu');
+  const hb=document.getElementById('hamburger');
+  menu.classList.toggle('open');
+  const spans=hb.querySelectorAll('span');
+  if(menu.classList.contains('open')){
+    spans[0].style.transform='rotate(45deg) translate(5px,5px)';
+    spans[1].style.opacity='0';
+    spans[2].style.transform='rotate(-45deg) translate(5px,-5px)';
+  } else {
+    spans[0].style.transform='';
+    spans[1].style.opacity='1';
+    spans[2].style.transform='';
+  }
+}
+function closeMobileMenu(){
+  document.getElementById('mobile-menu').classList.remove('open');
+  const spans=document.getElementById('hamburger').querySelectorAll('span');
+  spans[0].style.transform='';spans[1].style.opacity='1';spans[2].style.transform='';
+}
+document.addEventListener('click',e=>{
+  const menu=document.getElementById('mobile-menu');
+  const hb=document.getElementById('hamburger');
+  if(menu&&hb&&!menu.contains(e.target)&&!hb.contains(e.target))closeMobileMenu();
+});
+
+// Highlight active nav pill on scroll
+const cards=document.querySelectorAll('.app-card');
+const pills=document.querySelectorAll('.nav-pill');
+</script>
+</body>
+</html>

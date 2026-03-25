@@ -668,6 +668,99 @@ input[type=range].vol::-webkit-slider-thumb { background:var(--green); box-shado
 }
 .myvoice-active-badge.show { display:inline-flex; }
 .mv-dot { width:5px; height:5px; border-radius:50%; background:var(--purple); box-shadow:0 0 5px rgba(157,122,255,.6); animation:blink 1.8s infinite; }
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  html, body { overflow: auto; height: auto; }
+
+  /* 3-column grid → single column stack */
+  .app {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  /* TOPBAR */
+  .topbar { padding: 0 10px; gap: 6px; flex-wrap: wrap; height: auto; min-height: 54px; padding: 6px 10px; }
+  .logo-text { font-size: 13px; }
+  .logo-mark { width: 26px; height: 26px; }
+  .top-badge { display: none; }
+  .top-div { display: none; }
+  .top-right { gap: 5px; }
+  .btn { font-size: 11px; padding: 4px 9px; }
+  .ibtn { width: 28px; height: 28px; }
+
+  /* LEFT PANEL — voice list becomes collapsible */
+  .left-panel {
+    width: 100%;
+    max-height: 260px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    overflow-y: auto;
+  }
+  .voice-section { max-height: 200px; }
+  .voice-item { padding: 5px 7px; }
+  .voice-avatar { width: 28px; height: 28px; font-size: 12px; }
+  .voice-name { font-size: 10px; }
+
+  /* MAIN CENTER */
+  .main-panel {
+    flex: 1;
+    height: auto;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* EDITOR / TEXT AREA */
+  .text-editor { min-height: 180px; font-size: 14px; }
+  .editor-area { padding: 10px; }
+  .editor-toolbar { flex-wrap: wrap; gap: 3px; padding: 6px; }
+  .etb { padding: 4px 8px; font-size: 11px; }
+
+  /* CONTROLS */
+  .controls-bar { flex-wrap: wrap; padding: 8px; gap: 8px; }
+  .ctrl-group { flex: 1; min-width: 120px; }
+
+  /* PLAYBACK BUTTONS */
+  .play-btn { width: 48px; height: 48px; font-size: 18px; }
+  .playback-row { gap: 8px; padding: 8px; flex-wrap: wrap; justify-content: center; }
+
+  /* RIGHT PANEL — hide on mobile or show below */
+  .right-panel {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .panel-head { height: 36px; }
+  .panel-title { font-size: 9px; }
+
+  /* WORD HIGHLIGHT */
+  .word-highlight { font-size: 13px; line-height: 1.8; padding: 10px; }
+
+  /* PROGRESS BAR */
+  .progress-wrap { padding: 0 10px; }
+
+  /* STATS */
+  .stat-row { flex-wrap: wrap; gap: 6px; padding: 6px 10px; }
+  .stat-item { flex: 1; min-width: 70px; }
+  .stat-val { font-size: 16px; }
+
+  /* BOTTOM BAR */
+  .bottom-bar { flex-wrap: wrap; padding: 6px 10px; gap: 6px; height: auto; }
+  .bst { font-size: 10px; }
+}
+
+@media (max-width: 480px) {
+  .logo-text { font-size: 12px; }
+  .left-panel { max-height: 200px; }
+  .voice-section { max-height: 150px; }
+  .right-panel { max-height: 220px; }
+  .top-right .btn.cyan { font-size: 11px; padding: 4px 8px; }
+}
 </style>
 </head>
 <body>

@@ -102,6 +102,26 @@
   .annotation-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
   .annotation-layer.active { pointer-events: all; }
 
+  /* ── PDF.JS TEXT LAYER ── */
+  .textLayer {
+    position: absolute; top: 0; left: 0;
+    overflow: hidden; opacity: 0.25; line-height: 1;
+    pointer-events: all; cursor: text;
+    /* allow text selection */
+    user-select: text; -webkit-user-select: text;
+  }
+  .textLayer span, .textLayer br {
+    color: transparent; position: absolute;
+    white-space: pre; cursor: text;
+    transform-origin: 0% 0%;
+  }
+  .textLayer ::selection { background: rgba(0, 100, 255, 0.3); }
+  .textLayer .highlight { background: rgba(255, 214, 0, 0.4); border-radius: 2px; }
+  .textLayer .highlight.selected { background: rgba(0, 100, 255, 0.3); }
+  /* Draw canvas on top of everything */
+  .draw-canvas { position: absolute; top: 0; left: 0; pointer-events: none; cursor: crosshair; }
+  .draw-canvas.active { pointer-events: all; }
+
   /* ── ANNOTATIONS ── */
   .sticky-note { position: absolute; width: 160px; min-height: 100px; background: #fef08a; border-radius: 4px; padding: 8px; font-size: 12px; color: #333; box-shadow: 3px 3px 10px rgba(0,0,0,0.3); cursor: move; z-index: 10; resize: both; overflow: auto; }
   .sticky-note .note-header { display: flex; justify-content: space-between; font-size: 10px; color: #666; margin-bottom: 4px; }
@@ -1300,6 +1320,37 @@ document.addEventListener('DOMContentLoaded', () => {
   }, {passive: true});
 
   notify('Welcome to NovaPDF! Open a PDF to get started.', 'info');
+
+  // Add draw controls to toolbar
+  const toolbar = document.getElementById('toolbar');
+  const drawControls = document.createElement('div');
+  drawControls.className = 'tb-group';
+  drawControls.id = 'draw-controls';
+  drawControls.style.display = 'none';
+  drawControls.innerHTML = `
+    <div class="tb-sep"></div>
+    <input type="color" class="tb-color" id="draw-color-picker" value="#ff3333" title="Draw color" onchange="setDrawColor(this.value)" style="cursor:pointer;">
+    <select class="tb-select" onchange="setDrawWidth(this.value)" title="Line width">
+      <option value="2">Thin</option>
+      <option value="4" selected>Medium</option>
+      <option value="8">Thick</option>
+      <option value="16">Bold</option>
+    </select>
+    <button class="tb-btn" onclick="setDrawShape('freehand')" title="Freehand">✏️ Free</button>
+    <button class="tb-btn" onclick="setDrawShape('line')" title="Line">📏 Line</button>
+    <button class="tb-btn" onclick="setDrawShape('rect')" title="Rectangle">▭ Rect</button>
+    <button class="tb-btn" onclick="setDrawShape('circle')" title="Circle">○ Circle</button>
+    <button class="tb-btn" onclick="setDrawShape('arrow')" title="Arrow">→ Arrow</button>
+    <button class="tb-btn" onclick="clearDrawings()" title="Clear drawings" style="color:var(--red)">🗑️ Clear</button>
+  `;
+  if (toolbar) toolbar.appendChild(drawControls);
+
+  // Show draw controls when draw/shape tool selected
+  const origSetTool = window.setTool;
+  document.addEventListener('click', e => {
+    const dc = document.getElementById('draw-controls');
+    if (dc) dc.style.display = ['draw','shape','highlight','erase'].includes(currentTool) ? 'flex' : 'none';
+  });
 });
 
 function onCanvasScroll() {
@@ -1378,18 +1429,85 @@ async function renderAllPages() {
   const pagesDiv = document.getElementById('pdf-pages'); pagesDiv.innerHTML = '';
   const isMobile = window.innerWidth <= 900;
   const maxW = isMobile ? window.innerWidth - 28 : null;
+
   for (let i = 1; i <= totalPages; i++) {
     const page = await pdfDoc.getPage(i);
     let scale = zoomLevel / 100;
     if (maxW) { const bv = page.getViewport({scale:1}); scale = Math.min(scale, maxW / bv.width); }
     const viewport = page.getViewport({scale});
-    const wrapper = document.createElement('div'); wrapper.className = 'page-wrapper';
-    const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
-    const al = document.createElement('div'); al.className = 'annotation-layer active'; al.id = `anno-${i}`;
-    wrapper.appendChild(canvas); wrapper.appendChild(al); pagesDiv.appendChild(wrapper);
+
+    // Wrapper
+    const wrapper = document.createElement('div');
+    wrapper.className = 'page-wrapper';
+    wrapper.style.width = viewport.width + 'px';
+    wrapper.style.height = viewport.height + 'px';
+
+    // Render canvas (PDF content)
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width; canvas.height = viewport.height;
+    canvas.style.display = 'block';
+    wrapper.appendChild(canvas);
     await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
+
+    // ── TEXT LAYER (enables text selection + search) ──
+    const textLayerDiv = document.createElement('div');
+    textLayerDiv.className = 'textLayer';
+    textLayerDiv.style.width = viewport.width + 'px';
+    textLayerDiv.style.height = viewport.height + 'px';
+    wrapper.appendChild(textLayerDiv);
+
+    const pdfjsLib = window['pdfjs-dist/build/pdf'];
+    if (pdfjsLib && pdfjsLib.renderTextLayer) {
+      const textContent = await page.getTextContent();
+      pdfjsLib.renderTextLayer({
+        textContent,
+        container: textLayerDiv,
+        viewport,
+        textDivs: []
+      });
+    } else {
+      // Fallback: manually place text spans
+      try {
+        const textContent = await page.getTextContent();
+        textContent.items.forEach(item => {
+          if (!item.str) return;
+          const tx = pdfjsLib ? pdfjsLib.Util.transform(
+            pdfjsLib.Util.transform(viewport.transform, item.transform), [1, 0, 0, -1, 0, 0]
+          ) : item.transform;
+          const span = document.createElement('span');
+          span.textContent = item.str;
+          const fontHeight = Math.sqrt((item.transform[2]*item.transform[2])+(item.transform[3]*item.transform[3]));
+          const fontAscent = fontHeight;
+          span.style.cssText = `
+            left: ${tx ? tx[4] : item.transform[4]}px;
+            top: ${tx ? tx[5] : viewport.height - item.transform[5]}px;
+            font-size: ${Math.ceil(fontHeight * scale)}px;
+            font-family: sans-serif;
+          `;
+          textLayerDiv.appendChild(span);
+        });
+      } catch(e) {}
+    }
+
+    // ── DRAWING CANVAS (for draw/highlight tools) ──
+    const drawCanvas = document.createElement('canvas');
+    drawCanvas.className = 'draw-canvas';
+    drawCanvas.width = viewport.width; drawCanvas.height = viewport.height;
+    drawCanvas.style.width = viewport.width + 'px';
+    drawCanvas.style.height = viewport.height + 'px';
+    drawCanvas.dataset.page = i;
+    wrapper.appendChild(drawCanvas);
+    setupDrawCanvas(drawCanvas, i);
+
+    // Annotation layer (sticky notes, stamps)
+    const al = document.createElement('div');
+    al.className = 'annotation-layer'; al.id = `anno-${i}`;
+    al.style.pointerEvents = 'none';
+    wrapper.appendChild(al);
+
+    pagesDiv.appendChild(wrapper);
   }
-  currentPage = 1; updateStatusBar();
+  currentPage = 1; updateStatusBar(); updateDrawCanvases();
 }
 
 async function buildThumbnails() {
@@ -1446,13 +1564,151 @@ function setZoom(val) {
 // ── TOOL ──
 function setTool(tool) {
   currentTool = tool;
-  // Desktop buttons
   document.querySelectorAll('.tb-btn[id^="tool-"]').forEach(b => b.classList.remove('active'));
   const db = document.getElementById(`tool-${tool}`); if (db) db.classList.add('active');
-  // Mobile buttons
   document.querySelectorAll('.mt-btn[id^="mt-"]').forEach(b => b.classList.remove('active'));
   const mb = document.getElementById(`mt-${tool}`); if (mb) mb.classList.add('active');
   document.getElementById('sb-tool').textContent = tool.charAt(0).toUpperCase() + tool.slice(1);
+  updateDrawCanvases();
+  // Cursor
+  const ca = document.getElementById('canvas-area');
+  const cursors = { hand:'grab', select:'default', text:'text', draw:'crosshair', highlight:'text', erase:'cell', shape:'crosshair' };
+  ca.style.cursor = cursors[tool] || 'default';
+  // Text tool — let text layer handle selection
+  document.querySelectorAll('.textLayer').forEach(tl => {
+    tl.style.pointerEvents = (tool === 'select' || tool === 'highlight' || tool === 'text') ? 'all' : 'none';
+    tl.style.opacity = (tool === 'select' || tool === 'highlight') ? '0.3' : '0.25';
+  });
+}
+
+// ── DRAW ENGINE ──
+let isDrawing = false, drawStartX = 0, drawStartY = 0, drawLastX = 0, drawLastY = 0;
+let drawColor = '#ff3333', drawLineWidth = 3, drawShape = 'freehand';
+let snapshots = {}; // store canvas snapshots for shape preview
+
+function updateDrawCanvases() {
+  document.querySelectorAll('.draw-canvas').forEach(dc => {
+    const activeTools = ['draw','highlight','erase','shape'];
+    if (activeTools.includes(currentTool)) {
+      dc.classList.add('active'); dc.style.pointerEvents = 'all';
+    } else {
+      dc.classList.remove('active'); dc.style.pointerEvents = 'none';
+    }
+  });
+}
+
+function setupDrawCanvas(canvas, pageNum) {
+  const ctx = canvas.getContext('2d');
+
+  const getPos = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const src = e.touches ? e.touches[0] : e;
+    return {
+      x: (src.clientX - rect.left) * scaleX,
+      y: (src.clientY - rect.top)  * scaleY
+    };
+  };
+
+  const startDraw = (e) => {
+    if (!['draw','highlight','erase','shape'].includes(currentTool)) return;
+    e.preventDefault(); e.stopPropagation();
+    isDrawing = true;
+    const pos = getPos(e);
+    drawStartX = pos.x; drawStartY = pos.y;
+    drawLastX  = pos.x; drawLastY  = pos.y;
+    // Save snapshot for shape preview
+    snapshots[pageNum] = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    if (currentTool === 'draw' || currentTool === 'highlight') {
+      ctx.beginPath(); ctx.moveTo(pos.x, pos.y);
+    }
+  };
+
+  const doDraw = (e) => {
+    if (!isDrawing) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+    if (currentTool === 'draw') {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = drawColor; ctx.lineWidth = drawLineWidth; ctx.globalAlpha = 1;
+      ctx.lineTo(pos.x, pos.y); ctx.stroke();
+
+    } else if (currentTool === 'highlight') {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = '#FFE234'; ctx.lineWidth = 16; ctx.globalAlpha = 0.35;
+      ctx.lineTo(pos.x, pos.y); ctx.stroke();
+
+    } else if (currentTool === 'erase') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.strokeStyle = 'rgba(0,0,0,1)'; ctx.lineWidth = 24; ctx.globalAlpha = 1;
+      ctx.beginPath(); ctx.arc(pos.x, pos.y, 12, 0, Math.PI*2); ctx.fill();
+
+    } else if (currentTool === 'shape') {
+      // Restore snapshot then draw shape preview
+      if (snapshots[pageNum]) ctx.putImageData(snapshots[pageNum], 0, 0);
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = drawColor; ctx.lineWidth = drawLineWidth; ctx.globalAlpha = 1;
+      ctx.beginPath();
+      if (drawShape === 'rect') {
+        ctx.strokeRect(drawStartX, drawStartY, pos.x - drawStartX, pos.y - drawStartY);
+      } else if (drawShape === 'circle') {
+        const rx = Math.abs(pos.x - drawStartX)/2, ry = Math.abs(pos.y - drawStartY)/2;
+        const cx = drawStartX + (pos.x - drawStartX)/2, cy = drawStartY + (pos.y - drawStartY)/2;
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI*2); ctx.stroke();
+      } else if (drawShape === 'arrow') {
+        drawArrow(ctx, drawStartX, drawStartY, pos.x, pos.y);
+      } else if (drawShape === 'line') {
+        ctx.moveTo(drawStartX, drawStartY); ctx.lineTo(pos.x, pos.y); ctx.stroke();
+      }
+    }
+
+    drawLastX = pos.x; drawLastY = pos.y;
+  };
+
+  const stopDraw = (e) => {
+    if (!isDrawing) return;
+    isDrawing = false;
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.beginPath(); // reset path
+    delete snapshots[pageNum];
+  };
+
+  // Mouse events
+  canvas.addEventListener('mousedown',  startDraw, {passive:false});
+  canvas.addEventListener('mousemove',  doDraw,    {passive:false});
+  canvas.addEventListener('mouseup',    stopDraw);
+  canvas.addEventListener('mouseleave', stopDraw);
+  // Touch events
+  canvas.addEventListener('touchstart', startDraw, {passive:false});
+  canvas.addEventListener('touchmove',  doDraw,    {passive:false});
+  canvas.addEventListener('touchend',   stopDraw);
+}
+
+function drawArrow(ctx, x1, y1, x2, y2) {
+  const headLen = 14, angle = Math.atan2(y2-y1, x2-x1);
+  ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - headLen*Math.cos(angle - Math.PI/6), y2 - headLen*Math.sin(angle - Math.PI/6));
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - headLen*Math.cos(angle + Math.PI/6), y2 - headLen*Math.sin(angle + Math.PI/6));
+  ctx.stroke();
+}
+
+// Set draw color/width from toolbar
+function setDrawColor(color) { drawColor = color; }
+function setDrawWidth(w) { drawLineWidth = parseInt(w); }
+function setDrawShape(s) { drawShape = s; setTool('shape'); }
+
+// Clear all drawings on current page
+function clearDrawings() {
+  const pages = document.querySelectorAll('.draw-canvas');
+  const dc = pages[currentPage - 1];
+  if (dc) { dc.getContext('2d').clearRect(0, 0, dc.width, dc.height); notify('Drawings cleared', 'success'); }
 }
 
 // ── PAGE OPS ──
@@ -1865,6 +2121,37 @@ function simulateConversionDownload(fmt, filename) {
 
 // Store original file blob for re-download
 let currentFileBlob = null;
+
+// ── TEXT TOOL — click to add editable text box ──
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('canvas-area').addEventListener('click', e => {
+    if (currentTool !== 'text') return;
+    const wrapper = e.target.closest('.page-wrapper');
+    if (!wrapper) return;
+    const rect = wrapper.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const box = document.createElement('div');
+    box.style.cssText = `position:absolute;left:${x}px;top:${y}px;z-index:30;`;
+    const input = document.createElement('div');
+    input.contentEditable = 'true';
+    input.style.cssText = `min-width:80px;min-height:24px;background:transparent;border:1px dashed rgba(91,110,245,0.6);color:#1a1a1a;font-size:14px;font-family:Arial,sans-serif;padding:3px 6px;outline:none;cursor:text;white-space:pre;`;
+    input.textContent = '';
+
+    // close button
+    const closeBtn = document.createElement('span');
+    closeBtn.textContent = '×';
+    closeBtn.style.cssText = `position:absolute;top:-10px;right:-10px;background:var(--red);color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:31;`;
+    closeBtn.onclick = () => box.remove();
+
+    box.appendChild(input); box.appendChild(closeBtn);
+    wrapper.appendChild(box);
+    makeDraggable(box);
+    input.focus();
+    notify('Type your text. Click × to remove.', 'info');
+  });
+});
 
 // ═══════════════════════════════════════
 document.addEventListener('keydown', e => {
